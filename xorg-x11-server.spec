@@ -1,3 +1,4 @@
+
 %define pkgname xorg-server
 
 Summary:   X.Org X11 X server
