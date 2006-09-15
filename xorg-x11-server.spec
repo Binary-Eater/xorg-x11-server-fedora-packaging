@@ -1,17 +1,15 @@
-
 %define pkgname xorg-server
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.1.1
-Release:   38%{?dist}
+Version:   1.1.99.3
+Release:   0.1%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0:   ftp://ftp.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
-Source100: comment-header-modefiles.txt
 
 Patch0:    xorg-x11-server-0.99.3-init-origins-fix.patch
 # https://bugs.freedesktop.org/show_bug.cgi?id=5093
@@ -26,8 +24,6 @@ Patch8:    xorg-x11-server-1.1.1-xvfb-composite-crash.patch
 # OpenGL compositing manager feature/optimization patches.
 Patch100:  xorg-x11-server-1.1.0-no-move-damage.patch
 Patch101:  xorg-x11-server-1.1.0-dont-backfill-bg-none.patch
-Patch103:  xorg-x11-server-1.1.0-tfp-damage.patch
-Patch104:  xorg-x11-server-1.1.0-mesa-copy-sub-buffer.patch
 Patch105:  xorg-x11-server-1.1.1-enable-composite.patch
 Patch106:  xorg-x11-server-1.1.1-no-composite-in-xnest.patch
 Patch107:  xorg-x11-server-1.1.1-offscreen-pixmaps.patch
@@ -44,7 +40,6 @@ Patch1004:  xorg-x11-server-1.1.1-selinux-awareness.patch
 Patch1005:  xorg-x11-server-1.1.1-builtin-fonts.patch
 
 # Backports of post-1.1 stuff.
-Patch2001:  xorg-x11-server-1.1.0-pci-scan-fixes.patch
 Patch2004:  xorg-x11-server-1.1.0-no-zlib.patch
 Patch2005:  xorg-x11-server-1.1.1-Xdmx-render-fix-fdo7482.patch
 Patch2006:  xorg-x11-server-1.1.1-revert-xkb-change.patch
@@ -332,6 +327,12 @@ drivers, input drivers, or other X modules should install this package.
 
 %prep
 %setup -q -n %{pkgname}-%{version}
+
+# hack
+%patch108 -p1 -b .mesa-651
+%patch1004 -p1 -b .selinux-awareness
+[ -n "$FEDORA" ] || exit 0
+
 %patch0 -p0 -b .init-origins-fix
 %patch3 -p0 -b .parser-add-missing-headers-to-sdk
 %patch5 -p0 -b .libxf86config-dont-write-empty-sections
@@ -341,22 +342,17 @@ drivers, input drivers, or other X modules should install this package.
 
 %patch100 -p0 -b .no-move-damage
 %patch101 -p0 -b .dont-backfill-bg-none
-%patch103 -p0 -b .tfp-damage
-%patch104 -p0 -b .mesa-copy-sub-buffer
-%patch105 -p0 -b .enable-composite
+%patch105 -p1 -b .enable-composite
 %patch106 -p1 -b .no-xnest-composite
 %patch107 -p1 -b .offscreen-pixmaps
-%patch108 -p1 -b .mesa-651
 %patch109 -p1 -b .aiglx-happy-vt-switch
 
 %patch1000 -p0 -b .redhat-die-ugly-pattern-die-die-die
 %patch1001 -p1 -b .Red-Hat-extramodes
 %patch1002 -p1 -b .xephyr
 %patch1003 -p1 -b .fpic
-%patch1004 -p1 -b .selinux-awareness
 %patch1005 -p0 -b .builtin-fonts
 
-%patch2001 -p1 -b .pci-scan
 %patch2004 -p1 -b .zlib
 %patch2005 -p1 -b .Xdmx
 %patch2006 -p1 -b .revert-xkb-change
@@ -430,11 +426,7 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
 # be able to parse the same modelist as the X server uses (rhpxl).
 {
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/xorg
-    for each in vesamodes extramodes ; do
-        install -m 0644 %{SOURCE100} $RPM_BUILD_ROOT%{_datadir}/xorg/$each
-        cat hw/xfree86/common/$each >> $RPM_BUILD_ROOT%{_datadir}/xorg/$each
-        chmod 0444 $RPM_BUILD_ROOT%{_datadir}/xorg/$each
-    done
+    install -m 0444 hw/xfree86/common/{vesa,extra}modes $RPM_BUILD_ROOT%{_datadir}/xorg/
 }
 %endif
 
@@ -482,6 +474,12 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
     rm -rf $RPM_BUILD_ROOT/var/lib/xkb
 #    rm -f $RPM_BUILD_ROOT%{_datadir}/man/man1/Xserver.1x*
 %endif
+
+    # XXX pre-1.2 noise.  fix me properly please.
+    rm -f $RPM_BUILD_ROOT/%{_bindir}/X{ati,chips,epson,fake,fbdev,i810,mach64}
+    rm -f $RPM_BUILD_ROOT/%{_bindir}/X{mga,neomagic,nvidia,pm2,r128,sdl,smi}
+    rm -f $RPM_BUILD_ROOT/%{_bindir}/X{vesa,via}
+    rm -f $RPM_BUILD_ROOT/%{_libdir}/xorg/modules/librac.a
 }
 
 %clean
@@ -577,7 +575,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/extensions/libxtrap.so
 %dir %{_libdir}/xorg/modules/input
 %dir %{_libdir}/xorg/modules/fonts
-%{_libdir}/xorg/modules/fonts/libbitmap.so
 %{_libdir}/xorg/modules/fonts/libfreetype.so
 %{_libdir}/xorg/modules/fonts/libtype1.so
 %dir %{_libdir}/xorg/modules/linux
@@ -595,7 +592,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/multimedia/uda1380_drv.so
 %{_libdir}/xorg/modules/libafb.so
 %{_libdir}/xorg/modules/libcfb.so
-%{_libdir}/xorg/modules/libcfb16.so
 %{_libdir}/xorg/modules/libcfb32.so
 %{_libdir}/xorg/modules/libddc.so
 %{_libdir}/xorg/modules/libexa.so
@@ -604,7 +600,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/libint10.so
 %{_libdir}/xorg/modules/libmfb.so
 %{_libdir}/xorg/modules/libpcidata.so
-%{_libdir}/xorg/modules/librac.so
 %{_libdir}/xorg/modules/libramdac.so
 %{_libdir}/xorg/modules/libscanpci.so
 %{_libdir}/xorg/modules/libshadow.so
@@ -630,6 +625,7 @@ rm -rf $RPM_BUILD_ROOT
 #%dir %{_mandir}/man4x
 #%{_mandir}/man4/fbdevhw.4x*
 %{_mandir}/man4/fbdevhw.4*
+%{_mandir}/man4/exa.4*
 #%dir %{_mandir}/man5x
 %{_mandir}/man5/xorg.conf.5x*
 %dir %{_localstatedir}/lib/xkb
@@ -708,6 +704,10 @@ rm -rf $RPM_BUILD_ROOT
 # -------------------------------------------------------------------
 
 %changelog
+* Thu Sep 14 2006 Adam Jackson <ajackson@redhat.com> - 1.1.99.3-0.1.fc6
+- Initial attempt to get pre-1.2 building.
+- Omit applying fedora patches unless $FEDORA is set at rpmbuild time.
+
 * Thu Sep  7 2006 Adam Jackson <ajackson@redhat.coM> - 1.1.1-38.fc6
 - xorg-x11-server-1.1.1-believe-monitor-rb-modes.patch: Always believe the
   monitor when it reports a reduced-blanking mode, even over VGA.
