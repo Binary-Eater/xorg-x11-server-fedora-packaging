@@ -68,23 +68,17 @@ Patch3017:  xorg-x11-server-1.1.1-believe-monitor-rb-modes.patch
 %define drimoduledir	%{_libdir}/dri
 %define sdkdir		%{_includedir}/xorg
 
+%define base_xservers --enable-xvfb --enable-xnest --enable-kdrive --enable-xephyr
 %ifarch %{ix86} x86_64 ppc ppc64 ia64 alpha sparc sparc64
-%define xservers --enable-xorg --enable-dmx --enable-xvfb --enable-xnest --enable-kdrive --enable-xephyr
+%define xservers --enable-xorg --enable-dmx %{base_xservers}
 %define with_hw_servers 1
 %define with_dmx_server 1
 %endif
 %ifarch s390 s390x
-%define xservers --disable-xorg --disable-dmx --enable-xvfb --enable-xnest --enable-kdrive --enable-xephyr
+%define xservers --disable-xorg --disable-dmx %{base_xservers}
 %define with_hw_servers 0
 %define with_dmx_server 0
 %endif
-
-# NOTE: The developer utils are intended for low level video driver hackers,
-# doing low level bit twiddling, who really know what they are doing, and are
-# disabled by default, as they are not generally useful to end users.
-# FIXME: Reconfigure the spec file to put them in a separate subpackage, so
-# I can build one build with them enabled, install them, then disable it again.
-%define with_developer_utils	0
 
 %ifarch %{ix86} x86_64 ppc ia64 alpha sparc sparc64
 %define with_dri	1
@@ -124,9 +118,6 @@ BuildRequires: libX11-devel
 BuildRequires: libXext-devel
 #
 BuildRequires: freetype-devel >= 2.1.9-1
-# FIXME: Disabling zlib-devel dep as we are applying the xorg-x11-server-1.1.0-no-zlib.patch
-# patch which should remove any dependency on zlib anyway.
-#BuildRequires: zlib-devel
 
 # FIXME: libXt-devel should be wrapped in with_dmx_server - for Xdmxconfig,
 # probably should only be needed for DMX builds, but the build explodes with
@@ -440,17 +431,6 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
     rm -f $RPM_BUILD_ROOT%{_libdir}/X11/getconfig/xorg.cfg
     rm -f $RPM_BUILD_ROOT%{_bindir}/getconfig
     rm -f $RPM_BUILD_ROOT%{_bindir}/getconfig.pl
-%if ! %{with_developer_utils}
-    rm -f $RPM_BUILD_ROOT%{_bindir}/inb
-    rm -f $RPM_BUILD_ROOT%{_bindir}/inl
-    rm -f $RPM_BUILD_ROOT%{_bindir}/inw
-    rm -f $RPM_BUILD_ROOT%{_bindir}/ioport
-    rm -f $RPM_BUILD_ROOT%{_bindir}/outb
-    rm -f $RPM_BUILD_ROOT%{_bindir}/outl
-    rm -f $RPM_BUILD_ROOT%{_bindir}/outw
-    rm -f $RPM_BUILD_ROOT%{_bindir}/pcitweak
-    rm -f $RPM_BUILD_ROOT%{_mandir}/man1/pcitweak.1*
-%endif
     rm -f $RPM_BUILD_ROOT%{_mandir}/man1/getconfig.1x*
     rm -f $RPM_BUILD_ROOT%{_mandir}/man5/getconfig.5x*
     # Remove all libtool archives (*.la)
@@ -546,16 +526,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(4711, root, root) %{_bindir}/Xorg
 %{_bindir}/gtf
 %{_bindir}/cvt
-%if %{with_developer_utils}
-%{_bindir}/inb
-%{_bindir}/inl
-%{_bindir}/inw
-%{_bindir}/ioport
-%{_bindir}/outb
-%{_bindir}/outl
-%{_bindir}/outw
-%{_bindir}/pcitweak
-%endif
 %{_bindir}/scanpci
 %dir %{_datadir}/xorg
 %{_datadir}/xorg/vesamodes
@@ -614,9 +584,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/xserver
 %{_libdir}/xserver/SecurityPolicy
 #%dir %{_mandir}/man1x
-%if %{with_developer_utils}
-%{_mandir}/man1/pcitweak.1x*
-%endif
 %{_mandir}/man1/gtf.1x*
 %{_mandir}/man1/scanpci.1x*
 %{_mandir}/man1/Xorg.1x*
@@ -704,6 +671,11 @@ rm -rf $RPM_BUILD_ROOT
 # -------------------------------------------------------------------
 
 %changelog
+* Sat Sep 16 2006 Adam Jackson <ajackson@redhat.com>
+- Misc spec janitation:
+  - Remove unused with_developer_utils macro
+  - Add base_xservers macro
+
 * Thu Sep 14 2006 Adam Jackson <ajackson@redhat.com> - 1.1.99.3-0.1.fc6
 - Initial attempt to get pre-1.2 building.
 - Omit applying fedora patches unless $FEDORA is set at rpmbuild time.
