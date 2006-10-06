@@ -719,6 +719,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Fri Oct 6 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.4-0.4.olpc1
 - Move built-in fonts patch to base patch set.
+- Add EXA two-pass masked blends experiment.
 
 * Fri Oct 6 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.3-0.3.olpc1
 - OLPC: Remove scanpci from the install so rpm doesn't include it, and
