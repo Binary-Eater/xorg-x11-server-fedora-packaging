@@ -3,7 +3,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.1.99.3
-Release:   0.1.olpc1
+Release:   0.3.olpc1
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -488,6 +488,7 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
     rm -f $RPM_BUILD_ROOT%{_bindir}/ioport
     rm -f $RPM_BUILD_ROOT%{_bindir}/out?
     rm -f $RPM_BUILD_ROOT%{_bindir}/pcitweak
+    rm -f $RPM_BUILD_ROOT%{_bindir}/scanpci
     rm -f $RPM_BUILD_ROOT%{_mandir}/man1/pcitweak.1*
 %endif
 }
@@ -556,7 +557,9 @@ rm -rf $RPM_BUILD_ROOT
 %attr(4711, root, root) %{_bindir}/Xorg
 %{_bindir}/gtf
 %{_bindir}/cvt
+%if !%{xolpc}
 %{_bindir}/scanpci
+%endif
 %dir %{_datadir}/xorg
 %{_datadir}/xorg/vesamodes
 %{_datadir}/xorg/extramodes
@@ -711,6 +714,10 @@ rm -rf $RPM_BUILD_ROOT
 # -------------------------------------------------------------------
 
 %changelog
+* Fri Oct 6 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.3-0.3.olpc1
+- OLPC: Remove scanpci from the install so rpm doesn't include it, and
+  thereby pick up a (bogus) DT_NEEDED on libscanpci.so.
+
 * Thu Oct 5 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.3-0.2.olpc1
 - Add OLPC build tuning.  Slightly gross atm, needs rework.
 
