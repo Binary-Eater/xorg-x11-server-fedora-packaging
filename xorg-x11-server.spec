@@ -3,7 +3,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.1.99.3
-Release:   0.1%{?dist}
+Release:   0.1.olpc1
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -87,6 +87,15 @@ Patch3017:  xorg-x11-server-1.1.1-believe-monitor-rb-modes.patch
 %define with_dri	0
 %endif
 
+# OLPC tuning
+#%if 0%{?olpc}
+%if 1
+%define xolpc 1
+%define with_dri 0
+%else
+%define xolpc 0
+%endif
+
 # FIXME: Temporary Build deps on autotools, as needed...
 #BuildRequires: automake17
 BuildRequires: automake
@@ -166,15 +175,12 @@ Summary: Xorg X server
 Group: User Interface/X
 # NOTE: The X server invokes xkbcomp directly, so this is required.
 Requires: xkbcomp
-# NOTE: The X server requires 'fixed' and 'cursor' font, which are provided
-# by xorg-x11-fonts-base
+%if !%{xolpc}
 Requires: xorg-x11-fonts-base
-# NOTE: Require some basic drivers for minimal configuration. (#173060)
-# We _should_ install every driver, but OLPC wants different (#191781),
-# which is quite lame and wants an better solution.
 Requires: xorg-x11-drv-mouse xorg-x11-drv-keyboard xorg-x11-drv-vesa
 Requires: xorg-x11-drv-void xorg-x11-drv-evdev
 #Requires: xorg-x11-drivers >= 0.99.2-4
+%endif
 
 # NOTE: We use implementation non-specific "xkbdata" here, to make it easy
 # to switch to the freedesktop.org 'xkeyboard-config' project replacment
@@ -374,14 +380,22 @@ drivers, input drivers, or other X modules should install this package.
 #	--disable-dependency-tracking \
 # also, --enable-kdrive just for Xephyr is overkill, should fix that upstream
 
+%if %{xolpc}
+%define baseopts --disable-xcsecurity --disable-xinerama --disable-cup --disable-evi --disable-xf86vidmode
+%else
+%define baseopts --enable-xcsecurity 
+%endif
+
 aclocal ; automake ; autoconf
+%if %{xolpc}
+export CFLAGS="$RPM_OPT_FLAGS -Os"
+%endif
 %configure %{xservers} \
 	--disable-xprint \
 	--disable-static \
 	--with-pic \
 	--enable-composite \
 	--enable-xtrap \
-	--enable-xcsecurity \
 	--enable-xevie \
 	--with-default-font-path="unix/:7100,built-ins" \
 	--with-module-dir=%{moduledir} \
@@ -400,6 +414,7 @@ aclocal ; automake ; autoconf
 %else
 	--disable-dri \
 %endif
+	%{baseopts} ${EXTRA_CONFIGURE}
 
 make %{?_smp_mflags}
 
@@ -456,10 +471,25 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
 %endif
 
     # XXX pre-1.2 noise.  fix me properly please.
-    rm -f $RPM_BUILD_ROOT/%{_bindir}/X{ati,chips,epson,fake,fbdev,i810,mach64}
-    rm -f $RPM_BUILD_ROOT/%{_bindir}/X{mga,neomagic,nvidia,pm2,r128,sdl,smi}
-    rm -f $RPM_BUILD_ROOT/%{_bindir}/X{vesa,via}
-    rm -f $RPM_BUILD_ROOT/%{_libdir}/xorg/modules/librac.a
+    rm -f $RPM_BUILD_ROOT%{_bindir}/X{ati,chips,epson,fake,fbdev,i810,mach64}
+    rm -f $RPM_BUILD_ROOT%{_bindir}/X{mga,neomagic,nvidia,pm2,r128,sdl,smi}
+    rm -f $RPM_BUILD_ROOT%{_bindir}/X{vesa,via}
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/librac.a
+
+%if %{xolpc}
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libafb*
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libcfb*
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libmfb*
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libscanpci*
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libxaa*
+    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libxf*    
+    rm -rf $RPM_BUILD_ROOT%{_libdir}/xorg/modules/multimedia/
+    rm -f $RPM_BUILD_ROOT%{_bindir}/in?
+    rm -f $RPM_BUILD_ROOT%{_bindir}/ioport
+    rm -f $RPM_BUILD_ROOT%{_bindir}/out?
+    rm -f $RPM_BUILD_ROOT%{_bindir}/pcitweak
+    rm -f $RPM_BUILD_ROOT%{_mandir}/man1/pcitweak.1*
+%endif
 }
 
 %clean
@@ -552,6 +582,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/linux/libdrm.so
 %endif
 %{_libdir}/xorg/modules/linux/libfbdevhw.so
+%if !%{xolpc}
 %dir %{_libdir}/xorg/modules/multimedia
 %{_libdir}/xorg/modules/multimedia/bt829_drv.so
 %{_libdir}/xorg/modules/multimedia/fi1236_drv.so
@@ -563,26 +594,35 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/libafb.so
 %{_libdir}/xorg/modules/libcfb.so
 %{_libdir}/xorg/modules/libcfb32.so
+%endif
 %{_libdir}/xorg/modules/libddc.so
 %{_libdir}/xorg/modules/libexa.so
 %{_libdir}/xorg/modules/libfb.so
 %{_libdir}/xorg/modules/libi2c.so
 %{_libdir}/xorg/modules/libint10.so
+%if !%{xolpc}
 %{_libdir}/xorg/modules/libmfb.so
+%endif
 %{_libdir}/xorg/modules/libpcidata.so
 %{_libdir}/xorg/modules/libramdac.so
+%if !%{xolpc}
 %{_libdir}/xorg/modules/libscanpci.so
+%endif
 %{_libdir}/xorg/modules/libshadow.so
 %{_libdir}/xorg/modules/libshadowfb.so
 %{_libdir}/xorg/modules/libvbe.so
 %{_libdir}/xorg/modules/libvgahw.so
+%if !%{xolpc}
 %{_libdir}/xorg/modules/libxaa.so
 %{_libdir}/xorg/modules/libxf1bpp.so
 %{_libdir}/xorg/modules/libxf4bpp.so
 %{_libdir}/xorg/modules/libxf8_16bpp.so
 %{_libdir}/xorg/modules/libxf8_32bpp.so
+%endif
+%if !%{xolpc}
 %dir %{_libdir}/xserver
 %{_libdir}/xserver/SecurityPolicy
+%endif
 #%dir %{_mandir}/man1x
 %{_mandir}/man1/gtf.1x*
 %{_mandir}/man1/scanpci.1x*
@@ -671,6 +711,9 @@ rm -rf $RPM_BUILD_ROOT
 # -------------------------------------------------------------------
 
 %changelog
+* Thu Oct 5 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.3-0.2.olpc1
+- Add OLPC build tuning.  Slightly gross atm, needs rework.
+
 * Sat Sep 16 2006 Adam Jackson <ajackson@redhat.com>
 - Misc spec janitation:
   - Remove unused with_developer_utils macro
