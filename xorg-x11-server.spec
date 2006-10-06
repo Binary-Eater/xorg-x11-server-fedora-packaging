@@ -3,7 +3,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.1.99.3
-Release:   0.3.olpc1
+Release:   0.4.olpc1
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -63,6 +63,8 @@ Patch3014:  xorg-x11-server-1.1.1-infer-virtual.patch
 Patch3015:  xorg-x11-server-1.1.1-mode-sort-kung-fu.patch
 Patch3016:  xorg-x11-server-1.1.1-pci-paranoia.patch
 Patch3017:  xorg-x11-server-1.1.1-believe-monitor-rb-modes.patch
+
+Patch4000: exa-1tmu-masked-blends-3.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -328,6 +330,8 @@ drivers, input drivers, or other X modules should install this package.
 # hack
 %patch108 -p1 -b .mesa-651
 %patch1004 -p1 -b .selinux-awareness
+%patch1005 -p0 -b .builtin-fonts
+%patch4000 -p1 -b .exa-1tmu
 [ -n "$FEDORA" ] || exit 0
 
 %patch0 -p0 -b .init-origins-fix
@@ -348,7 +352,6 @@ drivers, input drivers, or other X modules should install this package.
 %patch1001 -p1 -b .Red-Hat-extramodes
 %patch1002 -p1 -b .xephyr
 %patch1003 -p1 -b .fpic
-%patch1005 -p0 -b .builtin-fonts
 
 %patch2004 -p1 -b .zlib
 %patch2005 -p1 -b .Xdmx
@@ -714,6 +717,9 @@ rm -rf $RPM_BUILD_ROOT
 # -------------------------------------------------------------------
 
 %changelog
+* Fri Oct 6 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.4-0.4.olpc1
+- Move built-in fonts patch to base patch set.
+
 * Fri Oct 6 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.3-0.3.olpc1
 - OLPC: Remove scanpci from the install so rpm doesn't include it, and
   thereby pick up a (bogus) DT_NEEDED on libscanpci.so.
