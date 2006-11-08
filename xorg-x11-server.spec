@@ -2,8 +2,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.1.99.3
-Release:   0.4.olpc1
+Version:   1.1.99.902
+Release:   0.1
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -89,15 +89,6 @@ Patch4000: exa-1tmu-masked-blends-3.patch
 %define with_dri	0
 %endif
 
-# OLPC tuning
-#%if 0%{?olpc}
-%if 1
-%define xolpc 1
-%define with_dri 0
-%else
-%define xolpc 0
-%endif
-
 # FIXME: Temporary Build deps on autotools, as needed...
 #BuildRequires: automake17
 BuildRequires: automake
@@ -177,12 +168,10 @@ Summary: Xorg X server
 Group: User Interface/X
 # NOTE: The X server invokes xkbcomp directly, so this is required.
 Requires: xkbcomp
-%if !%{xolpc}
 Requires: xorg-x11-fonts-base
 Requires: xorg-x11-drv-mouse xorg-x11-drv-keyboard xorg-x11-drv-vesa
 Requires: xorg-x11-drv-void xorg-x11-drv-evdev
 #Requires: xorg-x11-drivers >= 0.99.2-4
-%endif
 
 # NOTE: We use implementation non-specific "xkbdata" here, to make it easy
 # to switch to the freedesktop.org 'xkeyboard-config' project replacment
@@ -328,10 +317,10 @@ drivers, input drivers, or other X modules should install this package.
 %setup -q -n %{pkgname}-%{version}
 
 # hack
-%patch108 -p1 -b .mesa-651
+#%patch108 -p1 -b .mesa-651
 %patch1004 -p1 -b .selinux-awareness
 %patch1005 -p0 -b .builtin-fonts
-%patch4000 -p1 -b .exa-1tmu
+#%patch4000 -p1 -b .exa-1tmu
 [ -n "$FEDORA" ] || exit 0
 
 %patch0 -p0 -b .init-origins-fix
@@ -383,16 +372,9 @@ drivers, input drivers, or other X modules should install this package.
 #	--disable-dependency-tracking \
 # also, --enable-kdrive just for Xephyr is overkill, should fix that upstream
 
-%if %{xolpc}
-%define baseopts --disable-xcsecurity --disable-xinerama --disable-cup --disable-evi --disable-xf86vidmode
-%else
 %define baseopts --enable-xcsecurity 
-%endif
 
 aclocal ; automake ; autoconf
-%if %{xolpc}
-export CFLAGS="$RPM_OPT_FLAGS -Os"
-%endif
 %configure %{xservers} \
 	--disable-xprint \
 	--disable-static \
@@ -478,22 +460,15 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
     rm -f $RPM_BUILD_ROOT%{_bindir}/X{mga,neomagic,nvidia,pm2,r128,sdl,smi}
     rm -f $RPM_BUILD_ROOT%{_bindir}/X{vesa,via}
     rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/librac.a
-
-%if %{xolpc}
-    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libafb*
-    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libcfb*
-    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libmfb*
-    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libscanpci*
-    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libxaa*
-    rm -f $RPM_BUILD_ROOT%{_libdir}/xorg/modules/libxf*    
-    rm -rf $RPM_BUILD_ROOT%{_libdir}/xorg/modules/multimedia/
-    rm -f $RPM_BUILD_ROOT%{_bindir}/in?
+    rm -f $RPM_BUILD_ROOT%{_bindir}/inb
+    rm -f $RPM_BUILD_ROOT%{_bindir}/inl
+    rm -f $RPM_BUILD_ROOT%{_bindir}/inw
     rm -f $RPM_BUILD_ROOT%{_bindir}/ioport
-    rm -f $RPM_BUILD_ROOT%{_bindir}/out?
+    rm -f $RPM_BUILD_ROOT%{_bindir}/outb
+    rm -f $RPM_BUILD_ROOT%{_bindir}/outl
+    rm -f $RPM_BUILD_ROOT%{_bindir}/outw
     rm -f $RPM_BUILD_ROOT%{_bindir}/pcitweak
-    rm -f $RPM_BUILD_ROOT%{_bindir}/scanpci
-    rm -f $RPM_BUILD_ROOT%{_mandir}/man1/pcitweak.1*
-%endif
+    rm -f $RPM_BUILD_ROOT%{_mandir}/man1/pcitweak.*
 }
 
 %clean
@@ -560,9 +535,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(4711, root, root) %{_bindir}/Xorg
 %{_bindir}/gtf
 %{_bindir}/cvt
-%if !%{xolpc}
 %{_bindir}/scanpci
-%endif
 %dir %{_datadir}/xorg
 %{_datadir}/xorg/vesamodes
 %{_datadir}/xorg/extramodes
@@ -588,7 +561,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/linux/libdrm.so
 %endif
 %{_libdir}/xorg/modules/linux/libfbdevhw.so
-%if !%{xolpc}
 %dir %{_libdir}/xorg/modules/multimedia
 %{_libdir}/xorg/modules/multimedia/bt829_drv.so
 %{_libdir}/xorg/modules/multimedia/fi1236_drv.so
@@ -600,35 +572,26 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/libafb.so
 %{_libdir}/xorg/modules/libcfb.so
 %{_libdir}/xorg/modules/libcfb32.so
-%endif
 %{_libdir}/xorg/modules/libddc.so
 %{_libdir}/xorg/modules/libexa.so
 %{_libdir}/xorg/modules/libfb.so
 %{_libdir}/xorg/modules/libi2c.so
 %{_libdir}/xorg/modules/libint10.so
-%if !%{xolpc}
 %{_libdir}/xorg/modules/libmfb.so
-%endif
 %{_libdir}/xorg/modules/libpcidata.so
 %{_libdir}/xorg/modules/libramdac.so
-%if !%{xolpc}
 %{_libdir}/xorg/modules/libscanpci.so
-%endif
 %{_libdir}/xorg/modules/libshadow.so
 %{_libdir}/xorg/modules/libshadowfb.so
 %{_libdir}/xorg/modules/libvbe.so
 %{_libdir}/xorg/modules/libvgahw.so
-%if !%{xolpc}
 %{_libdir}/xorg/modules/libxaa.so
 %{_libdir}/xorg/modules/libxf1bpp.so
 %{_libdir}/xorg/modules/libxf4bpp.so
 %{_libdir}/xorg/modules/libxf8_16bpp.so
 %{_libdir}/xorg/modules/libxf8_32bpp.so
-%endif
-%if !%{xolpc}
 %dir %{_libdir}/xserver
 %{_libdir}/xserver/SecurityPolicy
-%endif
 #%dir %{_mandir}/man1x
 %{_mandir}/man1/gtf.1x*
 %{_mandir}/man1/scanpci.1x*
@@ -717,6 +680,10 @@ rm -rf $RPM_BUILD_ROOT
 # -------------------------------------------------------------------
 
 %changelog
+* Wed Nov 8 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.902-0.1
+- Undo OLPC customization, now lives on its own branch.
+- Test harness for 1.2rc2.
+
 * Fri Oct 6 2006 Adam Jackson <ajackson@redhat.com> 1.1.99.4-0.4.olpc1
 - Move built-in fonts patch to base patch set.
 - Add EXA two-pass masked blends experiment.
