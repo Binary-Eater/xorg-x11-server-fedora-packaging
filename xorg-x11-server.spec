@@ -9,12 +9,12 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.2.99.901
-Release:   1%{?dist}
+Release:   1%{?dist}.dwmw2
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-
+ExclusiveArch: ppc
 Source0:   ftp://ftp.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
 Source100: comment-header-modefiles.txt
 
@@ -28,6 +28,7 @@ Patch11:   xorg-x11-server-1.1.1-vt-activate-is-a-terrible-api.patch
 Patch12:   xorg-x11-server-1.1.1-graphics-expose.patch
 Patch15:   xorg-x11-server-1.1.1-automake-1.10-fixes.patch
 Patch18:   xorg-x11-server-1.1.1-glcore-visual-matching.patch
+patch19:   xorg-x11-server-1.2.99-unbreak-domain.patch
 
 # OpenGL compositing manager feature/optimization patches.
 Patch100:  xorg-x11-server-1.1.0-no-move-damage.patch
@@ -251,6 +252,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch12 -p1 -b .graphics-expose
 %patch15 -p1 -b .automake-1.10
 %patch18 -p1 -b .glcore-visual
+%patch19 -p1 -b .domain
 
 %patch100 -p0 -b .no-move-damage
 %patch101 -p0 -b .dont-backfill-bg-none
@@ -559,6 +561,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 07 2007 David Woodhouse <dwmw2@redhat.com> 1.2.99.901-1.dwmw2
+- Unbreak machines with multiple PCI domains. Again.
+
 * Mon Mar 05 2007 Adam Jackson <ajax@redhat.com> 1.2.99.901-1
 - xserver 1.3 RC1.  RANDR 1.2 hotness in the hizzouse.
 - xserver-1.2.0-honor-displaysize.patch: Honor the DisplaySize config
