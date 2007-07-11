@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   9%{?dist}
+Release:   13.1%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -65,6 +65,7 @@ Patch2006:  xserver-1.3.0-less-randr-fakerama.patch
 Patch2007:  xserver-1.3.0-randr12-config-hack.patch
 Patch2008:  xserver-1.3.0-randrama-no-zero-screens.patch
 Patch2009:  xserver-1.3.0-arm-iopl.patch
+Patch2010:  xserver-1.3.0-idletime.patch
 
 # assorted PCI layer shenanigans.  oh the pain.
 Patch2500:  xorg-x11-server-1.2.99-unbreak-domain.patch
@@ -73,6 +74,8 @@ Patch2502:  xserver-1.3.0-mmap-failure-check.patch
 Patch2503:  xserver-1.3.0-rom-search.patch
 Patch2504:  xserver-1.3.0-domain-obiwan.patch
 Patch2505:  xserver-1.3.0-pci-device-enable.patch
+
+Patch3000: exa-firstpixel-tweak.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -136,7 +139,6 @@ BuildRequires: libXpm-devel
 BuildRequires: libXaw-devel
 BuildRequires: libXfixes-devel
 
-BuildRequires: xorg-x11-font-utils >= 1.0.0-1
 BuildRequires: mesa-libGL-devel >= 6.5.2
 BuildRequires: mesa-source >= 6.5.2
 # XXX silly...
@@ -146,6 +148,9 @@ Requires: libdrm >= 2.3.0
 %endif
 
 BuildRequires: libselinux-devel
+
+# Make sure libXfont has the catalogue FPE
+Requires: libXfont >= 1.2.9
 
 # Make sure we pull ABI compatible drivers.
 Conflicts: xorg-x11-drv-ati < 6.6.1
@@ -174,6 +179,9 @@ Requires: xorg-x11-drv-void xorg-x11-drv-evdev
 # virtuals.  XXX fix the xkbcomp fork() upstream.
 Requires: xkbdata xkbcomp
 Obsoletes: XFree86 xorg-x11
+# These drivers were dropped in F7 for being broken, so uninstall them.
+Obsoletes: xorg-x11-drv-elo2300 <= 1.1.0-2.fc7
+Obsoletes: xorg-x11-drv-joystick <= 1.1.0-2.fc7
 
 %description Xorg
 X.org X11 is an open source implementation of the X Window System.  It
@@ -314,6 +322,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2007 -p1 -b .randrconfig
 %patch2008 -p1 -b .randrama-zero-screens
 %patch2009 -p1 -b .arm
+%patch2010 -p1 -b .idletime
 
 %patch2500 -p1 -b .unbreak-domains
 %patch2501 -p1 -b .pci-bus-count
@@ -323,6 +332,12 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2505 -p1 -b .device-enable
 
 %build
+
+%if 0%{?fedora} == 7
+%define default_font_path "unix/:7100,catalogue:/etc/X11/fontpath.d,built-ins"
+%else
+%define default_font_path "catalogue:/etc/X11/fontpath.d,built-ins"
+%endif
 
 # --with-rgb-path should be superfluous now ?
 # --with-pie ?
@@ -338,7 +353,7 @@ aclocal ; automake -a ; autoconf
 	--enable-xcsecurity \
 	--enable-xevie \
 	--with-int10=x86emu \
-	--with-default-font-path="unix/:7100,built-ins" \
+	--with-default-font-path=%{default_font_path} \
 	--with-module-dir=%{moduledir} \
 	--with-os-name="Fedora Core 7" \
 	--with-os-vendor="Red Hat, Inc." \
@@ -347,7 +362,6 @@ aclocal ; automake -a ; autoconf
 	--with-rgb-path=%{_datadir}/X11/rgb \
 	--disable-xorgcfg \
 	--enable-install-libxf86config \
-	--with-fontdir=%(pkg-config --variable=fontdir fontutil) \
 	--with-mesa-source=%{_datadir}/mesa/source \
 %if %{with_hw_servers}
 	--enable-dri \
@@ -427,25 +441,30 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with_hw_servers}
 %pre Xorg
 {
-  pushd /etc/X11
-  for configfile in XF86Config XF86Config-4 ; do
-    if [ -r $configfile ]; then
-      if [ -r xorg.conf ]; then
-        mv -f $configfile $configfile.obsoleted
-    else
-        mv -f $configfile xorg.conf
-      fi
-    fi
-  done
-  configfile="xorg.conf"
-  if [ -r xorg.conf -a -w xorg.conf ]; then
+    pushd /etc/X11
+
+    for configfile in XF86Config XF86Config-4 ; do
+	if [ -r $configfile ]; then
+	    if [ -r xorg.conf ]; then
+		mv -f $configfile $configfile.obsoleted
+	    else
+		mv -f $configfile xorg.conf
+	    fi
+	fi
+    done
+
+    [ -e xorg.conf ] || return 0
+
     perl -p -i -e 's/^.*Load.*"(pex5|xie|xtt).*\n$"//gi' xorg.conf
     perl -p -i -e 's/^\s*Driver(.*)"keyboard"/Driver\1"kbd"/gi' xorg.conf
     perl -p -i -e 's/^.*Option.*"XkbRules".*"(xfree86|xorg)".*\n$//gi' xorg.conf
     perl -p -i -e 's#^\s*RgbPath.*$##gi' xorg.conf
-    perl -p -i -e 's#^\s*ModulePath.*$##gi' xorg.conf
-  fi
-  popd
+    # lame, the nvidia driver needs to override this
+    if ! grep -q 'ModulePath.*nvidia' xorg.conf ; then
+      perl -p -i -e 's#^\s*ModulePath.*$##gi' xorg.conf
+    fi
+
+    popd
 } &> /dev/null || :
 %endif
 
@@ -579,6 +598,25 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 11 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-13.1
+- Test of exa-firstpixel-tweak.patch
+
+* Mon Jul 02 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-13
+- Add IDLETIME sync counter for great powersaving justice.
+- Conditionalise default font path for F7 spec compatibility.
+
+* Wed Jun 27 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-12
+- Tweak %%post Xorg slightly to not demolish ModulePath lines installed by
+  the nvidia driver.  (#244359)
+
+* Wed Jun 27 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-11
+- Obsolete the joystick and elo2300 drivers, they never worked and shouldn't
+  be installed.
+
+* Fri Jun 22 2007 Kristian Høgsberg <krh@redhat.com> - 1.3.0.0-10
+- Change the default font path to catalogue:/etc/X11/fontpath.d,built-ins
+- Drop build dependency xorg-x11-font-utils.
+
 * Mon Jun 11 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-9
 - xserver-1.3.0-reput-video.patch: Don't crash when minimizing an Xv
   window. (#241214)
