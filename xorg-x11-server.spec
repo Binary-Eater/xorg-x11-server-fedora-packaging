@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   33%{?dist}
+Release:   420%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -76,6 +76,8 @@ Patch2014:  xserver-1.3.0-intel-by-default.patch
 Patch2015:  xserver-1.3.0-accidental-abi.patch
 Patch2016:  xserver-1.3.0-xorg-conf-man-randr-update.patch
 Patch2017:  xserver-1.3.0-update-quirks.patch
+Patch2018:  xserver-1.3.0-late-sigusr1.patch
+Patch2019:  xserver-1.3.0-yet-more-vt-ioctl-hate.patch
 
 # assorted PCI layer shenanigans.  oh the pain.
 Patch2500:  xorg-x11-server-1.2.99-unbreak-domain.patch
@@ -84,8 +86,6 @@ Patch2502:  xserver-1.3.0-mmap-failure-check.patch
 Patch2503:  xserver-1.3.0-rom-search.patch
 Patch2504:  xserver-1.3.0-domain-obiwan.patch
 Patch2505:  xserver-1.3.0-pci-device-enable.patch
-
-Patch9999:  xserver-1.3.0-late-sigusr1.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -343,6 +343,8 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2015 -p1 -b .accidental-abi
 %patch2016 -p1 -b .document-randr
 %patch2017 -p1 -b .update-quirk
+%patch2018 -p1 -b .sigusr1
+%patch2019 -p1 -b .jx
 
 %patch2500 -p1 -b .unbreak-domains
 %patch2501 -p1 -b .pci-bus-count
@@ -350,8 +352,6 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2503 -p1 -b .rom-search
 %patch2504 -p1 -b .domain-obiwan
 %patch2505 -p1 -b .device-enable
-
-%patch9999 -p1 -b .jx
 
 %build
 
@@ -620,6 +620,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Nov 01 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-34
+- xserver-1.3.0-yet-more-vt-ioctl-hate.patch: You don't even want to know.
+
 * Thu Oct 18 2007 Dave Airlie <airlied@redhat.com> 1.3.0.0-33
 - xserver-1.3.0-xorg-conf-man-randr-update.patch - update man page for randr setup
 - xserver-1.3.0-update-quirks.patch - update quirks for more monitor issues
