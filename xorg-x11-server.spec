@@ -8,74 +8,88 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.3.0.0
-Release:   13.1%{?dist}
+Version:   1.4
+Release:   7%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 Source0:   ftp://ftp.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
+#Source0:   %{pkgname}-%{version}.tar.bz2
 Source100: comment-header-modefiles.txt
+Source200: xorg.conf
+Source201: x11-input.fdi
+Source202: xorg-server.conf
 
 # general bug fixes
 Patch0:    xorg-x11-server-0.99.3-init-origins-fix.patch
-Patch5:    xorg-x11-server-libxf86config-dont-write-empty-sections.patch
-Patch6:    xorg-x11-server-1.1.1-builderstring.patch
-Patch7:    xorg-x11-server-1.1.1-xkb-in-xnest.patch
+#Patch5:    xorg-x11-server-libxf86config-dont-write-empty-sections.patch
+#Patch6:    xorg-x11-server-1.1.1-builderstring.patch
+#Patch7:    xorg-x11-server-1.1.1-xkb-in-xnest.patch
 Patch10:   xorg-x11-server-1.1.1-vbe-filter-less.patch
-Patch11:   xorg-x11-server-1.1.1-vt-activate-is-a-terrible-api.patch
-Patch12:   xorg-x11-server-1.1.1-graphics-expose.patch
-Patch15:   xorg-x11-server-1.1.1-automake-1.10-fixes.patch
-Patch18:   xorg-x11-server-1.1.1-glcore-visual-matching.patch
+#rejects
+#Patch11:   xorg-x11-server-1.1.1-vt-activate-is-a-terrible-api.patch
+#Patch12:   xorg-x11-server-1.1.1-graphics-expose.patch
+#Patch15:   xorg-x11-server-1.1.1-automake-1.10-fixes.patch
+#rejects
+#Patch18:   xorg-x11-server-1.1.1-glcore-visual-matching.patch
 Patch19:   xserver-1.3.0-xnest-exposures.patch
-Patch20:   xserver-1.3.0-x86emu-imul-int64.patch
+#Patch20:   xserver-1.3.0-x86emu-imul-int64.patch
 Patch21:   xserver-1.3.0-xkb-and-loathing.patch
 Patch22:   xserver-1.3.0-fbdevhw-magic-numbers.patch
-Patch23:   xserver-1.3.0-ramdac-export.patch
-Patch24:   xserver-1.3.0-reput-video.patch
+#Patch23:   xserver-1.3.0-ramdac-export.patch
+#Patch24:   xserver-1.3.0-reput-video.patch
 
 # OpenGL compositing manager feature/optimization patches.
 Patch100:  xorg-x11-server-1.1.0-no-move-damage.patch
-Patch101:  xorg-x11-server-1.1.0-dont-backfill-bg-none.patch
-Patch105:  xorg-x11-server-1.2.0-enable-composite.patch
-Patch106:  xorg-x11-server-1.1.1-no-composite-in-xnest.patch
+#rejects, no longer needed?
+#Patch101:  xorg-x11-server-1.1.0-dont-backfill-bg-none.patch
+#rejects
+#Patch105:  xorg-x11-server-1.2.0-enable-composite.patch
+#rejects
+#Patch106:  xorg-x11-server-1.1.1-no-composite-in-xnest.patch
 Patch107:  xorg-x11-server-1.1.1-offscreen-pixmaps.patch
 Patch108:  xserver-1.3.0-no-pseudocolor-composite.patch
 
 # Red Hat specific tweaking, not intended for upstream
 # XXX move these to the end of the list
 Patch1001:  xorg-x11-server-Red-Hat-extramodes.patch
-Patch1002:  xorg-x11-server-1.2.0-xephyr-only.patch
-Patch1003:  xorg-x11-server-1.0.1-fpic-libxf86config.patch
-Patch1004:  xorg-x11-server-1.2.0-selinux-awareness.patch
-Patch1005:  xorg-x11-server-1.1.1-builtin-fonts.patch
+#rejects
+#Patch1002:  xorg-x11-server-1.2.0-xephyr-only.patch
+#rejects
+#Patch1003:  xorg-x11-server-1.0.1-fpic-libxf86config.patch
+#rejects
+#Patch1004:  xorg-x11-server-1.2.0-selinux-awareness.patch
+#rejects
+#Patch1005:  xorg-x11-server-1.1.1-builtin-fonts.patch
 Patch1006:  xorg-x11-server-1.1.1-no-scanpci.patch
-Patch1007:  xorg-x11-server-1.1.1-spurious-libxf1bpp-link.patch
+#Patch1007:  xorg-x11-server-1.1.1-spurious-libxf1bpp-link.patch
 Patch1008:  xorg-x11-server-1.2.0-xf86config-comment-less.patch
-Patch1009:  xorg-x11-server-1.2.0-maxpixclock-option.patch
 Patch1010:  xserver-1.3.0-no-prerelease-warning.patch
 
-Patch2001:  xserver-1.2.0-geode-mmx.patch
-Patch2002:  xserver-1.2.0-xephyr-keysym-madness.patch
-Patch2003:  xserver-1.2.0-vfprintf.patch
-Patch2004:  xserver-1.2.0-honor-displaysize.patch
-Patch2005:  xserver-1.2.99.901-xephyr-crash-at-exit.patch
-Patch2006:  xserver-1.3.0-less-randr-fakerama.patch
-Patch2007:  xserver-1.3.0-randr12-config-hack.patch
-Patch2008:  xserver-1.3.0-randrama-no-zero-screens.patch
-Patch2009:  xserver-1.3.0-arm-iopl.patch
-Patch2010:  xserver-1.3.0-idletime.patch
+#rejects
+#Patch2002:  xserver-1.2.0-xephyr-keysym-madness.patch
+#Patch2003:  xserver-1.2.0-vfprintf.patch
+#rejects
+#Patch2004:  xserver-1.2.0-honor-displaysize.patch
+#rejects
+#Patch2005:  xserver-1.2.99.901-xephyr-crash-at-exit.patch
+#rejects
+#Patch2007:  xserver-1.3.0-randr12-config-hack.patch
+#Patch2009:  xserver-1.3.0-arm-iopl.patch
+#rejects
+#Patch2010:  xserver-1.3.0-idletime.patch
 
 # assorted PCI layer shenanigans.  oh the pain.
 Patch2500:  xorg-x11-server-1.2.99-unbreak-domain.patch
-Patch2501:  xserver-1.3.0-pci-bus-count.patch
-Patch2502:  xserver-1.3.0-mmap-failure-check.patch
-Patch2503:  xserver-1.3.0-rom-search.patch
-Patch2504:  xserver-1.3.0-domain-obiwan.patch
+#Patch2501:  xserver-1.3.0-pci-bus-count.patch
+#Patch2502:  xserver-1.3.0-mmap-failure-check.patch
+#Patch2503:  xserver-1.3.0-rom-search.patch
+#Patch2504:  xserver-1.3.0-domain-obiwan.patch
 Patch2505:  xserver-1.3.0-pci-device-enable.patch
 
-Patch3000: exa-firstpixel-tweak.patch
+Patch3001: xserver-1.4-hal-touchpad.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -93,7 +107,21 @@ Patch3000: exa-firstpixel-tweak.patch
 %define enable_xorg --disable-xorg
 %endif
 
+%if %{with_hw_servers}
+%if 0%{?olpc}
+%define with_drm 0
+%else
+%define with_drm 1
+%endif
+%else
+%define with_drm 0
+%endif
+
+%if 0%{?olpc}
+%define xservers --disable-xvfb --disable-xnest --disable-kdrive --disable-xephyr --disable-dmx 
+%else
 %define xservers --enable-xvfb --enable-xnest --enable-kdrive --enable-xephyr --enable-dmx
+%endif
 
 # FIXME: Temporary Build deps on autotools, as needed...
 BuildRequires: automake autoconf libtool
@@ -101,12 +129,14 @@ BuildRequires: automake autoconf libtool
 BuildRequires: pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.1.5
 
-BuildRequires: xorg-x11-proto-devel >= 7.1-11
+BuildRequires: xorg-x11-proto-devel >= 7.2-12
 BuildRequires: randrproto >= 1.2
 BuildRequires: fixesproto >= 4.0
 BuildRequires: damageproto >= 1.1
 BuildRequires: scrnsaverproto >= 1.1
 BuildRequires: kbproto >= 1.0.3
+BuildRequires: inputproto >= 1.4
+BuildRequires: compositeproto >= 0.4
 
 BuildRequires: xorg-x11-xtrans-devel
 BuildRequires: libXfont-devel
@@ -139,11 +169,13 @@ BuildRequires: libXpm-devel
 BuildRequires: libXaw-devel
 BuildRequires: libXfixes-devel
 
+%if 0%{!?olpc}
 BuildRequires: mesa-libGL-devel >= 6.5.2
 BuildRequires: mesa-source >= 6.5.2
 # XXX silly...
 BuildRequires: libdrm-devel >= 2.3.0
-%if %{with_hw_servers}
+%endif
+%if %{with_drm}
 Requires: libdrm >= 2.3.0
 %endif
 
@@ -174,8 +206,10 @@ Group: User Interface/X
 Provides: Xorg = %{version}-%{release}
 Provides: Xserver
 # Requires: xorg-x11-drivers >= 0.99.2-4
+%if 0%{!?olpc}
 Requires: xorg-x11-drv-mouse xorg-x11-drv-keyboard xorg-x11-drv-vesa
 Requires: xorg-x11-drv-void xorg-x11-drv-evdev
+%endif
 # virtuals.  XXX fix the xkbcomp fork() upstream.
 Requires: xkbdata xkbcomp
 Obsoletes: XFree86 xorg-x11
@@ -191,6 +225,7 @@ upon.
 %endif
 
 
+%if 0%{!?olpc}
 %package Xnest
 Summary: A nested server.
 Group: User Interface/X
@@ -250,6 +285,7 @@ applications without running them on their real X server.  Unlike
 Xnest, Xephyr renders to an X image rather than relaying the
 X protocol, and therefore supports the newer X extensions like
 Render and Composite.
+%endif # !olpc
 
 
 %if %{with_hw_servers}
@@ -280,56 +316,57 @@ Xserver source code needed to build VNC server (Xvnc)
 %prep
 %setup -q -n %{pkgname}-%{version}
 %patch0 -p0 -b .init-origins-fix
-%patch5 -p0 -b .libxf86config-dont-write-empty-sections
-%patch6 -p1 -b .builderstring
-%patch7 -p1 -b .xkb-in-xnest
+#%patch5 -p0 -b .libxf86config-dont-write-empty-sections
+#%patch6 -p1 -b .builderstring
+#%patch7 -p1 -b .xkb-in-xnest
 %patch10 -p1 -b .vbe-filter
-%patch11 -p1 -b .vt-activate
-%patch12 -p1 -b .graphics-expose
-%patch15 -p1 -b .automake-1.10
-%patch18 -p1 -b .glcore-visual
+#%patch11 -p1 -b .vt-activate
+#%patch12 -p1 -b .graphics-expose
+#%patch15 -p1 -b .automake-1.10
+#%patch18 -p1 -b .glcore-visual
 %patch19 -p1 -b .xnest-expose
-%patch20 -p1 -b .x86emu-imul
+#%patch20 -p1 -b .x86emu-imul
 %patch21 -p1 -b .xkb-signal-loathing
 %patch22 -p1 -b .magic-numbers
-%patch23 -p1 -b .ramdac
-%patch24 -p1 -b .reput
+#%patch23 -p1 -b .ramdac
+#%patch24 -p1 -b .reput
 
 %patch100 -p0 -b .no-move-damage
-%patch101 -p0 -b .dont-backfill-bg-none
-%patch105 -p1 -b .enable-composite
-%patch106 -p1 -b .no-xnest-composite
+#%patch101 -p0 -b .dont-backfill-bg-none
+#%patch105 -p1 -b .enable-composite
+#%patch106 -p1 -b .no-xnest-composite
 %patch107 -p1 -b .offscreen-pixmaps
 %patch108 -p1 -b .composite-paranoia
 
 %patch1001 -p1 -b .Red-Hat-extramodes
-%patch1002 -p1 -b .xephyr
-%patch1003 -p1 -b .fpic
-%patch1004 -p1 -b .selinux-awareness
-%patch1005 -p0 -b .builtin-fonts
+#%patch1002 -p1 -b .xephyr
+#%patch1003 -p1 -b .fpic
+#%patch1004 -p1 -b .selinux-awareness
+#%patch1005 -p0 -b .builtin-fonts
 %patch1006 -p1 -b .no-scanpci
-%patch1007 -p1 -b .xf1bpp
+#%patch1007 -p1 -b .xf1bpp
 %patch1008 -p1 -b .comment-less
-%patch1009 -p1 -b .maxpixclock
 %patch1010 -p1 -b .prerelease-warning
 
-%patch2001 -p1 -b .geode-mmx
-%patch2002 -p1 -b .xephyr-keysym
-%patch2003 -p1 -b .vfprintf
-%patch2004 -p1 -b .displaysize
-%patch2005 -p1 -b .xephyr-crash
-%patch2006 -p1 -b .fakerama
-%patch2007 -p1 -b .randrconfig
-%patch2008 -p1 -b .randrama-zero-screens
-%patch2009 -p1 -b .arm
-%patch2010 -p1 -b .idletime
+#%patch2001 -p1 -b .geode-mmx
+#%patch2002 -p1 -b .xephyr-keysym
+#%patch2003 -p1 -b .vfprintf
+#%patch2004 -p1 -b .displaysize
+#%patch2005 -p1 -b .xephyr-crash
+#%patch2007 -p1 -b .randrconfig
+#%patch2008 -p1 -b .randrama-zero-screens
+#%patch2009 -p1 -b .arm
+#%patch2010 -p1 -b .idletime
 
 %patch2500 -p1 -b .unbreak-domains
-%patch2501 -p1 -b .pci-bus-count
-%patch2502 -p1 -b .mmap-check
-%patch2503 -p1 -b .rom-search
-%patch2504 -p1 -b .domain-obiwan
+#%patch2501 -p1 -b .pci-bus-count
+#%patch2502 -p1 -b .mmap-check
+#%patch2503 -p1 -b .rom-search
+#%patch2504 -p1 -b .domain-obiwan
 %patch2505 -p1 -b .device-enable
+
+#bernie
+%patch3001 -p1 -b .touchpad
 
 %build
 
@@ -344,8 +381,8 @@ Xserver source code needed to build VNC server (Xvnc)
 aclocal ; automake -a ; autoconf
 %configure \
 	%{enable_xorg} \
-	--disable-xprint --enable-xvfb --enable-xnest --enable-dmx \
-	--enable-kdrive --enable-xephyr \
+	--disable-xprint \
+	%{xservers} \
 	--disable-static \
 	--with-pic \
 	--enable-composite \
@@ -362,10 +399,39 @@ aclocal ; automake -a ; autoconf
 	--with-rgb-path=%{_datadir}/X11/rgb \
 	--disable-xorgcfg \
 	--enable-install-libxf86config \
-	--with-mesa-source=%{_datadir}/mesa/source \
-%if %{with_hw_servers}
+%if 0%{?olpc}
+	--disable-xtrap \
+	--disable-record \
+	--disable-xvmc \
+	--disable-dga \
+	--disable-xdmcp \
+	--disable-xinerama \
+	--disable-xf86vidmode \
+	--disable-xf86misc \
+	--disable-xace \
+	--disable-xcsecurity \
+	--disable-appgroup \
+	--disable-cup \
+        --disable-evi \
+	--disable-dbe \
+	--disable-xevie \
+	--disable-glx \
+	--disable-aiglx \
+	--disable-afb \
+	--disable-mfb \
+	--disable-cfb \
+	--disable-xdmcp \
+	--disable-xdm-auth-1 \
+	--enable-builtin-fonts \
+	--enable-null-root-cursor \
+	--enable-config-dbus \
+	--enable-config-hal \
+%endif
+%if %{with_drm}
 	--enable-dri \
 	--with-dri-driver-path=%{drimoduledir} \
+%else
+	--disable-dri \
 %endif
 	${CONFIGURE}
 
@@ -389,12 +455,20 @@ for each in vesamodes extramodes ; do
 done
 %endif
 
+%if 0%{?olpc}
+install -D -m 0644 %{SOURCE200} $RPM_BUILD_ROOT/etc/X11/xorg.conf
+install -D -m 0644 %{SOURCE201} $RPM_BUILD_ROOT/etc/hal/fdi/policy/x11-input.fdi
+install -D -m 0644 %{SOURCE202} $RPM_BUILD_ROOT/etc/dbus-1/system.d/xorg-server.conf
+%endif
+
 # Make the source package
 %define xserver_source_dir %{_datadir}/xorg-x11-server-source
 %define inst_srcdir %{buildroot}/%{xserver_source_dir}
 mkdir -p %{inst_srcdir}/{Xext,xkb,GL,hw/xfree86/{common,utils/xorgconfig}}
 cp cpprules.in %{inst_srcdir}
+%if 0%{!?olpc}
 cp Xext/SecurityPolicy %{inst_srcdir}/Xext
+%endif
 cp xkb/README.compiled %{inst_srcdir}/xkb
 cp GL/symlink-mesa.sh %{inst_srcdir}/GL
 cp hw/xfree86/{xorgconf.cpp,Options} %{inst_srcdir}/hw/xfree86
@@ -439,6 +513,7 @@ xargs tar cf - | (cd %{inst_srcdir} && tar xf -)
 rm -rf $RPM_BUILD_ROOT
 
 %if %{with_hw_servers}
+%if 0%{!?olpc}
 %pre Xorg
 {
     pushd /etc/X11
@@ -467,6 +542,7 @@ rm -rf $RPM_BUILD_ROOT
     popd
 } &> /dev/null || :
 %endif
+%endif
 
 # The Xserver.1 manpage is intentionally present in multiple subpackages.
 # It could reasonably form part of a -common subpackage though.
@@ -485,13 +561,15 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/xorg/modules
 %dir %{_libdir}/xorg/modules/drivers
 %dir %{_libdir}/xorg/modules/extensions
+%if 0%{!?olpc}
 %{_libdir}/xorg/modules/extensions/libGLcore.so
 %{_libdir}/xorg/modules/extensions/libglx.so
 %{_libdir}/xorg/modules/extensions/libdri.so
 %{_libdir}/xorg/modules/extensions/libdbe.so
+%{_libdir}/xorg/modules/extensions/libxtrap.so
+%endif
 %{_libdir}/xorg/modules/extensions/libextmod.so
 %{_libdir}/xorg/modules/extensions/librecord.so
-%{_libdir}/xorg/modules/extensions/libxtrap.so
 %dir %{_libdir}/xorg/modules/input
 %dir %{_libdir}/xorg/modules/fonts
 %{_libdir}/xorg/modules/fonts/libfreetype.so
@@ -506,37 +584,49 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/multimedia/tda9850_drv.so
 %{_libdir}/xorg/modules/multimedia/tda9885_drv.so
 %{_libdir}/xorg/modules/multimedia/uda1380_drv.so
-%{_libdir}/xorg/modules/libafb.so
-%{_libdir}/xorg/modules/libcfb.so
-%{_libdir}/xorg/modules/libcfb32.so
 %{_libdir}/xorg/modules/libexa.so
 %{_libdir}/xorg/modules/libfb.so
 %{_libdir}/xorg/modules/libint10.so
-%{_libdir}/xorg/modules/libmfb.so
 %{_libdir}/xorg/modules/libpcidata.so
 %{_libdir}/xorg/modules/libshadow.so
 %{_libdir}/xorg/modules/libshadowfb.so
 %{_libdir}/xorg/modules/libvbe.so
 %{_libdir}/xorg/modules/libvgahw.so
+%{_libdir}/xorg/modules/libwfb.so
 %{_libdir}/xorg/modules/libxaa.so
+%if 0%{!?olpc}
 %{_libdir}/xorg/modules/libxf1bpp.so
 %{_libdir}/xorg/modules/libxf4bpp.so
 %{_libdir}/xorg/modules/libxf8_16bpp.so
 %{_libdir}/xorg/modules/libxf8_32bpp.so
+%{_libdir}/xorg/modules/libafb.so
+%{_libdir}/xorg/modules/libcfb.so
+%{_libdir}/xorg/modules/libcfb32.so
+%{_libdir}/xorg/modules/libmfb.so
+%endif
 %dir %{_libdir}/xserver
+%if 0%{!?olpc}
 %{_libdir}/xserver/SecurityPolicy
+%endif
 %{_mandir}/man1/gtf.1*
 %{_mandir}/man1/Xorg.1*
 %{_mandir}/man1/Xserver.1*
 %{_mandir}/man1/cvt.1*
 %{_mandir}/man4/fbdevhw.4*
 %{_mandir}/man4/exa.4*
+%{_mandir}/man5/SecurityPolicy.5.*
 %{_mandir}/man5/xorg.conf.5*
 %dir %{_localstatedir}/lib/xkb
 %{_localstatedir}/lib/xkb/README.compiled
 %endif
 
+%if 0%{?olpc}
+%verify(not md5 size mtime) %config            /etc/X11/xorg.conf
+%verify(not md5 size mtime) %config(noreplace) /etc/hal/fdi/policy/x11-input.fdi
+%verify(not md5 size mtime) %config(noreplace) /etc/dbus-1/system.d/xorg-server.conf
+%endif
 
+%if 0%{!?olpc}
 %files Xnest
 %defattr(-,root,root,-)
 %{_bindir}/Xnest
@@ -580,6 +670,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/Xephyr
 %{_mandir}/man1/Xserver.1*
+%endif
 
 
 %if %{with_hw_servers}
@@ -598,8 +689,28 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct 09 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-5
+- Add dbus configuration file.
+- Add xserver-1.4-hal-touchpad.patch.
+
+* Tue Oct 09 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-2
+- Mark xorg.conf and x11-input.fdi as config files.
+
+* Tue Oct 09 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-1
+- Add OLPC specific xorg.conf and x11-input.fdi.
+
+* Sun Sep 23 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-0
+- Update to 1.4 release.
+
+* Mon Sep 05 2007 Bernardo Innocenti <bernie@codewiz.org> 1.3.99.1-0.git20070814
+- Remove spurious dependencies.
+
+* Mon Aug 13 2007 Bernardo Innocenti <bernie@codewiz.org> 1.3.99.1-0.git20070814
+- xserver 1.3.99.1 (git20070814)
+- Drop patches already present in upstream.
+
 * Wed Jul 11 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-13.1
-- Test of exa-firstpixel-tweak.patch
+- Test of exa-firstpixel-tweak.patch.
 
 * Mon Jul 02 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-13
 - Add IDLETIME sync counter for great powersaving justice.
