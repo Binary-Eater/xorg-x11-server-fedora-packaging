@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4
-Release:   7%{?dist}
+Release:   7%{?dist}.1
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -180,6 +180,8 @@ Requires: libdrm >= 2.3.0
 %endif
 
 BuildRequires: libselinux-devel
+
+BuildRequires: pixman-devel
 
 # Make sure libXfont has the catalogue FPE
 Requires: libXfont >= 1.2.9
@@ -689,6 +691,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 21 2007 Dennis Gilmore <dennis@ausil.us> 1.4-7.1
+- add pixman-devel to BuildRequires
+
 * Tue Oct 09 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-5
 - Add dbus configuration file.
 - Add xserver-1.4-hal-touchpad.patch.
