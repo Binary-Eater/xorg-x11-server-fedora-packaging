@@ -179,8 +179,9 @@ Requires: libdrm >= 2.3.0
 %endif
 
 BuildRequires: libselinux-devel
-
 BuildRequires: pixman-devel
+BuildRequires: dbus-devel
+BuildRequires: hal-devel
 
 # Make sure libXfont has the catalogue FPE
 Requires: libXfont >= 1.2.9
