@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4
-Release:   7%{?dist}.1
+Release:   8%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -18,7 +18,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Source0:   ftp://ftp.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
 #Source0:   %{pkgname}-%{version}.tar.bz2
 Source100: comment-header-modefiles.txt
-Source200: xorg.conf
 Source201: x11-input.fdi
 Source202: xorg-server.conf
 
@@ -458,7 +457,6 @@ done
 %endif
 
 %if 0%{?olpc}
-install -D -m 0644 %{SOURCE200} $RPM_BUILD_ROOT/etc/X11/xorg.conf
 install -D -m 0644 %{SOURCE201} $RPM_BUILD_ROOT/etc/hal/fdi/policy/x11-input.fdi
 install -D -m 0644 %{SOURCE202} $RPM_BUILD_ROOT/etc/dbus-1/system.d/xorg-server.conf
 %endif
@@ -623,7 +621,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %if 0%{?olpc}
-%verify(not md5 size mtime) %config            /etc/X11/xorg.conf
 %verify(not md5 size mtime) %config(noreplace) /etc/hal/fdi/policy/x11-input.fdi
 %verify(not md5 size mtime) %config(noreplace) /etc/dbus-1/system.d/xorg-server.conf
 %endif
@@ -691,6 +688,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Nov 24 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-8
+- Drop xorg.conf (the master copy is in olpc-utils)
+
 * Wed Nov 21 2007 Dennis Gilmore <dennis@ausil.us> 1.4-7.1
 - add pixman-devel to BuildRequires
 
