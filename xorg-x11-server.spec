@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   34%{?dist}
+Release:   35%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -61,6 +61,8 @@ Patch1015:  xserver-1.3.0-randr-updates.patch
 Patch1022:  xserver-1.3.0-default-dpi.patch
 Patch1023:  xserver-1.3.0-randr-preferred-mode-fix.patch
 Patch1024:  xserver-1.3.0-avoid-ps2-probe.patch
+Patch1025:  xserver-1.3.0-ignore-extra-entity.patch
+Patch1026:  xserver-1.3.0-randr-fix-set-rotations-xinerama.patch
 
 Patch2001:  xserver-1.2.0-geode-mmx.patch
 Patch2002:  xserver-1.2.0-xephyr-keysym-madness.patch
@@ -78,6 +80,7 @@ Patch2016:  xserver-1.3.0-xorg-conf-man-randr-update.patch
 Patch2017:  xserver-1.3.0-update-quirks.patch
 Patch2018:  xserver-1.3.0-late-sigusr1.patch
 Patch2019:  xserver-1.3.0-yet-more-vt-ioctl-hate.patch
+
 
 # assorted PCI layer shenanigans.  oh the pain.
 Patch2500:  xorg-x11-server-1.2.99-unbreak-domain.patch
@@ -328,6 +331,8 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch1022 -p1 -b .dpi
 %patch1023 -p1 -b .randr-preferred
 %patch1024 -p1 -b .ps2-probe
+%patch1025 -p1 -b .ignore-entities
+%patch1026 -p1 -b .fix-set-rotation-crash
 
 %patch2001 -p1 -b .geode-mmx
 %patch2002 -p1 -b .xephyr-keysym
@@ -377,7 +382,7 @@ aclocal ; automake -a ; autoconf
 	--with-int10=x86emu \
 	--with-default-font-path=%{default_font_path} \
 	--with-module-dir=%{moduledir} \
-	--with-os-name="Fedora Core 7" \
+	--with-os-name="Fedora 8" \
 	--with-os-vendor="Red Hat, Inc." \
 	--with-builderstring="Build ID: %{name} %{version}-%{release}" \
 	--with-xkb-output=%{_localstatedir}/lib/xkb \
@@ -620,6 +625,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Nov 29 2007 Dave Airlie <airlied@redhat.com> 1.3.0.0-35
+- xserver-1.3.0-ignore-extra-entity.patch - if a driver doesn't support 
+  secondary entities, don't fatal error just ignore and keep going
+- xserver-1.3.0-randr-fix-set-rotations-xinerama.patch - attempt to stop xinerama segfaulting randr12
+
 * Thu Nov 01 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-34
 - xserver-1.3.0-yet-more-vt-ioctl-hate.patch: You don't even want to know.
 
