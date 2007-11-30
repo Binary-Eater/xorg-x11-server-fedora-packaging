@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   35%{?dist}
+Release:   36%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -80,7 +80,7 @@ Patch2016:  xserver-1.3.0-xorg-conf-man-randr-update.patch
 Patch2017:  xserver-1.3.0-update-quirks.patch
 Patch2018:  xserver-1.3.0-late-sigusr1.patch
 Patch2019:  xserver-1.3.0-yet-more-vt-ioctl-hate.patch
-
+Patch2020:  xserver-1.3.0-update-edid-quirks.patch
 
 # assorted PCI layer shenanigans.  oh the pain.
 Patch2500:  xorg-x11-server-1.2.99-unbreak-domain.patch
@@ -349,7 +349,8 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2016 -p1 -b .document-randr
 %patch2017 -p1 -b .update-quirk
 %patch2018 -p1 -b .sigusr1
-%patch2019 -p1 -b .jx
+%patch2019 -p1 -b .vt-ioctl-hate
+%patch2020 -p1 -b .more-quirk-patch
 
 %patch2500 -p1 -b .unbreak-domains
 %patch2501 -p1 -b .pci-bus-count
@@ -625,6 +626,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Nov 30 2007 Dave Airlie <airlied@redhat.com> 1.3.0.0-36
+- xserver-1.3.0-update-edid-quirks.patch - updates quirk from master server
+
 * Thu Nov 29 2007 Dave Airlie <airlied@redhat.com> 1.3.0.0-35
 - xserver-1.3.0-ignore-extra-entity.patch - if a driver doesn't support 
   secondary entities, don't fatal error just ignore and keep going

@@ -1,0 +1,105 @@
+diff -up xorg-server-1.3.0.0/hw/xfree86/modes/xf86EdidModes.c.da xorg-server-1.3.0.0/hw/xfree86/modes/xf86EdidModes.c
+--- xorg-server-1.3.0.0/hw/xfree86/modes/xf86EdidModes.c.da	2007-11-30 13:28:41.000000000 +1000
++++ xorg-server-1.3.0.0/hw/xfree86/modes/xf86EdidModes.c	2007-11-30 13:29:10.000000000 +1000
+@@ -64,13 +64,16 @@ typedef enum {
+      * maximum size and use that.
+      */
+     DDC_QUIRK_DETAILED_USE_MAXIMUM_SIZE = 1 << 5,
++    /* Monitor forgot to set the first detailed is preferred bit. */
++    DDC_QUIRK_FIRST_DETAILED_PREFERRED = 1 << 6,
+ } ddc_quirk_t;
+ 
+ static Bool quirk_prefer_large_60 (int scrnIndex, xf86MonPtr DDC)
+ {
+     /* Belinea 10 15 55 */
+     if (memcmp (DDC->vendor.name, "MAX", 4) == 0 &&
+-	DDC->vendor.prod_id == 1516)
++	((DDC->vendor.prod_id == 1516) ||
++	(DDC->vendor.prod_id == 0x77e)))
+ 	return TRUE;
+     
+     /* Acer AL1706 */
+@@ -147,6 +150,16 @@ static Bool quirk_135_clock_too_high (in
+     return FALSE;
+ }
+ 
++static Bool quirk_first_detailed_preferred (int scrnIndex, xf86MonPtr DDC)
++{
++    /* Philips 107p5 CRT. Reported on xorg@ with pastebin. */
++    if (memcmp (DDC->vendor.name, "PHL", 4) == 0 &&
++	DDC->vendor.prod_id == 57364)
++	return TRUE;
++
++    return FALSE;
++}
++
+ typedef struct {
+     Bool	(*detect) (int scrnIndex, xf86MonPtr DDC);
+     ddc_quirk_t	quirk;
+@@ -178,6 +191,10 @@ static const ddc_quirk_map_t ddc_quirks[
+ 	quirk_detailed_use_maximum_size,   DDC_QUIRK_DETAILED_USE_MAXIMUM_SIZE,
+ 	"Detailed timings give sizes in cm."
+     },
++    {
++	quirk_first_detailed_preferred, DDC_QUIRK_FIRST_DETAILED_PREFERRED,
++	"First detailed timing was not marked as preferred."
++    },
+     { 
+ 	NULL,		DDC_QUIRK_NONE,
+ 	"No known quirks"
+@@ -257,7 +274,7 @@ DDCModesFromStandardTiming(int scrnIndex
+  */
+ static DisplayModePtr
+ DDCModeFromDetailedTiming(int scrnIndex, struct detailed_timings *timing,
+-			  int preferred, ddc_quirk_t quirks)
++			  Bool preferred, ddc_quirk_t quirks)
+ {
+     DisplayModePtr Mode;
+ 
+@@ -470,9 +487,10 @@ xf86DDCSetPreferredRefresh(int scrnIndex
+ _X_EXPORT DisplayModePtr
+ xf86DDCGetModes(int scrnIndex, xf86MonPtr DDC)
+ {
+-    int preferred, i;
++    int		    i;
+     DisplayModePtr  Modes = NULL, Mode;
+     ddc_quirk_t	    quirks;
++    Bool	    preferred;
+ 
+     xf86DrvMsg (scrnIndex, X_INFO, "EDID vendor \"%s\", prod id %d\n",
+ 		DDC->vendor.name, DDC->vendor.prod_id);
+@@ -480,8 +498,10 @@ xf86DDCGetModes(int scrnIndex, xf86MonPt
+     quirks = xf86DDCDetectQuirks(scrnIndex, DDC, TRUE);
+ 
+     preferred = PREFERRED_TIMING_MODE(DDC->features.msc);
+-    if (quirks & DDC_QUIRK_PREFER_LARGE_60)
+-	preferred = 0;
++    if (quirks & DDC_QUIRK_FIRST_DETAILED_PREFERRED)
++	preferred = TRUE;
++    if (quirks & (DDC_QUIRK_PREFER_LARGE_60 | DDC_QUIRK_PREFER_LARGE_75))
++	preferred = FALSE;
+ 
+     for (i = 0; i < DET_TIMINGS; i++) {
+ 	struct detailed_monitor_section *det_mon = &DDC->det_mon[i];
+@@ -492,7 +512,7 @@ xf86DDCGetModes(int scrnIndex, xf86MonPt
+                                              &det_mon->section.d_timings,
+ 					     preferred,
+ 					     quirks);
+-	    preferred = 0;
++	    preferred = FALSE;
+             Modes = xf86ModesAdd(Modes, Mode);
+             break;
+         case DS_STD_TIMINGS:
+@@ -538,10 +558,8 @@ xf86DDCMonitorSet(int scrnIndex, MonPtr 
+ 
+     Monitor->DDC = DDC;
+ 
+-    if (Monitor->widthmm <= 0 && Monitor->heightmm <= 0) {
+-        Monitor->widthmm = 10 * DDC->features.hsize;
+-        Monitor->heightmm = 10 * DDC->features.vsize;
+-    }
++    Monitor->widthmm = 10 * DDC->features.hsize;
++    Monitor->heightmm = 10 * DDC->features.vsize;
+ 
+     /* If this is a digital display, then we can use reduced blanking */
+     if (DDC->features.input_type)
