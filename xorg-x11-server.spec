@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   36%{?dist}
+Release:   37%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -626,6 +626,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 13 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-37
+- xorg-x11-server-Red-Hat-extramodes.patch: Remove the non-CVT-R timings
+  for 1920x1080 and 1920x1200, they don't fit in a single DVI link and
+  are therefore useless.
+
 * Fri Nov 30 2007 Dave Airlie <airlied@redhat.com> 1.3.0.0-36
 - xserver-1.3.0-update-edid-quirks.patch - updates quirk from master server
 
