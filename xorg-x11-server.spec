@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   37%{?dist}
+Release:   38%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,6 +89,13 @@ Patch2502:  xserver-1.3.0-mmap-failure-check.patch
 Patch2503:  xserver-1.3.0-rom-search.patch
 Patch2504:  xserver-1.3.0-domain-obiwan.patch
 Patch2505:  xserver-1.3.0-pci-device-enable.patch
+
+# CVEs
+Patch3000:  cve-2007-5760.patch
+Patch3001:  cve-2007-5958.patch
+Patch3002:  cve-2007-6427.patch
+Patch3003:  cve-2007-6428.patch
+Patch3004:  cve-2007-6429.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -359,6 +366,12 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2504 -p1 -b .domain-obiwan
 %patch2505 -p1 -b .device-enable
 
+%patch3000 -p1 -b .cve-2007-5760
+%patch3001 -p1 -b .cve-2007-5958
+%patch3002 -p1 -b .cve-2007-6427
+%patch3003 -p1 -b .cve-2007-6428
+%patch3004 -p1 -b .cve-2007-6429
+
 %build
 
 %if %{fedora} == 7
@@ -626,6 +639,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 18 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-38
+- cve-2007-5760.patch: XFree86-Misc Extension Invalid Array Index Vulnerability
+- cve-2007-5958.patch: Xorg / XFree86 file existence disclosure vulnerability
+- cve-2007-6427.patch: XInput Extension Memory Corruption Vulnerability
+- cve-2007-6428.patch: TOG-CUP Extension Memory Corruption Vulnerability
+- cve-2007-6429.patch: EVI and MIT-SHM Extension Integer Overflow Vulnerability
+
 * Thu Dec 13 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-37
 - xorg-x11-server-Red-Hat-extramodes.patch: Remove the non-CVT-R timings
   for 1920x1080 and 1920x1200, they don't fit in a single DVI link and
