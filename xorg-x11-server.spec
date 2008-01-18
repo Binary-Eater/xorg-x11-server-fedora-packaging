@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   38%{?dist}
+Release:   39%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -641,6 +641,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 18 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-39
+- cve-2007-6429.patch: Fix patch to not break java apps
+
 * Fri Jan 18 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-38
 - cve-2007-5760.patch: XFree86-Misc Extension Invalid Array Index Vulnerability
 - cve-2007-5958.patch: Xorg / XFree86 file existence disclosure vulnerability
