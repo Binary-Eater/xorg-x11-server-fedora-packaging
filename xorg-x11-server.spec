@@ -81,6 +81,7 @@ Patch3001:  cve-2007-5958.patch
 Patch3002:  cve-2007-6427.patch
 Patch3003:  cve-2007-6428.patch
 Patch3004:  cve-2007-6429.patch
+Patch3005:  cve-2008-0006-server-fixup.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -341,6 +342,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch3002 -p1 -b .cve-2007-6427
 %patch3003 -p1 -b .cve-2007-6428
 %patch3004 -p1 -b .cve-2007-6429
+%patch3005 -p1 -b .cve-2008-0006
 
 %build
 
@@ -615,6 +617,7 @@ rm -rf $RPM_BUILD_ROOT
 - cve-2007-6427.patch: XInput Extension Memory Corruption Vulnerability
 - cve-2007-6428.patch: TOG-CUP Extension Memory Corruption Vulnerability
 - cve-2007-6429.patch: EVI and MIT-SHM Extension Integer Overflow Vulnerability
+- cve-2008-0006-server-fixup.patch: PCF Font Vulnerability - this patch isn't strictly required with new version of libXfont.
 
 * Mon Jul 02 2007 Adam Jackson <ajax@redhat.com> 1.3.0.0-13
 - Add IDLETIME sync counter for great powersaving justice.
