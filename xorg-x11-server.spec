@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   15%{?dist}
+Release:   16%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -82,6 +82,7 @@ Patch3002:  cve-2007-6427.patch
 Patch3003:  cve-2007-6428.patch
 Patch3004:  cve-2007-6429.patch
 Patch3005:  cve-2008-0006-server-fixup.patch
+Patch3006:  cve-2007-3920.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -343,6 +344,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch3003 -p1 -b .cve-2007-6428
 %patch3004 -p1 -b .cve-2007-6429
 %patch3005 -p1 -b .cve-2008-0006
+%patch3006 -p1 -b .cve-2007-3920
 
 %build
 
@@ -611,6 +613,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jan 21 2008 Kristian Høgsberg <krh@redhat.com> - 1.3.0.0-16
+- cve-2007-3920.patch: Don't break grabs when redirecting windows.
+
 * Fri Jan 18 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-15
 - cve-2007-6429.patch: Fix patch to not break java apps
 
