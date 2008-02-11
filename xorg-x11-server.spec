@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   40%{?dist}
+Release:   41%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -643,6 +643,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 11 2008 Adam Jackson <ajax@redhat.com> 1.3.0.0-41
+- xserver-1.3.0-xorg-conf-man-randr-update.patch: Various fixes. (#429988)
+
 * Mon Jan 21 2008 Kristian Høgsberg <krh@redhat.com> - 1.3.0.0-40
 - cve-2007-3920.patch: Don't break grabs when redirecting windows.
 

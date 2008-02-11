@@ -10,7 +10,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .SH INTRODUCTION
  .B __xservername__
  supports several mechanisms for supplying/obtaining configuration and
-@@ -21,9 +21,10 @@ manual page.
+@@ -21,9 +21,10 @@
  .SH DESCRIPTION
  .B __xservername__
  uses a configuration file called
@@ -24,7 +24,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 4
  .nf
-@@ -31,30 +32,31 @@ following places when the server is star
+@@ -31,30 +32,31 @@
  .IR __projectroot__/etc/X11/ <cmdline>
  .IB /etc/X11/ $XORGCONFIG
  .IB __projectroot__/etc/X11/ $XORGCONFIG
@@ -63,7 +63,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  search locations are as follows:
  .PP
  .RS 4
-@@ -66,14 +68,14 @@ search locations are as follows:
+@@ -66,14 +68,14 @@
  .IB /etc/X11/ $XORGCONFIG
  .IB __projectroot__/etc/X11/ $XORGCONFIG
  .BI $HOME /__xconfigfile__
@@ -81,7 +81,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .I __projectroot__/lib/X11/__xconfigfile__
  .fi
  .RE
-@@ -90,13 +92,13 @@ environment variable (absolute or relati
+@@ -90,13 +92,13 @@
  is the path specified by that environment variable (usually the home
  directory), and
  .I <hostname>
@@ -100,7 +100,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 4
  .nf
-@@ -121,13 +123,14 @@ The section names are:
+@@ -121,13 +123,14 @@
  .BR "Modes          " "Video modes descriptions"
  .BR "Screen         " "Screen configuration"
  .BR "ServerLayout   " "Overall layout"
@@ -118,7 +118,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B InputDevice
  section should be used instead.
  .PP
-@@ -144,35 +147,38 @@ section is no longer recognised.
+@@ -144,35 +147,38 @@
  .PP
  The
  .B ServerLayout
@@ -173,7 +173,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 4
  .nf
-@@ -182,17 +188,18 @@ on the keyword.  The argument types are:
+@@ -182,17 +188,18 @@
  .fi
  .RE
  .PP
@@ -198,7 +198,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 4
  .nf
-@@ -209,8 +216,8 @@ Note that
+@@ -209,8 +216,8 @@
  .B Option
  values, not just strings, must be enclosed in quotes.
  .PP
@@ -209,7 +209,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .BR TRUE .
  The following boolean option values are recognised as
  .BR TRUE :
-@@ -263,56 +270,97 @@ When the unit name is omitted, the corre
+@@ -263,48 +270,89 @@
  the value and the expectations of the appropriate range of the value.
  It is recommended that the units always be specified when using frequency
  option values to avoid any errors in determining the value.
@@ -314,43 +314,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 4
  .nf
--.I __projectroot__/share/X11/fonts/misc/
--.I __projectroot__/share/X11/fonts/TTF/
--.I __projectroot__/share/X11/fonts/Type1/
--.I __projectroot__/share/X11/fonts/75dpi/
--.I __projectroot__/share/X11/fonts/100dpi/
-+.I __projectroot__/lib/X11/fonts/misc/
-+.I __projectroot__/lib/X11/fonts/TTF/
-+.I __projectroot__/lib/X11/fonts/Type1/
-+.I __projectroot__/lib/X11/fonts/75dpi/
-+.I __projectroot__/lib/X11/fonts/100dpi/
- .fi
- .RE
- .PP
-@@ -320,14 +368,14 @@ The recommended font path contains the f
- .PP
- .RS 4
- .nf
--.I __projectroot__/share/X11/fonts/local/
--.I __projectroot__/share/X11/fonts/misc/
--.I __projectroot__/share/X11/fonts/75dpi/:unscaled
--.I __projectroot__/share/X11/fonts/100dpi/:unscaled
--.I __projectroot__/share/X11/fonts/Type1/
--.I __projectroot__/share/X11/fonts/Speedo/
--.I __projectroot__/share/X11/fonts/75dpi/
--.I __projectroot__/share/X11/fonts/100dpi/
-+.I __projectroot__/lib/X11/fonts/local/
-+.I __projectroot__/lib/X11/fonts/misc/
-+.I __projectroot__/lib/X11/fonts/75dpi/:unscaled
-+.I __projectroot__/lib/X11/fonts/100dpi/:unscaled
-+.I __projectroot__/lib/X11/fonts/Type1/
-+.I __projectroot__/lib/X11/fonts/Speedo/
-+.I __projectroot__/lib/X11/fonts/75dpi/
-+.I __projectroot__/lib/X11/fonts/100dpi/
- .fi
- .RE
- .PP
-@@ -338,7 +386,7 @@ font path when the server starts up.
+@@ -338,7 +386,7 @@
  .BI "RGBPath \*q" path \*q
  sets the path name for the RGB color database.
  When this entry is not specified in the config file, the server falls back
@@ -359,7 +323,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 11
  .I __projectroot__/share/X11/rgb
-@@ -350,9 +398,10 @@ is added to this path if the server was 
+@@ -350,9 +398,10 @@
  binary format RGB color databases.
  .TP 7
  .BI "ModulePath \*q" path \*q
@@ -373,7 +337,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B ModulePath
  entries may be specified, and they will be concatenated to build the
  module search path used by the server.
-@@ -360,8 +409,8 @@ module search path used by the server.
+@@ -360,8 +409,8 @@
  .ig
  .TP 7
  .BI "LogFile \*q" path \*q
@@ -384,7 +348,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 11
  .RI __logdir__/__xservername__. <n> .log
-@@ -372,15 +421,18 @@ where
+@@ -372,15 +421,18 @@
  .I <n>
  is the display number for the __xservername__ server.
  ..
@@ -407,7 +371,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B ServerFlags
  section is optional, as are the entries that may be specified in it.
  .PP
-@@ -392,11 +444,12 @@ may be overridden by
+@@ -392,11 +444,12 @@
  .B Options
  specified in the active
  .B ServerLayout
@@ -424,7 +388,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  This specifies the default
  .B ServerLayout
  section to use in the absence of the
-@@ -404,148 +457,185 @@ section to use in the absence of the
+@@ -404,148 +457,185 @@
  command line option.
  .TP 7
  .BI "Option \*qNoTrapSignals\*q  \*q" boolean \*q
@@ -677,7 +641,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .\" Doubt this should be documented.
  .ig
  .TP 7
-@@ -555,48 +645,54 @@ Default: 0.
+@@ -555,48 +645,54 @@
  ..
  .TP 7
  .BI "Option \*qNoPM\*q  \*q" boolean \*q
@@ -751,7 +715,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B Terminate
  action and, if found, use XKEYBOARD for processing actions, otherwise
  the builtin handler will be used.
-@@ -604,24 +700,30 @@ the builtin handler will be used.
+@@ -604,24 +700,30 @@
  .BI "Option \*qAIGLX\*q \*q" boolean \*q
  enable or disable AIGLX. AIGLX is enabled by default.
  .TP 7
@@ -787,7 +751,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B Load
  keyword, as described here:
  .TP 7
-@@ -629,16 +731,31 @@ keyword, as described here:
+@@ -629,14 +731,15 @@
  This instructs the server to load the module called
  .IR modulename .
  The module name given should be the module's standard name, not the
@@ -806,24 +770,8 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
 +.B "Load \*qfreetype\*q"
  .RE
  .RE
-+.TP 7
-+.BI "Disable  \*q" modulename \*q
-+This instructs the server to not load the module called
-+.IR modulename .
-+Some modules are loaded by default in the server, and this overrides that
-+default. If a
-+.B Load
-+instruction is given for the same module, it overrides the 
-+.B Disable
-+instruction and the module is loaded. The module name given should be the
-+module's standard name, not the module file name. As with the
-+.B Load
-+instruction, the standard name is case-sensitive, and does not include the
-+"lib" prefix, or the ".a", ".o", or ".so" suffixes.
  .PP
- The second form of entry is a
- .BR SubSection,
-@@ -649,13 +766,13 @@ being
+@@ -649,13 +752,13 @@
  that are passed to the module when it is loaded.
  .PP
  Example: the extmod module (which contains a miscellaneous group of
@@ -839,7 +787,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B EndSubSection
  .fi
  .RE
-@@ -677,17 +794,20 @@ __projectroot__/lib/modules/extensions
+@@ -677,17 +780,20 @@
  .fi
  .RE
  .PP
@@ -869,7 +817,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .B InputDevice
  sections have the following format:
-@@ -709,18 +829,21 @@ and
+@@ -709,18 +815,21 @@
  .B Driver
  entries are required in all
  .B InputDevice
@@ -894,7 +842,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B InputDevice
  section is considered active if it is referenced by an active
  .B ServerLayout
-@@ -730,7 +853,10 @@ or
+@@ -730,7 +839,10 @@
  .B \-pointer
  command line options, or if it is selected implicitly as the core pointer
  or keyboard device in the absence of such explicit references.
@@ -906,7 +854,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  In the absence of an explicitly specified core input device, the first
  .B InputDevice
-@@ -738,21 +864,24 @@ marked as
+@@ -738,21 +850,24 @@
  .B CorePointer
  (or
  .BR CoreKeyboard )
@@ -939,7 +887,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B ServerLayout
  section, or from the
  .B \-pointer
-@@ -764,8 +893,9 @@ section is used.
+@@ -764,8 +879,9 @@
  .TP 7
  .BI "Option \*qCoreKeyboard\*q"
  When this is set, the input device is to be installed as the core
@@ -951,7 +899,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B ServerLayout
  section, or from the
  .B \-keyboard
-@@ -779,19 +909,21 @@ section is used.
+@@ -779,19 +895,21 @@
  .TP 7
  .BI "Option \*qSendCoreEvents\*q  \*q" boolean \*q
  Both of these options are equivalent, and when enabled cause the
@@ -979,7 +927,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .B Device
  sections have the following format:
-@@ -817,27 +949,30 @@ sections.  All other entries are optiona
+@@ -817,27 +935,30 @@
  .PP
  The
  .B Identifier
@@ -1018,7 +966,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  Note that most of the
  .B Options
  listed here (but not the other entries) may be specified in the
-@@ -846,118 +981,137 @@ section instead of here in the
+@@ -846,118 +967,137 @@
  .B Device
  section.
  .TP 7
@@ -1217,7 +1165,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .ig
  .TP 7
  This optional entry allows an IRQ number to be specified.
-@@ -966,19 +1120,22 @@ This optional entry allows an IRQ number
+@@ -966,19 +1106,22 @@
  .B Options
  Option flags may be specified in the
  .B Device
@@ -1246,7 +1194,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  but a default configuration will be created when one isn't specified.
  .PP
  .B Monitor
-@@ -1002,22 +1159,43 @@ entry.
+@@ -1002,22 +1145,43 @@
  .PP
  The
  .B Identifier
@@ -1298,7 +1246,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  The entries that may be used in
  .B Monitor
-@@ -1029,69 +1207,79 @@ This optional entry specifies the monito
+@@ -1029,69 +1193,79 @@
  .BI "ModelName  \*q" model \*q
  This optional entry specifies the monitor's model.
  .TP 7
@@ -1410,7 +1358,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .RS 7
  .TP 4
  .BI "DotClock  " clock
-@@ -1127,52 +1315,60 @@ and
+@@ -1127,52 +1301,60 @@
  may be used to select the composite sync polarity.
  .TP 4
  .BI "HSkew  " hskew
@@ -1493,7 +1441,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B Interlace
  indicates that the mode is interlaced.
  .B DoubleScan
-@@ -1191,7 +1387,8 @@ Additionally, on some hardware,
+@@ -1191,7 +1373,8 @@
  .B +CSync
  and
  .B \-CSync
@@ -1503,7 +1451,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B HSkew
  and
  .B VScan
-@@ -1214,21 +1411,79 @@ monitors do not require it.  The default
+@@ -1214,21 +1397,79 @@
  This optional entry specifies the vertical refresh rate that the server
  should aim for when selecting video modes.  Without this option, the
  default is to prefer modes with higher refresh rates.
@@ -1588,7 +1536,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  will be sufficient.
  .PP
  .B Modes
-@@ -1256,21 +1511,24 @@ and
+@@ -1256,21 +1497,24 @@
  entries that are described above in the
  .B Monitor
  section.
@@ -1619,7 +1567,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B Screen
  section found in the config file is considered the active one.
  .PP
-@@ -1298,94 +1556,97 @@ The
+@@ -1298,94 +1542,97 @@
  .B Identifier
  and
  .B Device
@@ -1757,7 +1705,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .TP 7
  .BI "Option \*qNoMTRR\*q"
  Disables MTRR (Memory Type Range Register) support, a feature of modern
-@@ -1395,14 +1656,14 @@ known to exhibit problems when MTRR's ar
+@@ -1395,14 +1642,14 @@
  .TP 7
  .BI "Option \*qXaaNoCPUToScreenColorExpandFill\*q"
  Disables accelerated rectangular expansion blits from source patterns
@@ -1775,7 +1723,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  pattern.
  .TP 7
  .BI "Option \*qXaaNoDashedBresenhamLine\*q"
-@@ -1412,8 +1673,8 @@ Disables accelerated dashed Bresenham li
+@@ -1412,8 +1659,8 @@
  Disables accelerated dashed line draws between two arbitrary points.
  .TP 7
  .BI "Option \*qXaaNoImageWriteRect\*q"
@@ -1786,7 +1734,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .TP 7
  .BI "Option \*qXaaNoMono8x8PatternFillRect\*q"
  Disables accelerated fills of a rectangular region with a monochrome
-@@ -1434,7 +1695,7 @@ Disables accelerated rectangular expansi
+@@ -1434,7 +1681,7 @@
  stored in system memory (one scan line at a time).
  .TP 7
  .BI "Option \*qXaaNoScanlineImageWriteRect\*q"
@@ -1795,7 +1743,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  system memory to video memory (one scan line at a time).
  .TP 7
  .BI "Option \*qXaaNoScreenToScreenColorExpandFill\*q"
-@@ -1449,10 +1710,10 @@ video memory to another part of video me
+@@ -1449,10 +1696,10 @@
  Disables accelerated solid Bresenham line draws.
  .TP 7
  .BI "Option \*qXaaNoSolidFillRect\*q"
@@ -1808,7 +1756,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .TP 7
  .BI "Option \*qXaaNoSolidHorVertLine\*q"
  Disables accelerated solid horizontal and vertical line draws.
-@@ -1464,27 +1725,30 @@ Each
+@@ -1464,27 +1711,30 @@
  .B Screen
  section may optionally contain one or more
  .B Display
@@ -1849,7 +1797,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .B Display
  subsections have the following format:
-@@ -1498,78 +1762,88 @@ subsections have the following format:
+@@ -1498,78 +1748,88 @@
  .B  "    EndSubSection"
  .fi
  .RE
@@ -1978,7 +1926,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  When this entry is omitted, the valid modes referenced by the appropriate
  .B Monitor
  section will be used.  If the
-@@ -1577,10 +1851,12 @@ section will be used.  If the
+@@ -1577,10 +1837,12 @@
  section contains no modes, then the selection will be taken from the
  built-in VESA standard modes.
  .TP 7
@@ -1995,7 +1943,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .BR PseudoColor ):
  .PP
  .RS 11
-@@ -1626,43 +1902,48 @@ The visual type available for the depth 
+@@ -1626,43 +1888,48 @@
  .RE
  .TP 7
  .BI "Black  " "red green blue"
@@ -2061,7 +2009,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B ServerLayout
  sections are present, the single active screen and two active (core)
  input devices are selected as described in the relevant sections above.
-@@ -1674,9 +1955,9 @@ sections have the following format:
+@@ -1674,9 +1941,9 @@
  .nf
  .B  "Section \*qServerLayout\*q"
  .BI "    Identifier   \*q" name \*q
@@ -2073,7 +2021,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .I  "    ..."
  .I  "    options"
  .I  "    ..."
-@@ -1694,10 +1975,11 @@ entry.
+@@ -1694,10 +1961,11 @@
  .PP
  The
  .B Identifier
@@ -2087,7 +2035,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .BR Options .
  The
  .B ServerFlags
-@@ -1708,21 +1990,25 @@ section.
+@@ -1708,21 +1976,25 @@
  .PP
  The entries that may be used in this section are described here.
  .TP 7
@@ -2124,7 +2072,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .RS 7
  .TP 4
  .I  "x y"
-@@ -1732,48 +2018,53 @@ These both specify that the upper left c
+@@ -1732,48 +2004,53 @@
  .RI ( x , y ).
  The
  .B Absolute
@@ -2198,7 +2146,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .PP
  .RS 11
  .nf
-@@ -1791,8 +2082,9 @@ and core keyboard devices respectively.
+@@ -1791,8 +2068,9 @@
  .B Options
  In addition to the following, any option permitted in the
  .B ServerFlags
@@ -2210,7 +2158,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .B ServerFlags
  section.
  .TP 7
-@@ -1805,9 +2097,11 @@ option (described in
+@@ -1805,9 +2083,11 @@
  .BR "DEVICE SECTION" ,
  above) for the format of the
  .I bus\-id
@@ -2224,7 +2172,7 @@ diff -up xorg-server-1.3.0.0/hw/xfree86/doc/man/xorg.conf.man.pre.da xorg-server
  .TP 7
  .BI "Option \*qSingleCard\*q  \*q" boolean \*q
  As
-@@ -1831,68 +2125,97 @@ section for a dual headed configuration 
+@@ -1831,68 +2111,97 @@
  .B "EndSection"
  .fi
  .RE
