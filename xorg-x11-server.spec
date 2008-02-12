@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   41%{?dist}
+Release:   42%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -643,6 +643,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Feb 12 2008 Adam Jackson <ajax@redhat.com> 1.3.0.0-42
+- xserver-1.3.0-avoid-ps2-probe.patch: Delete an irrelevant hunk against
+  the module loader that broke Xorg -configure.  (#397461)
+
 * Mon Feb 11 2008 Adam Jackson <ajax@redhat.com> 1.3.0.0-41
 - xserver-1.3.0-xorg-conf-man-randr-update.patch: Various fixes. (#429988)
 
