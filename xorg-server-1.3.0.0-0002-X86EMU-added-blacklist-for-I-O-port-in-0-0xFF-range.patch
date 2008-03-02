@@ -1,0 +1,187 @@
+From 3fd434670e4c371c5a1970982fdb6039b5bdf5fe Mon Sep 17 00:00:00 2001
+From: Bart Trojanowski <bart@symbio-technologies.com>
+Date: Tue, 19 Feb 2008 20:44:40 -0500
+Subject: [PATCH] X86EMU: added blacklist for I/O port in 0-0xFF range
+
+This patch adds a test just before x86emu accesses real I/O ports.
+The intent is to prevent access to ports that are know to be under
+the kernel's control.  Accessing these from the X process could cause
+catastrophic failure of the system, as it had occurred on all Geode
+systems with the General Software VGA BIOS.
+
+If such an access is detected, we terminate X "gracefully" by sending
+a SIGSEGV signal which is picked up by xf86SigHandler(), it then dumps
+the backtrace and exits gracefully.  Note that exiting here avoids a
+system corruption or freeze.
+
+This patch was based on help from Alan Cox.
+
+Thanks to Symbio Technologies for funding my work, and ThinCan for
+providing hardware :)
+
+Signed-off-by: Bart Trojanowski <bart@jukie.net>
+---
+ hw/xfree86/int10/helper_exec.c |   92 +++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 86 insertions(+), 6 deletions(-)
+
+diff --git a/hw/xfree86/int10/helper_exec.c b/hw/xfree86/int10/helper_exec.c
+index d80de89..babf99c 100644
+--- a/hw/xfree86/int10/helper_exec.c
++++ b/hw/xfree86/int10/helper_exec.c
+@@ -19,6 +19,8 @@
+ #endif
+ 
+ #include <unistd.h>
++#include <sys/types.h>
++#include <signal.h>
+ 
+ #include <X11/Xos.h>
+ #include "xf86.h"
+@@ -203,6 +205,72 @@ stack_trace(xf86Int10InfoPtr pInt)
+ 	xf86ErrorFVerb(3, "\n");
+ }
+ 
++enum port_action_e {
++	PORT_ACTION_PERMIT,
++	PORT_ACTION_WARN,
++	PORT_ACTION_BAIL,
++	PORT_ACTION_MAX
++};
++
++static const struct port_range {
++	CARD16 start, end;
++	enum port_action_e access;
++} port_range_table[] = {
++	// NOTE: port ranges are non overlapping and sorted
++	{ 0x00, 0x1f, PORT_ACTION_BAIL },	// DMA
++	{ 0x20, 0x21, PORT_ACTION_BAIL },	// PIC
++	{ 0x40, 0x47, PORT_ACTION_BAIL },	// PIT 1&2
++	{ 0x50, 0x53, PORT_ACTION_BAIL },
++	{ 0x70, 0x77, PORT_ACTION_BAIL },	// CMOS/RTC
++	{ 0x81, 0x8f, PORT_ACTION_BAIL },	// DIAG REGS
++	{ 0xa0, 0xa1, PORT_ACTION_BAIL },	// PIC2
++	{ 0xc0, 0xdf, PORT_ACTION_BAIL },	// DMA
++};
++#define ARRAY_SIZE(X) (sizeof((X)) / (sizeof(*(X))))
++#define ARRAY_END(X)  (&((X)[ARRAY_SIZE(X)]))
++
++static void assert_port_access_allowed (CARD16 port, CARD16 width)
++{
++	CARD16 access_start, access_end;
++	const struct port_range *pr, *pr_start, *pr_end;
++
++	access_start = port;
++	access_end = port + width - 1;
++
++	// TODO: if the list gets too long we should do a binary search
++	//        or convert the port list to a bitmap representation
++	pr_start = port_range_table;
++	pr_end   = ARRAY_END(port_range_table);
++
++	for (pr = pr_start; pr < pr_end; pr++) {
++		if (access_end < pr->start)
++			continue;
++		if (access_start > pr->end)
++			break;
++
++		// we are in the pr range now
++		switch (pr->access) {
++		default:
++			continue;
++		case PORT_ACTION_BAIL:
++		case PORT_ACTION_WARN:
++			break;
++		}
++
++		ErrorF("Emulator asked to make a suspect %saccess to "
++				"port %u (0x%04x)%s\n",
++				(width == 1) ? "byte " :
++				(width == 2) ? "word " :
++				(width == 4) ? "long " : "",
++				port, port,
++				(pr->access == PORT_ACTION_BAIL)
++				? "; terminating." : "ignoring.");
++
++		if (pr->access == PORT_ACTION_BAIL)
++			kill(getpid(), SIGSEGV);
++	}
++}
++
+ int
+ port_rep_inb(xf86Int10InfoPtr pInt,
+ 	     CARD16 port, CARD32 base, int d_f, CARD32 count)
+@@ -328,8 +396,10 @@ x_inb(CARD16 port)
+ 	}
+ #endif /* __NOT_YET__ */
+     } else {
+-	if (!pciCfg1inb(port, &val))
++	if (!pciCfg1inb(port, &val)) {
++	    assert_port_access_allowed (port, sizeof(val));
+ 	    val = inb(Int10Current->ioBase + port);
++	}
+ #ifdef PRINT_PORT
+ 	ErrorF(" inb(%#x) = %2.2x\n", port, val);
+ #endif
+@@ -352,8 +422,10 @@ x_inw(CARD16 port)
+ 	X_GETTIMEOFDAY(&tv);
+ 	val = (CARD16)(tv.tv_usec / 3);
+     } else {
+-	if (!pciCfg1inw(port, &val))
++	if (!pciCfg1inw(port, &val)) {
++	    assert_port_access_allowed (port, sizeof(val));
+ 	    val = inw(Int10Current->ioBase + port);
++	}
+     }
+ #ifdef PRINT_PORT
+     ErrorF(" inw(%#x) = %4.4x\n", port, val);
+@@ -390,8 +462,10 @@ x_outb(CARD16 port, CARD8 val)
+ #ifdef PRINT_PORT
+ 	ErrorF(" outb(%#x, %2.2x)\n", port, val);
+ #endif
+-	if (!pciCfg1outb(port, val))
++	if (!pciCfg1outb(port, val)) {
++	    assert_port_access_allowed (port, sizeof(val));
+ 	    outb(Int10Current->ioBase + port, val);
++	}
+     }
+ }
+ 
+@@ -402,8 +476,10 @@ x_outw(CARD16 port, CARD16 val)
+     ErrorF(" outw(%#x, %4.4x)\n", port, val);
+ #endif
+ 
+-    if (!pciCfg1outw(port, val))
++    if (!pciCfg1outw(port, val)) {
++	assert_port_access_allowed (port, sizeof(val));
+ 	outw(Int10Current->ioBase + port, val);
++    }
+ }
+ 
+ CARD32
+@@ -411,8 +487,10 @@ x_inl(CARD16 port)
+ {
+     CARD32 val;
+ 
+-    if (!pciCfg1in(port, &val))
++    if (!pciCfg1in(port, &val)) {
++	assert_port_access_allowed (port, sizeof(val));
+ 	val = inl(Int10Current->ioBase + port);
++    }
+ 
+ #ifdef PRINT_PORT
+     ErrorF(" inl(%#x) = %8.8x\n", port, val);
+@@ -427,8 +505,10 @@ x_outl(CARD16 port, CARD32 val)
+     ErrorF(" outl(%#x, %8.8x)\n", port, val);
+ #endif
+ 
+-    if (!pciCfg1out(port, val))
++    if (!pciCfg1out(port, val)) {
++	assert_port_access_allowed (port, sizeof(val));
+ 	outl(Int10Current->ioBase + port, val);
++    }
+ }
+ 
+ CARD8
+-- 
+1.5.3.7.1150.g149d432
+

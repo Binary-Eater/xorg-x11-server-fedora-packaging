@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   42%{?dist}
+Release:   43%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -81,6 +81,11 @@ Patch2017:  xserver-1.3.0-update-quirks.patch
 Patch2018:  xserver-1.3.0-late-sigusr1.patch
 Patch2019:  xserver-1.3.0-yet-more-vt-ioctl-hate.patch
 Patch2020:  xserver-1.3.0-update-edid-quirks.patch
+Patch2021:  xorg-server-1.3.0.0-prefer-openchrome-ugly-hack.patch
+Patch2022:  xorg-server-1.3.0.0-0001-X86EMU-handle-CPUID-instruction.patch
+Patch2023:  xorg-server-1.3.0.0-0003-X86EMU-when-emulating-PCI-access-use-the-correct-d.patch
+Patch2024:  xorg-server-1.3.0.0-0002-X86EMU-added-blacklist-for-I-O-port-in-0-0xFF-range.patch
+Patch2025:  xorg-server-1.3.0.0-geode-gx2-lx-autodetect.patch
 
 # assorted PCI layer shenanigans.  oh the pain.
 Patch2500:  xorg-x11-server-1.2.99-unbreak-domain.patch
@@ -360,6 +365,11 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch2018 -p1 -b .sigusr1
 %patch2019 -p1 -b .vt-ioctl-hate
 %patch2020 -p1 -b .more-quirk-patch
+%patch2021 -p1 -b .prefer-openchrome-ugly-hack
+%patch2022 -p1 -b .X86EMU-handle-CPUID-instruction
+%patch2023 -p1 -b .X86EMU-added-blacklist
+%patch2024 -p1 -b .X86EMU-when-emulating-PCI
+%patch2025 -p1 -b .geode-gx2-lx-autodetect
 
 %patch2500 -p1 -b .unbreak-domains
 %patch2501 -p1 -b .pci-bus-count
@@ -643,6 +653,17 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Mar 02 2008 Warren Togami <wtogami@redhat.com> 1.3.0.0-43
+- xorg-server-1.3.0.0-prefer-openchrome-ugly-hack.patch:
+  Prefer openchrome to via driver during autoconfiguration.
+- xorg-server-1.3.0.0-0001-X86EMU-handle-CPUID-instruction.patch
+  xorg-server-1.3.0.0-0002-X86EMU-added-blacklist-for-I-O-port-in-0-0xFF-range.patch
+  xorg-server-1.3.0.0-0003-X86EMU-when-emulating-PCI-access-use-the-correct-d.patch
+  X86EMU fixes that allow amd driver work with a few broken BIOS
+- xorg-server-1.3.0.0-geode-gx2-lx-autodetect.patch:
+  Autoconfigure AMD Geode GX2 100b:0030
+                AMD Geode LX  1022:2081
+
 * Tue Feb 12 2008 Adam Jackson <ajax@redhat.com> 1.3.0.0-42
 - xserver-1.3.0-avoid-ps2-probe.patch: Delete an irrelevant hunk against
   the module loader that broke Xorg -configure.  (#397461)

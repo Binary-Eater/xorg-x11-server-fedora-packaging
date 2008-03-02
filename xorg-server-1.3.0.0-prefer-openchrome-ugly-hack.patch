@@ -1,0 +1,17 @@
+--- xorg-server-1.3.0.0/hw/xfree86/common/xf86AutoConfig.c.orig	2008-02-28 17:00:39.000000000 -0500
++++ xorg-server-1.3.0.0/hw/xfree86/common/xf86AutoConfig.c	2008-02-28 17:32:45.000000000 -0500
+@@ -203,7 +203,13 @@
+ 	case 0x3d3d:		    return "glint";
+ 	case 0x1023:		    return "trident";
+ 	case 0x100c:		    return "tseng";
+-	case 0x1106:		    return "via";
++	case 0x1106:		    
++            /* Prefer openchrome if available before via driver */
++            if(!access(DEFAULT_MODULE_PATH "/drivers/openchrome_drv.so", R_OK)) {
++                                    return "openchrome";
++            } else {
++                                    return "via";
++            }
+ 	case 0x15ad:		    return "vmware";
+ 	default: break;
+     }

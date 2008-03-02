@@ -1,0 +1,23 @@
+diff -urN xorg-server-1.3.0.0.orig/hw/xfree86/common/xf86AutoConfig.c xorg-server-1.3.0.0/hw/xfree86/common/xf86AutoConfig.c
+--- xorg-server-1.3.0.0.orig/hw/xfree86/common/xf86AutoConfig.c	2008-03-02 15:07:48.000000000 -0500
++++ xorg-server-1.3.0.0/hw/xfree86/common/xf86AutoConfig.c	2008-03-02 15:21:19.000000000 -0500
+@@ -160,12 +160,18 @@
+ {
+     /*
+      * things not handled yet:
+-     * amd/cyrix/nsc
++     * cyrix/nsc
+      * xgi
+      */
+ 
+     switch (info->vendor)
+     {
++        case 0x100b:
++	    if (info->chipType == 0x0030)
++	        return "amd";
++        case 0x1022:
++	    if (info->chipType == 0x2081)
++	        return "amd";
+ 	case 0x1142:		    return "apm";
+ 	case 0xedd8:		    return "ark";
+ 	case 0x1a03:		    return "ast";
