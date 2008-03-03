@@ -63,6 +63,7 @@ Patch1023:  xserver-1.3.0-randr-preferred-mode-fix.patch
 Patch1024:  xserver-1.3.0-avoid-ps2-probe.patch
 Patch1025:  xserver-1.3.0-ignore-extra-entity.patch
 Patch1026:  xserver-1.3.0-randr-fix-set-rotations-xinerama.patch
+Patch1027:  xserver-1.3.0-exaupgrade-latest-fixes.patch
 
 Patch2001:  xserver-1.2.0-geode-mmx.patch
 Patch2002:  xserver-1.2.0-xephyr-keysym-madness.patch
@@ -347,6 +348,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch1024 -p1 -b .ps2-probe
 %patch1025 -p1 -b .ignore-entities
 %patch1026 -p1 -b .fix-set-rotation-crash
+%patch1027 -p1 -b .fix-exa
 
 %patch2001 -p1 -b .geode-mmx
 %patch2002 -p1 -b .xephyr-keysym
@@ -663,6 +665,7 @@ rm -rf $RPM_BUILD_ROOT
 - xorg-server-1.3.0.0-geode-gx2-lx-autodetect.patch:
   Autoconfigure AMD Geode GX2 100b:0030
                 AMD Geode LX  1022:2081
+- xserver-1.3.0-exaupgrade-latest-fixes.patch - airlied - fix EXA
 
 * Tue Feb 12 2008 Adam Jackson <ajax@redhat.com> 1.3.0.0-42
 - xserver-1.3.0-avoid-ps2-probe.patch: Delete an irrelevant hunk against

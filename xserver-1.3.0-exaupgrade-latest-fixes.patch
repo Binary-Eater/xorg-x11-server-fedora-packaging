@@ -1,0 +1,262 @@
+diff -ur ./exa_accel.c /home/airlied/devel/xorg/xserver/exa/exa_accel.c
+--- ./exa_accel.c	2008-03-03 12:55:32.000000000 +1000
++++ xserver/exa/exa_accel.c	2008-03-03 13:41:24.000000000 +1000
+@@ -1187,7 +1187,8 @@
+ 	    int dstY = pBox->y1;
+ 	    int tileY;
+ 
+-	    tileY = (dstY - pDrawable->y - pPatOrg->y) % tileHeight;
++	    modulus(dstY - pDrawable->y - pPatOrg->y, tileHeight, tileY);
++
+ 	    while (height > 0) {
+ 		int width = pBox->x2 - pBox->x1;
+ 		int dstX = pBox->x1;
+@@ -1198,7 +1199,8 @@
+ 		    h = height;
+ 		height -= h;
+ 
+-		tileX = (dstX - pDrawable->x - pPatOrg->x) % tileWidth;
++		modulus(dstX - pDrawable->x - pPatOrg->x, tileWidth, tileX);
++
+ 		while (width > 0) {
+ 		    int w = tileWidth - tileX;
+ 		    if (w > width)
+@@ -1223,7 +1225,8 @@
+     }
+ 
+ fallback:
+-    if (alu != GXcopy || planemask != FB_ALLONES)
++    if (alu != GXcopy || planemask != FB_ALLONES || pPatOrg->x != 0 ||
++	pPatOrg->y != 0)
+ 	return FALSE;
+     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pTile, pDrawable,
+ 		  exaDrawableLocation(&pTile->drawable),
+diff -ur ./exa.c /home/airlied/devel/xorg/xserver/exa/exa.c
+--- ./exa.c	2008-03-03 12:55:32.000000000 +1000
++++ xserver/exa/exa.c	2008-03-03 13:41:24.000000000 +1000
+@@ -526,6 +526,7 @@
+     if (ps) {
+ 	ps->Composite = pExaScr->SavedComposite;
+ 	ps->Glyphs = pExaScr->SavedGlyphs;
++	ps->Trapezoids = pExaScr->SavedTrapezoids;
+     }
+ #endif
+ 
+@@ -684,6 +685,9 @@
+ 
+ 	pExaScr->SavedGlyphs = ps->Glyphs;
+ 	ps->Glyphs = exaGlyphs;
++
++	pExaScr->SavedTrapezoids = ps->Trapezoids;
++	ps->Trapezoids = exaTrapezoids;
+     }
+ #endif
+ 
+diff -ur ./exa_migration.c /home/airlied/devel/xorg/xserver/exa/exa_migration.c
+--- ./exa_migration.c	2008-03-03 12:55:32.000000000 +1000
++++ xserver/exa/exa_migration.c	2008-03-03 13:41:24.000000000 +1000
+@@ -319,6 +319,10 @@
+     if (pPixmap->drawable.bitsPerPixel < 8)
+ 	return;
+ 
++    if (pPixmap->drawable.width > pExaScr->info->maxX ||
++	pPixmap->drawable.height > pExaScr->info->maxY)
++	return;
++
+     if (pExaPixmap->area == NULL) {
+ 	pExaPixmap->area =
+ 	    exaOffscreenAlloc (pScreen, pExaPixmap->fb_size,
+diff -ur ./exa_priv.h /home/airlied/devel/xorg/xserver/exa/exa_priv.h
+--- ./exa_priv.h	2008-03-03 12:55:32.000000000 +1000
++++ xserver/exa/exa_priv.h	2008-03-03 13:41:24.000000000 +1000
+@@ -108,6 +108,7 @@
+     RasterizeTrapezoidProcPtr	 SavedRasterizeTrapezoid;
+     AddTrianglesProcPtr		 SavedAddTriangles;
+     GlyphsProcPtr                SavedGlyphs;
++    TrapezoidsProcPtr            SavedTrapezoids;
+ #endif
+     Bool			 swappedOut;
+     enum ExaMigrationHeuristic	 migration;
+@@ -393,6 +394,11 @@
+ 	     CARD16	height);
+ 
+ void
++exaTrapezoids (CARD8 op, PicturePtr pSrc, PicturePtr pDst,
++               PictFormatPtr maskFormat, INT16 xSrc, INT16 ySrc,
++               int ntrap, xTrapezoid *traps);
++
++void
+ exaRasterizeTrapezoid (PicturePtr pPicture, xTrapezoid  *trap,
+ 		       int x_off, int y_off);
+ 
+diff -ur ./exa_render.c /home/airlied/devel/xorg/xserver/exa/exa_render.c
+--- ./exa_render.c	2008-03-03 12:55:32.000000000 +1000
++++ xserver/exa/exa_render.c	2008-03-03 13:41:24.000000000 +1000
+@@ -749,6 +749,132 @@
+ }
+ #endif
+ 
++/**
++ * Same as miCreateAlphaPicture, except it uses ExaCheckPolyFillRect instead
++ * of PolyFillRect to initialize the pixmap after creating it, to prevent
++ * the pixmap from being migrated.
++ *
++ * See the comments about exaTrapezoids.
++ */
++static PicturePtr
++exaCreateAlphaPicture (ScreenPtr     pScreen,
++                       PicturePtr    pDst,
++                       PictFormatPtr pPictFormat,
++                       CARD16        width,
++                       CARD16        height)
++{
++    PixmapPtr	    pPixmap;
++    PicturePtr	    pPicture;
++    GCPtr	    pGC;
++    int		    error;
++    xRectangle	    rect;
++
++    if (width > 32767 || height > 32767)
++	return 0;
++
++    if (!pPictFormat)
++    {
++	if (pDst->polyEdge == PolyEdgeSharp)
++	    pPictFormat = PictureMatchFormat (pScreen, 1, PICT_a1);
++	else
++	    pPictFormat = PictureMatchFormat (pScreen, 8, PICT_a8);
++	if (!pPictFormat)
++	    return 0;
++    }
++
++    pPixmap = (*pScreen->CreatePixmap) (pScreen, width, height,
++					pPictFormat->depth);
++    if (!pPixmap)
++	return 0;
++    pGC = GetScratchGC (pPixmap->drawable.depth, pScreen);
++    if (!pGC)
++    {
++	(*pScreen->DestroyPixmap) (pPixmap);
++	return 0;
++    }
++    ValidateGC (&pPixmap->drawable, pGC);
++    rect.x = 0;
++    rect.y = 0;
++    rect.width = width;
++    rect.height = height;
++    ExaCheckPolyFillRect (&pPixmap->drawable, pGC, 1, &rect);
++    exaPixmapDirty (pPixmap, 0, 0, width, height);
++    FreeScratchGC (pGC);
++    pPicture = CreatePicture (0, &pPixmap->drawable, pPictFormat,
++			      0, 0, serverClient, &error);
++    (*pScreen->DestroyPixmap) (pPixmap);
++    return pPicture;
++}
++
++/**
++ * exaTrapezoids is essentially a copy of miTrapezoids that uses
++ * exaCreateAlphaPicture instead of miCreateAlphaPicture.
++ *
++ * The problem with miCreateAlphaPicture is that it calls PolyFillRect
++ * to initialize the contents after creating the pixmap, which
++ * causes the pixmap to be moved in for acceleration. The subsequent
++ * call to RasterizeTrapezoid won't be accelerated however, which
++ * forces the pixmap to be moved out again.
++ *
++ * exaCreateAlphaPicture avoids this roundtrip by using ExaCheckPolyFillRect
++ * to initialize the contents.
++ */
++void
++exaTrapezoids (CARD8 op, PicturePtr pSrc, PicturePtr pDst,
++               PictFormatPtr maskFormat, INT16 xSrc, INT16 ySrc,
++               int ntrap, xTrapezoid *traps)
++{
++    ScreenPtr		pScreen = pDst->pDrawable->pScreen;
++    PictureScreenPtr    ps = GetPictureScreen(pScreen);
++
++    /*
++     * Check for solid alpha add
++     */
++    if (op == PictOpAdd && miIsSolidAlpha (pSrc))
++    {
++	for (; ntrap; ntrap--, traps++)
++	    (*ps->RasterizeTrapezoid) (pDst, traps, 0, 0);
++    }
++    else if (maskFormat)
++    {
++	PicturePtr	pPicture;
++	BoxRec		bounds;
++	INT16		xDst, yDst;
++	INT16		xRel, yRel;
++
++	xDst = traps[0].left.p1.x >> 16;
++	yDst = traps[0].left.p1.y >> 16;
++
++	miTrapezoidBounds (ntrap, traps, &bounds);
++	if (bounds.y1 >= bounds.y2 || bounds.x1 >= bounds.x2)
++	    return;
++	pPicture = exaCreateAlphaPicture (pScreen, pDst, maskFormat,
++	                                  bounds.x2 - bounds.x1,
++	                                  bounds.y2 - bounds.y1);
++	if (!pPicture)
++	    return;
++	for (; ntrap; ntrap--, traps++)
++	    (*ps->RasterizeTrapezoid) (pPicture, traps,
++				       -bounds.x1, -bounds.y1);
++	xRel = bounds.x1 + xSrc - xDst;
++	yRel = bounds.y1 + ySrc - yDst;
++	CompositePicture (op, pSrc, pPicture, pDst,
++			  xRel, yRel, 0, 0, bounds.x1, bounds.y1,
++			  bounds.x2 - bounds.x1,
++			  bounds.y2 - bounds.y1);
++	FreePicture (pPicture, 0);
++    }
++    else
++    {
++	if (pDst->polyEdge == PolyEdgeSharp)
++	    maskFormat = PictureMatchFormat (pScreen, 1, PICT_a1);
++	else
++	    maskFormat = PictureMatchFormat (pScreen, 8, PICT_a8);
++	for (; ntrap; ntrap--, traps++)
++	    exaTrapezoids (op, pSrc, pDst, maskFormat, xSrc, ySrc, 1, traps);
++    }
++}
++
+ #define NeedsComponent(f) (PICT_FORMAT_A(f) != 0 && PICT_FORMAT_RGB(f) != 0)
+ 
+ /**
+diff -ur ./exa_unaccel.c /home/airlied/devel/xorg/xserver/exa/exa_unaccel.c
+--- ./exa_unaccel.c	2008-03-03 12:55:32.000000000 +1000
++++ xserver/exa/exa_unaccel.c	2008-03-03 13:41:24.000000000 +1000
+@@ -382,19 +382,19 @@
+     ExaMigrationRec pixmaps[1];
+     ExaPixmapPriv (pPixmap);
+ 
++    fb = pExaPixmap->sys_ptr;
++
+     /* Try to avoid framebuffer readbacks */
+-    if (exaPixmapIsOffscreen(pPixmap)) {
+-	if (!miPointInRegion(DamageRegion(pExaPixmap->pDamage), 0, 0,  &box)) {
+-	    fb = pExaPixmap->sys_ptr;
+-	} else {
+-	    need_finish = TRUE;
+-	    fb = pPixmap->devPrivate.ptr;
+-	    pixmaps[0].as_dst = FALSE;
+-	    pixmaps[0].as_src = TRUE;
+-	    pixmaps[0].pPix = pPixmap;
+-	    exaDoMigration (pixmaps, 1, FALSE);
+-	    exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+-	}
++    if (exaPixmapIsOffscreen(pPixmap) &&
++        miPointInRegion(DamageRegion(pExaPixmap->pDamage), 0, 0,  &box))
++    {
++	need_finish = TRUE;
++	pixmaps[0].as_dst = FALSE;
++	pixmaps[0].as_src = TRUE;
++	pixmaps[0].pPix = pPixmap;
++	exaDoMigration (pixmaps, 1, FALSE);
++	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
++	fb = pPixmap->devPrivate.ptr;
+     }
+ 
+     switch (pPixmap->drawable.bitsPerPixel) {
