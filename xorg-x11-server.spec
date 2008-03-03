@@ -662,6 +662,7 @@ rm -rf $RPM_BUILD_ROOT
   xorg-server-1.3.0.0-0002-X86EMU-added-blacklist-for-I-O-port-in-0-0xFF-range.patch
   xorg-server-1.3.0.0-0003-X86EMU-when-emulating-PCI-access-use-the-correct-d.patch
   X86EMU fixes that allow amd driver work with a few broken BIOS
+  (from Bart Trojanowski of Symbio Technologies)
 - xorg-server-1.3.0.0-geode-gx2-lx-autodetect.patch:
   Autoconfigure AMD Geode GX2 100b:0030
                 AMD Geode LX  1022:2081
