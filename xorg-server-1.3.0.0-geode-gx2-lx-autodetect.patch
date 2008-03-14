@@ -14,10 +14,10 @@ diff -urN xorg-server-1.3.0.0.orig/hw/xfree86/common/xf86AutoConfig.c xorg-serve
      {
 +        case 0x100b:
 +	    if (info->chipType == 0x0030)
-+	        return "amd";
++	        return "geode";
 +        case 0x1022:
 +	    if (info->chipType == 0x2081)
-+	        return "amd";
++	        return "geode";
  	case 0x1142:		    return "apm";
  	case 0xedd8:		    return "ark";
  	case 0x1a03:		    return "ast";

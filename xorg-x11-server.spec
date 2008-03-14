@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   43%{?dist}
+Release:   44%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -655,6 +655,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Mar 14 2008 Warren Togami <wtogami@redhat.com> 1.3.0.0-44
+- amd driver is being renamed geode, 2.7.7.7+ supports both driver names
+  autoconfigure to use driver "geode" if xorg.conf does not exist
+
 * Sun Mar 02 2008 Warren Togami <wtogami@redhat.com> 1.3.0.0-43
 - xorg-server-1.3.0.0-prefer-openchrome-ugly-hack.patch:
   Prefer openchrome to via driver during autoconfiguration.
