@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   22.%{gitdate}%{?dist}
+Release:   23.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -52,17 +52,18 @@ Patch1014:  xserver-1.4.99-xaa-evict-pixmaps.patch
 Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
 
 # Trivial things to maybe merge upstream at next rebase
+Patch3000:  xserver-1.5.0-stenciled-visuals.patch
 
 # Trivial things to never merge upstream ever
 # Don't merge this without protecting the gccisms.
-Patch5001: xserver-1.4.99-alloca-poison.patch
+Patch5001:  xserver-1.4.99-alloca-poison.patch
 # This really could be done prettier.
-Patch5002: xserver-1.4.99-ssh-isnt-local.patch
+Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 
-Patch5007: xserver-1.5.0-bad-fbdev-thats-mine.patch
-Patch5008: xserver-1.5.0-xaa-sucks.patch
-Patch5009: xserver-1.5.0-no-evdev-keyboards-kthnx.patch
-Patch5010: xserver-1.5.0-selinux-off-by-default.patch
+Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
+Patch5008:  xserver-1.5.0-xaa-sucks.patch
+Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
+Patch5010:  xserver-1.5.0-selinux-off-by-default.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -513,6 +514,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Apr 22 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-23.20080415
+- xserver-1.5.0-stenciled-visuals.patch: Prefer visuals with a stencil
+  buffer for the default GLX visual.  (Hans de Goede, #442510)
+
 * Tue Apr 15 2008 Dave Airlie <airlied@redhat.com> 1.4.99.901-22.20080415
 - rebase to upstream server 1.5 branch from today - drop acr quirk
 
