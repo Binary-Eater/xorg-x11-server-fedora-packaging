@@ -49,7 +49,7 @@ index 11e9f89..aa23a95 100644
 -
      prev = NULL;
 -    for ( curr = glxc->readPriv->readGlxc
--	  ; curr != NULL 
+-	  ; curr != NULL
 -	  ; prev = curr, curr = curr->nextReadPriv ) {
 -	if (curr == glxc) {
 -	    /* found context.  Deassociate. */
