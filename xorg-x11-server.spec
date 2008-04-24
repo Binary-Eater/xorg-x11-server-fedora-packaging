@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   24.%{gitdate}%{?dist}
+Release:   25.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -54,6 +54,7 @@ Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
 # Trivial things to maybe merge upstream at next rebase
 Patch3000:  xserver-1.5.0-stenciled-visuals.patch
 Patch3001:  xserver-1.5.0-glcore-swap-no-crashy.patch
+Patch3002:  xserver-1.5.0-f-spot-screws-glx.patch
 
 # Trivial things to never merge upstream ever
 # Don't merge this without protecting the gccisms.
@@ -515,6 +516,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 24 2008 Dave Airlie <airlied@redhat.com> 1.4.99.901-25.20080415
+- xserver-1.5.0-f-spot-screws-glx.patch: stop GLX crashing X server when
+  f-spot exists (#443299)
+
 * Wed Apr 23 2008 Dave Airlie <airlied@redhat.com> 1.4.99.901-24.20080415
 - xserver-1.5.0-glcore-swap-no-crashy.patch: Fix issue with googleearth
   crashing GLcore.
