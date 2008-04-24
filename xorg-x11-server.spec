@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   25.%{gitdate}%{?dist}
+Release:   26.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -516,6 +516,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 24 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-26.20080415
+- xserver-1.5.0-no-evdev-keyboards-kthnx.patch: Disable evdev for keyboards
+  even on combo devices.  This means combo devices will go through the old
+  mouse driver too.  Oh well.  (#440380)
+
 * Thu Apr 24 2008 Dave Airlie <airlied@redhat.com> 1.4.99.901-25.20080415
 - xserver-1.5.0-f-spot-screws-glx.patch: stop GLX crashing X server when
   f-spot exists (#443299)
