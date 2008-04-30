@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   44%{?dist}
+Release:   45%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -64,6 +64,7 @@ Patch1024:  xserver-1.3.0-avoid-ps2-probe.patch
 Patch1025:  xserver-1.3.0-ignore-extra-entity.patch
 Patch1026:  xserver-1.3.0-randr-fix-set-rotations-xinerama.patch
 Patch1027:  xserver-1.3.0-exaupgrade-latest-fixes.patch
+Patch1028:  xserver-1.3.0-exaupgrade-fix-max-pixmap.patch
 
 Patch2001:  xserver-1.2.0-geode-mmx.patch
 Patch2002:  xserver-1.2.0-xephyr-keysym-madness.patch
@@ -349,6 +350,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch1025 -p1 -b .ignore-entities
 %patch1026 -p1 -b .fix-set-rotation-crash
 %patch1027 -p1 -b .fix-exa
+%patch1028 -p1 -b .fix-exa-max-pixmap
 
 %patch2001 -p1 -b .geode-mmx
 %patch2002 -p1 -b .xephyr-keysym
@@ -655,6 +657,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 30 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-45
+- fix EXA pixmap maximum size to not fail on 32-bpp * 8192 pixmaps.
+
 * Fri Mar 14 2008 Warren Togami <wtogami@redhat.com> 1.3.0.0-44
 - amd driver is being renamed geode, 2.7.7.7+ supports both driver names
   autoconfigure to use driver "geode" if xorg.conf does not exist

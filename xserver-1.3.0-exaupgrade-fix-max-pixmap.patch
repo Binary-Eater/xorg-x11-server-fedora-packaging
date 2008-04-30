@@ -1,0 +1,12 @@
+diff -up xorg-server-1.3.0.0/exa/exa.c.fix-pixmap-size xorg-server-1.3.0.0/exa/exa.c
+--- xorg-server-1.3.0.0/exa/exa.c.fix-pixmap-size	2008-04-30 10:45:51.000000000 +1000
++++ xorg-server-1.3.0.0/exa/exa.c	2008-04-30 10:44:57.000000000 +1000
+@@ -253,7 +253,7 @@ exaCreatePixmap(ScreenPtr pScreen, int w
+ 				     pExaScr->info->pixmapPitchAlign);
+     pExaPixmap->fb_size = pExaPixmap->fb_pitch * h;
+ 
+-    if (pExaPixmap->fb_pitch > 131071) {
++    if (pExaPixmap->fb_pitch > 32767) {
+ 	fbDestroyPixmap(pPixmap);
+ 	return NULL;
+     }
