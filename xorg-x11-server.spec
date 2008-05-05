@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   26.%{gitdate}%{?dist}
+Release:   27.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -55,6 +55,7 @@ Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
 Patch3000:  xserver-1.5.0-stenciled-visuals.patch
 Patch3001:  xserver-1.5.0-glcore-swap-no-crashy.patch
 Patch3002:  xserver-1.5.0-f-spot-screws-glx.patch
+Patch3003:  xserver-1.5.0-hal-closedown.patch
 
 # Trivial things to never merge upstream ever
 # Don't merge this without protecting the gccisms.
@@ -516,6 +517,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 05 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-27.20080415
+- xserver-1.5.0-hal-closedown.patch: Fix a crash in the hal code when
+  closing a device.
+
 * Thu Apr 24 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-26.20080415
 - xserver-1.5.0-no-evdev-keyboards-kthnx.patch: Disable evdev for keyboards
   even on combo devices.  This means combo devices will go through the old
