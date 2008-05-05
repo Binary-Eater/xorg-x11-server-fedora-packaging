@@ -1,0 +1,28 @@
+From 9cf87d6608436ae4e189f513fa72eb33ebf5ad81 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Mon, 5 May 2008 15:18:12 -0400
+Subject: [PATCH] Fix compiz blinkyblink.
+
+---
+ mi/mivaltree.c |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+diff --git a/mi/mivaltree.c b/mi/mivaltree.c
+index 74483e3..d9d07ca 100644
+--- a/mi/mivaltree.c
++++ b/mi/mivaltree.c
+@@ -255,7 +255,11 @@ miComputeClips (
+     if (pParent->redirectDraw != RedirectDrawNone)
+     {
+ 	if (miSetRedirectBorderClipProc)
++	{
++	    if (TreatAsTransparent (pParent))
++		REGION_EMPTY (pScreen, universe);
+ 	    (*miSetRedirectBorderClipProc) (pParent, universe);
++	}
+ 	REGION_COPY(pScreen, universe, &pParent->borderSize);
+     }
+ #endif
+-- 
+1.5.4.5
+
