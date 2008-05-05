@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   27.%{gitdate}%{?dist}
+Release:   28.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -50,6 +50,7 @@ Patch1010:  xserver-1.3.0-no-prerelease-warning.patch
 Patch1014:  xserver-1.4.99-xaa-evict-pixmaps.patch
 
 Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
+Patch2014:  xserver-1.5.0-compiz-clip-fix.patch
 
 # Trivial things to maybe merge upstream at next rebase
 Patch3000:  xserver-1.5.0-stenciled-visuals.patch
@@ -517,6 +518,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 05 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-28.20080415
+- xserver-1.5.0-compiz-clip-fix.patch: Make compiz stop blinking every
+  so often. (#441219)
+
 * Mon May 05 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-27.20080415
 - xserver-1.5.0-hal-closedown.patch: Fix a crash in the hal code when
   closing a device.
