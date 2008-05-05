@@ -1,0 +1,41 @@
+From 7985ebda80acb02f2d763904743665e470300d6c Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Mon, 5 May 2008 14:37:07 -0400
+Subject: [PATCH] Fix hal shutdown crash
+
+---
+ config/hal.c |    8 +++++---
+ 1 files changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/config/hal.c b/config/hal.c
+index 1575422..6534408 100644
+--- a/config/hal.c
++++ b/config/hal.c
+@@ -63,7 +63,7 @@ remove_device(DeviceIntPtr dev)
+ static void
+ device_removed(LibHalContext *ctx, const char *udi)
+ {
+-    DeviceIntPtr dev;
++    DeviceIntPtr dev, next;
+     char *value;
+ 
+     value = xalloc(strlen(udi) + 5); /* "hal:" + NULL */
+@@ -71,11 +71,13 @@ device_removed(LibHalContext *ctx, const char *udi)
+         return;
+     sprintf(value, "hal:%s", udi);
+ 
+-    for (dev = inputInfo.devices; dev; dev = dev->next) {
++    for (dev = inputInfo.devices; dev; dev = next) {
++	next = dev->next;
+         if (dev->config_info && strcmp(dev->config_info, value) == 0)
+             remove_device(dev);
+     }
+-    for (dev = inputInfo.off_devices; dev; dev = dev->next) {
++    for (dev = inputInfo.off_devices; dev; dev = next) {
++	next = dev->next;
+         if (dev->config_info && strcmp(dev->config_info, value) == 0)
+             remove_device(dev);
+     }
+-- 
+1.5.4.5
+
