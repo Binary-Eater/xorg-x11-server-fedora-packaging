@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   28.%{gitdate}%{?dist}
+Release:   29.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -518,6 +518,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue May 06 2008 Bill Nottingham <notting@redhat.com> 1.4.99.901-29.20080415
+- rebuild against new xorg-x11-xtrans-devel (#445303)
+
 * Mon May 05 2008 Adam Jackson <ajax@redhat.com> 1.4.99.901-28.20080415
 - xserver-1.5.0-compiz-clip-fix.patch: Make compiz stop blinking every
   so often. (#441219)
