@@ -15,12 +15,12 @@
 # RHEL5 bugfix sync
 
 %define pkgname xorg-server
-%define gitdate 20080415
+%define gitdate 20080519
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.901
-Release:   29.%{gitdate}%{?dist}
+Release:   30.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -50,13 +50,6 @@ Patch1010:  xserver-1.3.0-no-prerelease-warning.patch
 Patch1014:  xserver-1.4.99-xaa-evict-pixmaps.patch
 
 Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
-Patch2014:  xserver-1.5.0-compiz-clip-fix.patch
-
-# Trivial things to maybe merge upstream at next rebase
-Patch3000:  xserver-1.5.0-stenciled-visuals.patch
-Patch3001:  xserver-1.5.0-glcore-swap-no-crashy.patch
-Patch3002:  xserver-1.5.0-f-spot-screws-glx.patch
-Patch3003:  xserver-1.5.0-hal-closedown.patch
 
 # Trivial things to never merge upstream ever
 # Don't merge this without protecting the gccisms.
@@ -67,7 +60,6 @@ Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 Patch5008:  xserver-1.5.0-xaa-sucks.patch
 Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
-Patch5010:  xserver-1.5.0-selinux-off-by-default.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
