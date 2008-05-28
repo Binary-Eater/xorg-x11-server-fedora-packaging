@@ -2,14 +2,18 @@ diff --git a/config/hal.c b/config/hal.c
 index 3479be9..a235876 100644
 --- a/config/hal.c
 +++ b/config/hal.c
-@@ -177,7 +177,8 @@ device_added(LibHalContext *hal_ctx, const char *udi)
+@@ -177,7 +177,13 @@ device_added(LibHalContext *hal_ctx, const char *udi)
          if (strcmp(props[i], "input.keys") == 0 ||
              strcmp(props[i], "input.keyboard") == 0)
              type |= TYPE_KEYS;
--        if (strcmp(props[i], "input.mouse") == 0)
-+        if (strcmp(props[i], "input.mouse") == 0 ||
-+            strcmp(props[i], "input.touchpad") == 0)
+         if (strcmp(props[i], "input.mouse") == 0)
++        {
++            type |= TYPE_POINTER;
++            add_option(&options, "Mode", "Relative");
++        } else if (strcmp(props[i], "input.touchpad") == 0) {
              type |= TYPE_POINTER;
++            add_option(&options, "Mode", "Absolute");
++        }
      }
      libhal_free_string_array(props);
 diff --git a/config/x11-input.fdi b/config/x11-input.fdi
@@ -58,3 +62,36 @@ index c390706..20c73fa 100644
        <merge key="input.xkb.model" type="string">pc105</merge>
        <match key="/org/freedesktop/Hal/devices/computer:system.kernel.name"
               string="Linux">
+diff -u -r a/config/hal.c a/config/hal.c
+--- a/config/hal.c	2008-03-23 10:43:43.000000000 -0400
++++ b/config/hal.c	2008-03-23 10:41:17.000000000 -0400
+@@ -163,6 +163,14 @@
+ 
+     dbus_error_init(&error);
+ 
++    options = xcalloc(sizeof(*options), 1);
++    options->key = xstrdup("_source");
++    options->value = xstrdup("server/hal");
++    if (!options->key || !options->value) {
++        ErrorF("[config] couldn't allocate first key/value pair\n");
++        goto unwind;
++    }
++
+     props = libhal_device_get_property_strlist(hal_ctx, udi,
+                                                "info.capabilities", &error);
+     if (!props) {
+@@ -209,14 +217,6 @@
+         xkb_options = get_prop_string_array(hal_ctx, udi, "input.xkb.options");
+     }
+ 
+-    options = xcalloc(sizeof(*options), 1);
+-    options->key = xstrdup("_source");
+-    options->value = xstrdup("server/hal");
+-    if (!options->key || !options->value) {
+-        ErrorF("[config] couldn't allocate first key/value pair\n");
+-        goto unwind;
+-    }
+-
+     add_option(&options, "path", path);
+     add_option(&options, "driver", driver);
+     add_option(&options, "name", name);

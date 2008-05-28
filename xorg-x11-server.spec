@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4
-Release:   8%{?dist}
+Release:   9%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -689,6 +689,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri May 23 2008 Cortland Setlow <cortland.setlow@gmail.com> 1.4-9
+- Adapt HAL's input device hints into a form useful to the evdev driver.
+  (Hopefully all this will vanish in the shift to Fedora 9.)
+
 * Fri Nov 24 2007 Bernardo Innocenti <bernie@codewiz.org> 1.4-8
 - Drop xorg.conf (the master copy is in olpc-utils)
 
