@@ -15,12 +15,12 @@
 # RHEL5 bugfix sync
 
 %define pkgname xorg-server
-%define gitdate 20080519
+%define gitdate 20080609
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.4.99.901
-Release:   30.%{gitdate}%{?dist}
+Version:   1.4.99.902
+Release:   1.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -510,6 +510,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 09 2008 Adam Jackson <ajax@redhat.com> 1.4.99.902-1.20080609
+- Today's git snapshot.
+
 * Tue May 06 2008 Bill Nottingham <notting@redhat.com> 1.4.99.901-29.20080415
 - rebuild against new xorg-x11-xtrans-devel (#445303)
 
