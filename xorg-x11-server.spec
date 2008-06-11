@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   16%{?dist}
+Release:   17%{?dist}
 URL:       http://www.x.org
 License:   MIT/X11
 Group:     User Interface/X
@@ -83,6 +83,11 @@ Patch3003:  cve-2007-6428.patch
 Patch3004:  cve-2007-6429.patch
 Patch3005:  cve-2008-0006-server-fixup.patch
 Patch3006:  cve-2007-3920.patch
+Patch3007:  cve-2008-1377.patch
+Patch3008:  cve-2008-1379.patch
+Patch3009:  cve-2008-2360.patch
+Patch3010:  cve-2008-2361.patch
+Patch3011:  cve-2008-2362.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -345,6 +350,12 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch3004 -p1 -b .cve-2007-6429
 %patch3005 -p1 -b .cve-2008-0006
 %patch3006 -p1 -b .cve-2007-3920
+
+%patch3007 -p1 -b .cve-2008-1377
+%patch3008 -p1 -b .cve-2008-1379
+%patch3009 -p1 -b .cve-2008-2360
+%patch3010 -p1 -b .cve-2007-2361
+%patch3011 -p1 -b .cve-2007-2362
 
 %build
 
@@ -613,6 +624,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-17
+- cve-2008-1377.patch: Record and Security Extension Input validation
+- cve-2008-1379.patch: MIT-SHM extension Input Validation flaw
+- cve-2008-2360.patch: Render AllocateGlyph extension Integer overflows
+- cve-2008-2361.patch: Render CreateCursor extension Integer overflows
+- cve-2008-2362.patch: Render Gradient extension Integer overflows
+
 * Mon Jan 21 2008 Kristian Høgsberg <krh@redhat.com> - 1.3.0.0-16
 - cve-2007-3920.patch: Don't break grabs when redirecting windows.
 
