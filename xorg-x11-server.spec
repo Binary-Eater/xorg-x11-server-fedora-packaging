@@ -15,12 +15,12 @@
 # RHEL5 bugfix sync
 
 %define pkgname xorg-server
-%define gitdate 20080609
+%define gitdate 20080612
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.902
-Release:   1.%{gitdate}%{?dist}
+Release:   2.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -510,6 +510,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 1.4.99.902-2.20080612
+- cve-2008-1377: Record and Security Extension Input validation
+- cve-2008-1379: MIT-SHM extension Input Validation flaw
+- cve-2008-2360: Render AllocateGlyph extension Integer overflows
+- cve-2008-2361: Render CreateCursor extension Integer overflows
+- cve-2008-2362: Render Gradient extension Integer overflows
+- Rebase to 1.5 head for security patches for above
+
 * Mon Jun 09 2008 Adam Jackson <ajax@redhat.com> 1.4.99.902-1.20080609
 - Today's git snapshot.
 
