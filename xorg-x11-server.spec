@@ -20,7 +20,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.902
-Release:   3.%{gitdate}%{?dist}
+Release:   3.%{gitdate}%{?dist}.1
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -59,7 +59,7 @@ Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 Patch5008:  xserver-1.5.0-xaa-sucks.patch
-Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
+#Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
 Patch5010:  xserver-1.5.0-fix-single-aspect.patch
 
 %define moduledir	%{_libdir}/xorg/modules
@@ -511,6 +511,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun 17 2008 Dennis Gilmore <dennis@ausil.us> 1.4.99.902-3.20080612.1
+- disable the noevdev patch for OLPC
+
 * Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 1.4.99.902-3.20080612
 - xserver-1.5.0-fix-single-aspect.patch - fix 2560x1600 on my monitor.
 
