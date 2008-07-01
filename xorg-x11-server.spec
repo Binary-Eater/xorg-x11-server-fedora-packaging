@@ -15,12 +15,12 @@
 # RHEL5 bugfix sync
 
 %define pkgname xorg-server
-%define gitdate 20080612
+%define gitdate 20080701
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.4.99.902
-Release:   3.%{gitdate}%{?dist}
+Version:   1.4.99.905
+Release:   1.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -42,12 +42,15 @@ Patch101:  xserver-1.4.99-dont-backfill-bg-none.patch
 
 # Red Hat specific tweaking, not intended for upstream
 # XXX move these to the end of the list
-Patch1001:  xorg-x11-server-Red-Hat-extramodes.patch
+# dropme
+#Patch1001:  xorg-x11-server-Red-Hat-extramodes.patch
 Patch1003:  xserver-1.4.99-pic-libxf86config.patch
-Patch1004:  xserver-1.4.99-selinux-awareness.patch
+# maybe?
+#Patch1004:  xserver-1.4.99-selinux-awareness.patch
 Patch1005:  xserver-1.4.99-builtin-fonts.patch
 Patch1010:  xserver-1.3.0-no-prerelease-warning.patch
-Patch1014:  xserver-1.4.99-xaa-evict-pixmaps.patch
+# rebase for GL/glx -> glx move
+#Patch1014:  xserver-1.4.99-xaa-evict-pixmaps.patch
 
 Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
 
@@ -58,9 +61,9 @@ Patch5001:  xserver-1.4.99-alloca-poison.patch
 Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
-Patch5008:  xserver-1.5.0-xaa-sucks.patch
+#Patch5008:  xserver-1.5.0-xaa-sucks.patch
 Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
-Patch5010:  xserver-1.5.0-fix-single-aspect.patch
+#Patch5010:  xserver-1.5.0-fix-single-aspect.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -111,8 +114,9 @@ BuildRequires: libXv-devel
 
 # openssl? really?
 BuildRequires: pixman-devel libpciaccess-devel openssl-devel byacc flex
-BuildRequires: mesa-libGL-devel >= 7.1-0.21
-BuildRequires: mesa-source >= 7.1-0.21
+BuildRequires: mesa-libGL-devel >= 7.1-0.36
+# should be useless now...
+# BuildRequires: mesa-source >= 7.1-0.36
 # XXX silly...
 BuildRequires: libdrm-devel >= 2.4.0
 %if %{with_hw_servers}
@@ -310,7 +314,6 @@ export CFLAGS="${RPM_OPT_FLAGS} -Wstrict-overflow"
 	--disable-xorgcfg \
 	--disable-record \
 	--enable-install-libxf86config \
-	--with-mesa-source=%{_datadir}/mesa/source \
 	--enable-xselinux \
 	--with-dri-driver-path=%{drimoduledir} \
 	${CONFIGURE}
@@ -336,7 +339,6 @@ install -m 0444 hw/xfree86/common/{vesa,extra}modes $RPM_BUILD_ROOT%{_datadir}/x
 mkdir -p %{inst_srcdir}/{Xext,xkb,GL,hw/xfree86/{common,utils/xorgconfig}}
 cp cpprules.in %{inst_srcdir}
 cp xkb/README.compiled %{inst_srcdir}/xkb
-cp GL/symlink-mesa.sh %{inst_srcdir}/GL
 cp hw/xfree86/{xorgconf.cpp,Options} %{inst_srcdir}/hw/xfree86
 cp hw/xfree86/common/{vesamodes,extramodes} %{inst_srcdir}/hw/xfree86/common
 cp hw/xfree86/utils/xorgconfig/Cards{,98} %{inst_srcdir}/hw/xfree86/utils/xorgconfig/
@@ -418,7 +420,6 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/xorg/modules
 %dir %{_libdir}/xorg/modules/drivers
 %dir %{_libdir}/xorg/modules/extensions
-%{_libdir}/xorg/modules/extensions/libGLcore.so
 %{_libdir}/xorg/modules/extensions/libglx.so
 %{_libdir}/xorg/modules/extensions/libdri.so
 %{_libdir}/xorg/modules/extensions/libdri2.so
@@ -511,6 +512,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Jun 30 2008 Adam Jackson <ajax@redhat.com> 1.4.99.905-1.20080701
+- 1.5RC5.
+
 * Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 1.4.99.902-3.20080612
 - xserver-1.5.0-fix-single-aspect.patch - fix 2560x1600 on my monitor.
 
