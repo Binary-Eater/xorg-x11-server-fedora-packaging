@@ -12,15 +12,14 @@
 # F9 TODO list:
 #
 # Fix rhpxl to no longer need vesamodes/extramodes
-# RHEL5 bugfix sync
 
 %define pkgname xorg-server
-%define gitdate 20080701
+%define gitdate 20080702
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.905
-Release:   1.%{gitdate}%{?dist}
+Release:   2.%{gitdate}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -42,28 +41,18 @@ Patch101:  xserver-1.4.99-dont-backfill-bg-none.patch
 
 # Red Hat specific tweaking, not intended for upstream
 # XXX move these to the end of the list
-# dropme
-#Patch1001:  xorg-x11-server-Red-Hat-extramodes.patch
 Patch1003:  xserver-1.4.99-pic-libxf86config.patch
-# maybe?
-#Patch1004:  xserver-1.4.99-selinux-awareness.patch
 Patch1005:  xserver-1.4.99-builtin-fonts.patch
 Patch1010:  xserver-1.3.0-no-prerelease-warning.patch
-# rebase for GL/glx -> glx move
-#Patch1014:  xserver-1.4.99-xaa-evict-pixmaps.patch
 
 Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
 
 # Trivial things to never merge upstream ever
-# Don't merge this without protecting the gccisms.
-Patch5001:  xserver-1.4.99-alloca-poison.patch
 # This really could be done prettier.
 Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
-#Patch5008:  xserver-1.5.0-xaa-sucks.patch
 Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
-#Patch5010:  xserver-1.5.0-fix-single-aspect.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -115,8 +104,6 @@ BuildRequires: libXv-devel
 # openssl? really?
 BuildRequires: pixman-devel libpciaccess-devel openssl-devel byacc flex
 BuildRequires: mesa-libGL-devel >= 7.1-0.36
-# should be useless now...
-# BuildRequires: mesa-source >= 7.1-0.36
 # XXX silly...
 BuildRequires: libdrm-devel >= 2.4.0
 %if %{with_hw_servers}
@@ -125,17 +112,6 @@ Requires: libdrm >= 2.4.0
 
 BuildRequires: audit-libs-devel libselinux-devel >= 2.0.59-1
 BuildRequires: hal-devel dbus-devel
-
-# Make sure libXfont has the catalogue FPE
-Conflicts: libXfont < 1.2.9
-
-# Make sure we pull ABI compatible drivers.
-Conflicts: xorg-x11-drv-ati < 6.6.1
-Conflicts: xorg-x11-drv-i810 < 1.6.0
-# Match up work-arounds between compiz and the xserver
-Conflicts: compiz < 0.0.13-0.20.20060817git.fc6
-# Match up GLX_EXT_texture_from_pixmap opcodes
-Conflicts: mesa-libGL < 6.5.1-2.fc6
 
 # All server subpackages have a virtual provide for the name of the server
 # they deliver.  The Xorg one is versioned, the others are intentionally
@@ -189,10 +165,7 @@ Provides: Xnest
 %description Xnest
 Xnest is an X server, which has been implemented as an ordinary
 X application.  It runs in a window just like other X applications,
-but it is an X server itself in which you can run other software.  It
-is a very useful tool for developers who wish to test their
-applications without running them on their real X server.
-
+but it is an X server itself in which you can run other software.
 
 %package Xdmx
 Summary: Distributed Multihead X Server and utilities
@@ -205,12 +178,7 @@ Provides: Xdmx
 Xdmx is proxy X server that provides multi-head support for multiple displays
 attached to different machines (each of which is running a typical X server).
 When Xinerama is used with Xdmx, the multiple displays on multiple machines
-are presented to the user as a single unified screen.  A simple application
-for Xdmx would be to provide multi-head support using two desktop machines,
-each of which has a single display device attached to it.  A complex
-application for Xdmx would be to unify a 4 by 4 grid of 1280x1024 displays
-(each attached to one of 16 computers) into a unified 5120x4096 display.
-
+are presented to the user as a single unified screen.
 
 %package Xvfb
 Summary: A X Windows System virtual framebuffer X server.
@@ -236,10 +204,8 @@ Provides: Xephyr
 %description Xephyr
 Xephyr is an X server, which has been implemented as an ordinary
 X application.  It runs in a window just like other X applications,
-but it is an X server itself in which you can run other software.  It
-is a very useful tool for developers who wish to test their
-applications without running them on their real X server.  Unlike
-Xnest, Xephyr renders to an X image rather than relaying the
+but it is an X server itself in which you can run other software.
+Unlike Xnest, Xephyr renders to an X image rather than relaying the
 X protocol, and therefore supports the newer X extensions like
 Render and Composite.
 
@@ -358,21 +324,6 @@ xargs tar cf - | (cd %{inst_srcdir} && tar xf -)
     rm -f $RPM_BUILD_ROOT%{_bindir}/pcitweak
     rm -f $RPM_BUILD_ROOT%{_mandir}/man1/pcitweak.1*
     find $RPM_BUILD_ROOT -type f -name '*.la' | xargs rm -f -- || :
-
-%if !%{with_hw_servers}
-    # These get installed regardless of whether you're building Xorg.
-    # XXX Re-check this list.
-    # error: Installed (but unpackaged) file(s) found:
-    #	   /randrstr.h
-    #	   /usr/lib/pkgconfig/xorg-server.pc
-    #	      /usr/share/aclocal/xorg-server.m4
-    #	      /var/lib/xkb/README.compiled
-
-    rm -f $RPM_BUILD_ROOT/randrstr.h
-    rm -rf $RPM_BUILD_ROOT%{_libdir}/pkgconfig
-    rm -rf $RPM_BUILD_ROOT%{_datadir}/aclocal
-    rm -rf $RPM_BUILD_ROOT/var/lib/xkb
-%endif
 }
 
 %clean
@@ -512,6 +463,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 02 2008 Adam Jackson <ajax@redhat.com> 1.4.99.905-2.20080702
+- Today's snapshot.
+
 * Mon Jun 30 2008 Adam Jackson <ajax@redhat.com> 1.4.99.905-1.20080701
 - 1.5RC5.
 
