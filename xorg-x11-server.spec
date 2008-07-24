@@ -9,7 +9,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.3.0.0
-Release:   46%{?dist}
+Release:   47%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -110,6 +110,8 @@ Patch3008:  cve-2008-1379.patch
 Patch3009:  cve-2008-2360.patch
 Patch3010:  cve-2008-2361.patch
 Patch3011:  cve-2008-2362.patch
+# technically CVE-2007-2437, but it's DoS only so don't glorify it.
+Patch3012:  xserver-1.3.0-render-traps-crash.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -399,6 +401,7 @@ Xserver source code needed to build VNC server (Xvnc)
 %patch3009 -p1 -b .cve-2008-2360
 %patch3010 -p1 -b .cve-2008-2361
 %patch3011 -p1 -b .cve-2008-2362
+%patch3012 -p1 -b .render-traps-crash
 
 %build
 
@@ -667,6 +670,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 24 2008 Adam Jackson <ajax@redhat.com> 1.3.0.0-47
+- xserver-1.3.0-render-traps-crash.patch: Fix a crash in Render trapezoid
+  rasterisation. (#455209)
+
 * Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 1.3.0.0-46
 - cve-2008-1377.patch: Record and Security Extension Input validation
 - cve-2008-1379.patch: MIT-SHM extension Input Validation flaw
