@@ -14,25 +14,25 @@
 # Fix rhpxl to no longer need vesamodes/extramodes
 
 %define pkgname xorg-server
-%define gitdate 20080702
+#define gitdate 20080723
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.4.99.905
-Release:   2.%{gitdate}%{?dist}
+Version:   1.4.99.906
+Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%if 0%{gitdate}
+%if 0%{?gitdate}
 # git snapshot.  to recreate, run:
 # ./make-git-snapshot.sh `cat commitid`
-Source0:   xorg-server-%{gitdate}.tar.bz2
+Source0:   xorg-server-%{?gitdate}.tar.bz2
 Source1:   make-git-snapshot.sh
 Source2:   commitid
 %else
-Source0:   ftp://ftp.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
+Source0:   http://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
 %endif
 
 # OpenGL compositing manager feature/optimization patches.
@@ -91,8 +91,6 @@ BuildRequires: xorg-x11-xtrans-devel >= 1.0.3-3
 BuildRequires: libXfont-devel libXau-devel libxkbfile-devel libXres-devel
 BuildRequires: libfontenc-devel libXtst-devel libXdmcp-devel
 BuildRequires: libX11-devel libXext-devel
-# XXX Really?  Why would we need this, Xfont should hide it.
-BuildRequires: freetype-devel >= 2.1.9-1
 
 # DMX config utils buildreqs.
 BuildRequires: libXt-devel libdmx-devel libXmu-devel libXrender-devel
@@ -240,21 +238,20 @@ Xserver source code needed to build VNC server (Xvnc)
 %prep
 %setup -q -n %{pkgname}-%{?gitdate:%{gitdate}}%{!?gitdate:%{version}}
 
-%if 0%{gitdate}
+%if 0%{?gitdate}
 # XXX hack
 git checkout -b fedora
 # make it something you can push to.
 sed -i 's/git/&+ssh/' .git/config
 %else
 git-init-db
-echo "This is incomplete.  FIXME."
-exit 1
-%endif
-
 if [ -z "$GIT_COMMITTER_NAME" ]; then
-    export GIT_COMMITTER_NAME="Fedora X Ninjas"
+    git-config user.email "x@fedoraproject.org"
+    git-config user.name "Fedora X Ninjas"
 fi
-
+git-add .
+git-commit -a -q -m "%{version} baseline."
+%endif
 
 # Apply all the patches.  Hold your nose...
 git-am -p1 $(awk '/^Patch.*:/ { print "%{_sourcedir}/"$2 }' %{_specdir}/%{name}.spec)
@@ -278,7 +275,7 @@ export CFLAGS="${RPM_OPT_FLAGS} -Wstrict-overflow"
 	--with-xkb-output=%{_localstatedir}/lib/xkb \
 	--with-rgb-path=%{_datadir}/X11/rgb \
 	--disable-xorgcfg \
-	--disable-record \
+	--disable-record --disable-xtrap \
 	--enable-install-libxf86config \
 	--enable-xselinux \
 	--with-dri-driver-path=%{drimoduledir} \
@@ -376,7 +373,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/extensions/libdri2.so
 %{_libdir}/xorg/modules/extensions/libdbe.so
 %{_libdir}/xorg/modules/extensions/libextmod.so
-%{_libdir}/xorg/modules/extensions/libxtrap.so
 %dir %{_libdir}/xorg/modules/input
 %dir %{_libdir}/xorg/modules/fonts
 %{_libdir}/xorg/modules/fonts/libfreetype.so
@@ -463,6 +459,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 23 2008 Adam Jackson <ajax@redhat.com> 1.4.99.906-1
+- 1.5RC6.
+
 * Wed Jul 02 2008 Adam Jackson <ajax@redhat.com> 1.4.99.905-2.20080702
 - Today's snapshot.
 
