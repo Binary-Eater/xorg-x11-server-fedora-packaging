@@ -1,0 +1,92 @@
+From 6bf46df463d19456761ae670f60e0b153e285bd9 Mon Sep 17 00:00:00 2001
+From: Daniel Drake <dsd@laptop.org>
+Date: Thu, 24 Jul 2008 14:42:22 -0400
+Subject: [PATCH] Don't abort if swrast library is not present
+
+---
+ glx/glxdriswrast.c |    6 ++++++
+ glx/glxext.c       |   37 ++++++++++++++++++++++++-------------
+ 2 files changed, 30 insertions(+), 13 deletions(-)
+
+diff --git a/glx/glxdriswrast.c b/glx/glxdriswrast.c
+index cf4827e..20c39ab 100644
+--- a/glx/glxdriswrast.c
++++ b/glx/glxdriswrast.c
+@@ -468,6 +468,12 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 
+     screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
+     if (screen->driver == NULL) {
++	if (errno == ENOENT) {
++	    xfree(screen);
++	    LogMessage(X_INFO, "AIGLX: swrast library %s not found\n",
++		       filename);
++	    return NULL;
++	}
+ 	LogMessage(X_ERROR, "AIGLX error: dlopen of %s failed (%s)\n",
+ 		   filename, dlerror());
+         goto handle_error;
+diff --git a/glx/glxext.c b/glx/glxext.c
+index 13c65da..6ba404f 100644
+--- a/glx/glxext.c
++++ b/glx/glxext.c
+@@ -279,6 +279,7 @@ void GlxExtensionInit(void)
+     ScreenPtr pScreen;
+     int i;
+     __GLXprovider *p;
++    Bool glx_provided = False;
+ 
+     __glXContextRes = CreateNewResourceType((DeleteType)ContextGone);
+     __glXDrawableRes = CreateNewResourceType((DeleteType)DrawableGone);
+@@ -289,6 +290,29 @@ void GlxExtensionInit(void)
+     if (!AddCallback (&ClientStateCallback, glxClientCallback, 0))
+ 	return;
+ 
++    for (i = 0; i < screenInfo.numScreens; i++) {
++	pScreen = screenInfo.screens[i];
++
++	for (p = __glXProviderStack; p != NULL; p = p->next) {
++	    if (p->screenProbe(pScreen) != NULL) {
++		LogMessage(X_INFO,
++			   "GLX: Initialized %s GL provider for screen %d\n",
++			   p->name, i);
++		break;
++	    }
++	}
++
++	if (!p)
++	    LogMessage(X_INFO,
++		       "GLX: no usable GL providers found for screen %d\n", i);
++	else
++	    glx_provided = True;
++    }
++
++    /* don't register extension if GL is not provided on any screen */
++    if (!glx_provided)
++	return;
++
+     /*
+     ** Add extension to server extensions.
+     */
+@@ -306,19 +330,6 @@ void GlxExtensionInit(void)
+     }
+ 
+     __glXErrorBase = extEntry->errorBase;
+-
+-    for (i = 0; i < screenInfo.numScreens; i++) {
+-	pScreen = screenInfo.screens[i];
+-
+-	for (p = __glXProviderStack; p != NULL; p = p->next) {
+-	    if (p->screenProbe(pScreen) != NULL) {
+-		LogMessage(X_INFO,
+-			   "GLX: Initialized %s GL provider for screen %d\n",
+-			   p->name, i);
+-	    	break;
+-	    }
+-	}
+-    }
+ }
+ 
+ /************************************************************************/
+-- 
+1.5.5.1
+
