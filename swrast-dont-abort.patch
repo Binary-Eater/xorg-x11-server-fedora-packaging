@@ -1,30 +1,32 @@
-From 6bf46df463d19456761ae670f60e0b153e285bd9 Mon Sep 17 00:00:00 2001
+From eff25430b4a391409e39337962ff7697165d23c7 Mon Sep 17 00:00:00 2001
 From: Daniel Drake <dsd@laptop.org>
-Date: Thu, 24 Jul 2008 14:42:22 -0400
+Date: Thu, 24 Jul 2008 21:06:34 -0500
 Subject: [PATCH] Don't abort if swrast library is not present
 
+GLX is enabled by default, but the current swrast behaviour causes X
+to abort with fatal error if the swrast dri library dlopen fails.
+
+Handle the case where the swrast library is not present, and do not
+register the GLX extension unless at least one screen has a usable
+GL provider.
 ---
- glx/glxdriswrast.c |    6 ++++++
+ glx/glxdriswrast.c |    2 +-
  glx/glxext.c       |   37 ++++++++++++++++++++++++-------------
- 2 files changed, 30 insertions(+), 13 deletions(-)
+ 2 files changed, 25 insertions(+), 14 deletions(-)
 
 diff --git a/glx/glxdriswrast.c b/glx/glxdriswrast.c
-index cf4827e..20c39ab 100644
+index 199f5f8..2859704 100644
 --- a/glx/glxdriswrast.c
 +++ b/glx/glxdriswrast.c
-@@ -468,6 +468,12 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -515,7 +515,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
  
-     screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
-     if (screen->driver == NULL) {
-+	if (errno == ENOENT) {
-+	    xfree(screen);
-+	    LogMessage(X_INFO, "AIGLX: swrast library %s not found\n",
-+		       filename);
-+	    return NULL;
-+	}
- 	LogMessage(X_ERROR, "AIGLX error: dlopen of %s failed (%s)\n",
- 		   filename, dlerror());
-         goto handle_error;
+     xfree(screen);
+ 
+-    FatalError("GLX: could not load software renderer\n");
++    LogMessage(X_ERROR, "GLX: could not load software renderer\n");
+ 
+     return NULL;
+ }
 diff --git a/glx/glxext.c b/glx/glxext.c
 index 13c65da..6ba404f 100644
 --- a/glx/glxext.c

@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.906
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -462,6 +462,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 25 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2
+- update no-swrast patch to the one that went upstream, this one had a bug
+  (dlopen isn't documented to populate errno)
+
 * Thu Jul 24 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-1
 - resync with F-9 for new xinput ABI
 - add patch to allow X server to run when mesa's swrast is not present
