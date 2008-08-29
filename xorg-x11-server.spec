@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.906
-Release:   2%{?dist}
+Release:   2%{?dist}.2
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -56,6 +56,9 @@ Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 #Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
+
+Patch6000: exa-copyarea.patch
+Patch6001: xserver-1.5.0-hide-cursor.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -462,6 +465,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Aug 29 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2.1
+- add EXA CopyArea patch to solve rendering bugs (dlo#7612)
+- Suppress displaying the cursor until an app calls XDefineCursor().
+
 * Fri Jul 25 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2
 - update no-swrast patch to the one that went upstream, this one had a bug
   (dlopen isn't documented to populate errno)

@@ -1,0 +1,43 @@
+From 37087bc10630ee7740df1369b3e56a44fd2ad2b0 Mon Sep 17 00:00:00 2001
+From: =?utf-8?q?Michel=20D=C3=A4nzer?= <michel@tungstengraphics.com>
+Date: Wed, 30 Jul 2008 18:27:33 +0200
+Subject: [PATCH] EXA: Replace open coded CopyArea logic with GC op call.
+
+[fixes http://dev.laptop.org/ticket/7612 :)]
+[rediff by dsd@laptop.org]
+
+---
+ exa/exa_accel.c |   18 ++++++------------
+ 1 files changed, 6 insertions(+), 12 deletions(-)
+
+Index: xorg-server-1.4.99.906/exa/exa_accel.c
+===================================================================
+--- xorg-server-1.4.99.906.orig/exa/exa_accel.c
++++ xorg-server-1.4.99.906/exa/exa_accel.c
+@@ -261,20 +261,16 @@ exaDoShmPutImage(DrawablePtr pDrawable, 
+ 
+     if (format == ZPixmap)
+     {
+-	PixmapPtr pPixmap;
++	PixmapPtr pPixmap =
++	    GetScratchPixmapHeader(pDrawable->pScreen, w, h, depth,
++				   BitsPerPixel(depth), PixmapBytePad(w, depth),
++				   (pointer)data);
+ 
+-	pPixmap = GetScratchPixmapHeader(pDrawable->pScreen, w, h, depth,
+-		BitsPerPixel(depth), PixmapBytePad(w, depth), (pointer)data);
+ 	if (!pPixmap)
+ 	    return FALSE;
+ 
+-	if (exaGCReadsDestination(pDrawable, pGC->planemask, pGC->fillStyle,
+-				  pGC->alu))
+-	    exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+-	else
+-	    ExaDoPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+-	fbCopyArea((DrawablePtr)pPixmap, pDrawable, pGC, sx, sy, sw, sh, dx, dy);
+-	exaFinishAccess(pDrawable, EXA_PREPARE_DEST);
++	pGC->ops->CopyArea(&pPixmap->drawable, pDrawable, pGC, sx, sy, sw, sh,
++			   dx, dy);
+ 
+ 	FreeScratchPixmapHeader(pPixmap);
+ 
