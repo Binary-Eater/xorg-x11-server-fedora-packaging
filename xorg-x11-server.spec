@@ -59,6 +59,7 @@ Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 
 Patch6000: exa-copyarea.patch
 Patch6001: xserver-1.5.0-hide-cursor.patch
+Patch6001: dix-destroy-pixmap.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -465,6 +466,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep  2 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2.3
+- fix DIX crash when Pixmap can't be allocated
+
 * Fri Aug 29 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2.1
 - add EXA CopyArea patch to solve rendering bugs (dlo#7612)
 - Suppress displaying the cursor until an app calls XDefineCursor().

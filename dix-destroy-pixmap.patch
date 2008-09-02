@@ -1,0 +1,17 @@
+From: Daniel Drake <dsd@laptop.org>
+Subject: fix destroy of NULL pixmap
+
+Index: xorg-server-1.4.99.906/dix/dispatch.c
+===================================================================
+--- xorg-server-1.4.99.906.orig/dix/dispatch.c
++++ xorg-server-1.4.99.906/dix/dispatch.c
+@@ -1338,8 +1338,8 @@ CreatePmap:
+ 	}
+ 	if (AddResource(stuff->pid, RT_PIXMAP, (pointer)pMap))
+ 	    return(client->noClientException);
++	(*pDraw->pScreen->DestroyPixmap)(pMap);
+     }
+-    (*pDraw->pScreen->DestroyPixmap)(pMap);
+     return (BadAlloc);
+ }
+ 
