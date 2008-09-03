@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.4.99.906
-Release:   2%{?dist}.3
+Release:   2%{?dist}.4
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -57,7 +57,7 @@ Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 #Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
 
-Patch6000: exa-copyarea.patch
+Patch6000: reimplement-shmputimage.patch
 Patch6001: xserver-1.5.0-hide-cursor.patch
 Patch6001: dix-destroy-pixmap.patch
 
@@ -466,6 +466,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep  3 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2.4
+- update rendering fix to the one that went upstream, fixes dlo#8289
+
 * Tue Sep  2 2008 Daniel Drake <dsd@laptop.org> 1.4.99.906-2.3
 - fix DIX crash when Pixmap can't be allocated
 
