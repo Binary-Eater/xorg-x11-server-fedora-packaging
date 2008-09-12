@@ -1,6 +1,6 @@
-From e654ed62d44b8d61484f97eab1b1adbfb08d375f Mon Sep 17 00:00:00 2001
-From: Dave Airlie <airlied@redhat.com>
-Date: Thu, 12 Jun 2008 11:52:29 +1000
+From d70615e602361be7204552327f1fd5fa6d170cd0 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Fri, 12 Sep 2008 10:12:55 -0400
 Subject: [PATCH] config: disable evdev for keyboards
 
 ---
@@ -8,12 +8,12 @@ Subject: [PATCH] config: disable evdev for keyboards
  1 files changed, 28 insertions(+), 0 deletions(-)
 
 diff --git a/config/hal.c b/config/hal.c
-index f4eb438..ee0f18f 100644
+index 0e0505b..76e8c45 100644
 --- a/config/hal.c
 +++ b/config/hal.c
-@@ -168,6 +168,31 @@ get_prop_string_array(LibHalContext *hal_ctx, const char *udi, const char *prop)
+@@ -166,6 +166,31 @@ get_prop_string_array(LibHalContext *hal_ctx, const char *udi, const char *prop)
+     return ret;
  }
- #endif
  
 +static Bool
 +get_device_is_keyboard(LibHalContext *hal_ctx, const char *udi, DBusError *error_p)
@@ -43,7 +43,7 @@ index f4eb438..ee0f18f 100644
  static void
  device_added(LibHalContext *hal_ctx, const char *udi)
  {
-@@ -184,6 +209,9 @@ device_added(LibHalContext *hal_ctx, const char *udi)
+@@ -182,6 +207,9 @@ device_added(LibHalContext *hal_ctx, const char *udi)
  
      dbus_error_init(&error);
  
@@ -54,5 +54,5 @@ index f4eb438..ee0f18f 100644
      if (!driver){
          /* verbose, don't tell the user unless they _want_ to see it */
 -- 
-1.5.3.7
+1.6.0.1
 

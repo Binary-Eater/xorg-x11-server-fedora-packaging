@@ -18,7 +18,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.4.99.906
+Version:   1.5.0
 Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
@@ -459,6 +459,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Sep 12 2008 Adam Jackson <ajax@redhat.com> 1.5.0-1
+- xserver 1.5.0
+
 * Wed Jul 23 2008 Adam Jackson <ajax@redhat.com> 1.4.99.906-1
 - 1.5RC6.
 
