@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.0
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -458,6 +458,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep 18 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-2
+- xserver-1.5.0-no-evdev-keyboards-kthnx.patch: update to force
+  AllowEmptyInput off by default. #462606 
+
 * Fri Sep 12 2008 Adam Jackson <ajax@redhat.com> 1.5.0-1
 - xserver 1.5.0
 
