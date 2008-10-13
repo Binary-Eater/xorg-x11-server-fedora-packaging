@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.5.0
-Release:   3%{?dist}
+Version:   1.5.2
+Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -53,10 +53,8 @@ Patch5002:  xserver-1.4.99-ssh-isnt-local.patch
 
 Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
-
-# FDO bug 14373 (FIXED), RH bug #460545
-Patch5010:  xserver-1.5.0-xkb-core-kbd-map-fix.patch
-
+Patch5010:  xserver-1.5.1-global-backtrace.patch
+Patch5011:  xserver-1.5.2-mieq-backtrace.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -462,14 +460,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue Oct 7 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-3
-- xserver-1.5.0-xkb-core-kbd-map-fix.patch: don't invent groups when mapping
-  from xkb to core and back, and squash canonical types into explicit ones on
-  core reconstruction (2 patches). #460545
-
-* Thu Sep 18 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.0-2
-- xserver-1.5.0-no-evdev-keyboards-kthnx.patch: update to force
-  AllowEmptyInput off by default. #462606 
+* Mon Oct 13 2008 Adam Jackson <ajax@redhat.com> 1.5.2-1
+- xserver 1.5.2
+- xserver-1.5.1-global-backtrace.patch: Make backtracing globally available.
+- xserver-1.5.2-mieq-backtrace.patch: bt when the input queue overflows.
 
 * Fri Sep 12 2008 Adam Jackson <ajax@redhat.com> 1.5.0-1
 - xserver 1.5.0

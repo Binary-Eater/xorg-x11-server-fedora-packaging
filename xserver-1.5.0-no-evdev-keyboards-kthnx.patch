@@ -1,14 +1,11 @@
-From c5714d2d77e872344d0ef8b4665f50cd43e467d8 Mon Sep 17 00:00:00 2001
+From d70615e602361be7204552327f1fd5fa6d170cd0 Mon Sep 17 00:00:00 2001
 From: Adam Jackson <ajax@redhat.com>
 Date: Fri, 12 Sep 2008 10:12:55 -0400
 Subject: [PATCH] config: disable evdev for keyboards
 
-If we ignore evdev keyboards, then we must have AEI off by default to allow
-for kbd to start if no xorg.conf is present.
 ---
- config/hal.c                   |   28 ++++++++++++++++++++++++++++
- hw/xfree86/common/xf86Config.c |    5 +++--
- 2 files changed, 31 insertions(+), 2 deletions(-)
+ config/hal.c |   28 ++++++++++++++++++++++++++++
+ 1 files changed, 28 insertions(+), 0 deletions(-)
 
 diff --git a/config/hal.c b/config/hal.c
 index 0e0505b..76e8c45 100644
@@ -56,22 +53,6 @@ index 0e0505b..76e8c45 100644
      driver = get_prop_string(hal_ctx, udi, "input.x11_driver");
      if (!driver){
          /* verbose, don't tell the user unless they _want_ to see it */
-diff --git a/hw/xfree86/common/xf86Config.c b/hw/xfree86/common/xf86Config.c
-index a1c2e34..67cc783 100644
---- a/hw/xfree86/common/xf86Config.c
-+++ b/hw/xfree86/common/xf86Config.c
-@@ -1088,8 +1088,9 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
-     }
- #endif
- 
--    /* AllowEmptyInput is automatically true if we're hotplugging */
--    xf86Info.allowEmptyInput = (xf86Info.autoAddDevices && xf86Info.autoEnableDevices);
-+    /* Disable AEI by default, so setups with no config file force the kbd
-+     * driver */
-+    xf86Info.allowEmptyInput = FALSE;
-     xf86GetOptValBool(FlagOptions, FLAG_ALLOW_EMPTY_INPUT, &xf86Info.allowEmptyInput);
- 
-     xf86Info.useDefaultFontPath = TRUE;
 -- 
-1.5.5.2
+1.6.0.1
 
