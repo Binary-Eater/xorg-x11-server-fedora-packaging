@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -55,6 +55,9 @@ Patch5007:  xserver-1.5.0-bad-fbdev-thats-mine.patch
 Patch5009:  xserver-1.5.0-no-evdev-keyboards-kthnx.patch
 Patch5010:  xserver-1.5.1-global-backtrace.patch
 Patch5011:  xserver-1.5.2-mieq-backtrace.patch
+
+# Bug 434807 quick-fix, stops segfaults.
+Patch5012: xserver-1.5.0-more-sanity-checks.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -460,6 +463,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Oct 27 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-2
+- xserver-1.5.0-more-sanity-checks.patch: more sanity checks to stop vmmouse
+  from segfaulting the server. #434807
+
 * Mon Oct 13 2008 Adam Jackson <ajax@redhat.com> 1.5.2-1
 - xserver 1.5.2
 - xserver-1.5.1-global-backtrace.patch: Make backtracing globally available.
