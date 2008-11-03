@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.2
-Release:   2%{?dist}
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -463,6 +463,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 3 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-3
+- xserver-1.5.0-no-evdev-keyboards-kthnx.patch: disable AllowEmptyInput by
+  default again (got inadvertently removed). (#462606)
+
 * Mon Oct 27 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-2
 - xserver-1.5.0-more-sanity-checks.patch: more sanity checks to stop vmmouse
   from segfaulting the server. #434807
