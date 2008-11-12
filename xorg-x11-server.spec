@@ -50,6 +50,8 @@ Patch102:  xserver-1.5.2-exa-master-upgrade.patch
 Patch103:  xserver-1.5.0-bg-none-root.patch
 Patch104:  xserver-1.5.0-exa-master-fix-x11perf-crash.patch
 Patch105:  xserver-1.5.1-exa-fix-glyph-segfault.patch
+Patch106:  xserver-1.5.3-exa-fix-x-y-src-dst.patch
+Patch107:  xserver-1.5.3-exa-fix-composite-rects.patch
 
 # Red Hat specific tweaking, not intended for upstream
 # XXX move these to the end of the list
@@ -514,6 +516,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 12 2008 Dave Airlie <airlied@redhat.com> 1.5.3-2
+- xserver-1.5.3-exa-fix-composite-rects.patch - backport (#470638)
+- xserver-1.5.3-exa-fix-x-y-src-dst.patch - backport
+
 * Wed Nov 05 2008 Adam Jackson <ajax@redhat.com> 1.5.3-1
 - xserver 1.5.3
 
