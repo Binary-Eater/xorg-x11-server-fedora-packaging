@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   2%{?dist}
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -85,6 +85,8 @@ Patch6002: xserver-1.5.1-mode-debug.patch
 
 # Bug 434807
 Patch6003: xserver-1.5.2-more-sanity-checks.patch
+# Bug 471221
+Patch6004: xserver-1.5.3-AEI-on-by-default.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -516,6 +518,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Nov 13 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-3
+- xserver-1.5.3-AEI-on-by-default.patch: ensure AEI on if there is no
+  xorg.conf. (#471221)
+
 * Wed Nov 12 2008 Dave Airlie <airlied@redhat.com> 1.5.3-2
 - xserver-1.5.3-exa-fix-composite-rects.patch - backport (#470638)
 - xserver-1.5.3-exa-fix-x-y-src-dst.patch - backport
