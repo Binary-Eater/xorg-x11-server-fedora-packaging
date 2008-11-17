@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   4%{?dist}
+Release:   5%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -519,6 +519,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 17 2008 Dave Airlie <airlied@redhat.com> 1.5.3-5
+- xserver-1.5.3-exa-fix-unneeded-copies.patch: fix logic error
+
 * Mon Nov 17 2008 Dave Airlie <airlied@redhat.com> 1.5.3-4
 - xserver-1.5.3-exa-fix-unneeded-copies.patch: fix some unneeded calls to drivers
 

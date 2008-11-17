@@ -44,7 +44,7 @@ index 522224b..6e754b2 100644
  
 -		width = pBox[i].x2 - pBox[i].x1;
 -		height = min(pBox[i].y2 - dstY, tileHeight);
-+		if ((dstX < pBox[i].x2) && (dstY < pBox[i].y2))
++		if ((dstX < pBox[i].x2) || (dstY < pBox[i].y2))
 +		    more_copy = TRUE;
 +	    }
 +
