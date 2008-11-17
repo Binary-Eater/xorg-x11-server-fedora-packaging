@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   3%{?dist}
+Release:   4%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -52,6 +52,7 @@ Patch104:  xserver-1.5.0-exa-master-fix-x11perf-crash.patch
 Patch105:  xserver-1.5.1-exa-fix-glyph-segfault.patch
 Patch106:  xserver-1.5.3-exa-fix-x-y-src-dst.patch
 Patch107:  xserver-1.5.3-exa-fix-composite-rects.patch
+Patch108:  xserver-1.5.3-exa-fix-unneeded-copies.patch
 
 # Red Hat specific tweaking, not intended for upstream
 # XXX move these to the end of the list
@@ -518,6 +519,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Nov 17 2008 Dave Airlie <airlied@redhat.com> 1.5.3-4
+- xserver-1.5.3-exa-fix-unneeded-copies.patch: fix some unneeded calls to drivers
+
 * Thu Nov 13 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-3
 - xserver-1.5.3-AEI-on-by-default.patch: ensure AEI on if there is no
   xorg.conf. (#471221)
