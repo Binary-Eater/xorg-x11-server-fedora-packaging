@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   5%{?dist}
+Release:   6%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -88,6 +88,8 @@ Patch6002: xserver-1.5.1-mode-debug.patch
 Patch6003: xserver-1.5.2-more-sanity-checks.patch
 # Bug 471221
 Patch6004: xserver-1.5.3-AEI-on-by-default.patch
+
+Patch6005: xserver-1.5.3-idletime-fix.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -519,6 +521,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Dec 11 2008 Adam Jackson <ajax@redhat.com> 1.5.3-6
+- xserver-1.5.3-idletime-fix.patch: Fix IDLETIME infinite CPU usage.
+
 * Mon Nov 17 2008 Dave Airlie <airlied@redhat.com> 1.5.3-5
 - xserver-1.5.3-exa-fix-unneeded-copies.patch: fix logic error
 
