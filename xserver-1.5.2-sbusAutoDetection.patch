@@ -1,0 +1,157 @@
+From 24e863b0eb6ff11010a14cfd252a39df87a09d0e Mon Sep 17 00:00:00 2001
+From: Bernhard R. Link<brlink@debian.org>
+Date: Sat, 25  Oct  2008  22:19:34  +0000
+Subject: Bug#16501: autodetection of sbus graphic cards
+
+Add automatic detection of the graphic driver to load for sbus devices.
+This allows xorg to work on those devices without a "Device" section.
+
+Debian bug#483942.
+
+Slightly modified for Fedora 9 version of xorg-server by Tom "spot" Callaway <tcallawa@redhat.com>
+
+Signed-off-by: Julien Cristau <jcristau@debian.org>
+---
+diff -up xorg-server-1.5.2/hw/xfree86/common/xf86AutoConfig.c.BAD xorg-server-1.5.2/hw/xfree86/common/xf86AutoConfig.c
+--- xorg-server-1.5.2/hw/xfree86/common/xf86AutoConfig.c.BAD	2008-12-13 11:22:32.000000000 -0500
++++ xorg-server-1.5.2/hw/xfree86/common/xf86AutoConfig.c	2008-12-13 11:27:05.000000000 -0500
+@@ -39,6 +39,9 @@
+ #include "xf86Config.h"
+ #include "xf86Priv.h"
+ #include "xf86_OSlib.h"
++#ifdef __sparc__
++# include "xf86sbusBus.h"
++#endif
+ #include "dirent.h"
+ 
+ /* Sections for the default built-in configuration. */
+@@ -428,6 +431,12 @@ chooseVideoDriver(void)
+     for (i=0 ; i<20 ; i++)
+         matches[i] = NULL;
+ 
++#ifdef __sparc__
++    char *sbusDriver = sparcDriverName();
++    if (sbusDriver)
++	matches[i++] = xnfstrdup(sbusDriver);
++#endif
++
+     /* Find the primary device, and get some information about it. */
+     iter = pci_slot_match_iterator_create(NULL);
+     while ((info = pci_device_next(iter)) != NULL) {
+diff -up xorg-server-1.5.2/hw/xfree86/common/xf86sbusBus.h.BAD xorg-server-1.5.2/hw/xfree86/common/xf86sbusBus.h
+--- xorg-server-1.5.2/hw/xfree86/common/xf86sbusBus.h.BAD	2008-12-13 11:27:14.000000000 -0500
++++ xorg-server-1.5.2/hw/xfree86/common/xf86sbusBus.h	2008-12-13 11:27:41.000000000 -0500
+@@ -60,6 +60,7 @@ extern struct sbus_devtable {
+     int devId;
+     int fbType;
+     char *promName;
++    char *driverName;
+     char *descr;
+ } sbusDeviceTable[];
+ 
+@@ -93,5 +94,6 @@ int sparcPromGetBool(sbusPromNodePtr pno
+ void sparcPromAssignNodes(void);
+ char * sparcPromNode2Pathname(sbusPromNodePtr pnode);
+ int sparcPromPathname2Node(const char *pathName);
++char *sparcDriverName(void);
+ 
+ #endif /* _XF86_SBUSBUS_H */
+diff -up xorg-server-1.5.2/hw/xfree86/os-support/bus/Sbus.c.BAD xorg-server-1.5.2/hw/xfree86/os-support/bus/Sbus.c
+--- xorg-server-1.5.2/hw/xfree86/os-support/bus/Sbus.c.BAD	2008-12-13 11:27:50.000000000 -0500
++++ xorg-server-1.5.2/hw/xfree86/os-support/bus/Sbus.c	2008-12-13 11:32:57.000000000 -0500
+@@ -54,20 +54,20 @@ static struct openpromio *promOpio;
+ sbusDevicePtr *xf86SbusInfo = NULL;
+ 
+ struct sbus_devtable sbusDeviceTable[] = {
+-    { SBUS_DEVICE_BW2, FBTYPE_SUN2BW, "bwtwo", "Sun Monochrome (bwtwo)" },
+-    { SBUS_DEVICE_CG2, FBTYPE_SUN2COLOR, "cgtwo", "Sun Color2 (cgtwo)" },
+-    { SBUS_DEVICE_CG3, FBTYPE_SUN3COLOR, "cgthree", "Sun Color3 (cgthree)" },
+-    { SBUS_DEVICE_CG4, FBTYPE_SUN4COLOR, "cgfour", "Sun Color4 (cgfour)" },
+-    { SBUS_DEVICE_CG6, FBTYPE_SUNFAST_COLOR, "cgsix", "Sun GX" },
+-    { SBUS_DEVICE_CG8, FBTYPE_MEMCOLOR, "cgeight", "Sun CG8/RasterOps" },
+-    { SBUS_DEVICE_CG12, FBTYPE_SUNGP3, "cgtwelve", "Sun GS (cgtwelve)" },
+-    { SBUS_DEVICE_CG14, FBTYPE_MDICOLOR, "cgfourteen", "Sun SX" },
+-    { SBUS_DEVICE_GT, FBTYPE_SUNGT, "gt", "Sun Graphics Tower" },
+-    { SBUS_DEVICE_MGX, -1, "mgx", "Quantum 3D MGXplus" },
+-    { SBUS_DEVICE_LEO, FBTYPE_SUNLEO, "leo", "Sun ZX or Turbo ZX" },
+-    { SBUS_DEVICE_TCX, FBTYPE_TCXCOLOR, "tcx", "Sun TCX" },
+-    { SBUS_DEVICE_FFB, FBTYPE_CREATOR, "ffb", "Sun FFB" },
+-    { SBUS_DEVICE_FFB, FBTYPE_CREATOR, "afb", "Sun Elite3D" },
++    { SBUS_DEVICE_BW2, FBTYPE_SUN2BW, "bwtwo", "sunbw2", "Sun Monochrome (bwtwo)" },
++    { SBUS_DEVICE_CG2, FBTYPE_SUN2COLOR, "cgtwo", NULL, "Sun Color2 (cgtwo)" },
++    { SBUS_DEVICE_CG3, FBTYPE_SUN3COLOR, "cgthree", "suncg3", "Sun Color3 (cgthree)" },
++    { SBUS_DEVICE_CG4, FBTYPE_SUN4COLOR, "cgfour", NULL, "Sun Color4 (cgfour)" },
++    { SBUS_DEVICE_CG6, FBTYPE_SUNFAST_COLOR, "cgsix", "suncg6", "Sun GX" },
++    { SBUS_DEVICE_CG8, FBTYPE_MEMCOLOR, "cgeight", NULL, "Sun CG8/RasterOps" },
++    { SBUS_DEVICE_CG12, FBTYPE_SUNGP3, "cgtwelve", NULL, "Sun GS (cgtwelve)" },
++    { SBUS_DEVICE_CG14, FBTYPE_MDICOLOR, "cgfourteen", "suncg14", "Sun SX" },
++    { SBUS_DEVICE_GT, FBTYPE_SUNGT, "gt", NULL, "Sun Graphics Tower" },
++    { SBUS_DEVICE_MGX, -1, "mgx", NULL, "Quantum 3D MGXplus" },
++    { SBUS_DEVICE_LEO, FBTYPE_SUNLEO, "leo", "sunleo", "Sun ZX or Turbo ZX" },
++    { SBUS_DEVICE_TCX, FBTYPE_TCXCOLOR, "tcx", "suntcx", "Sun TCX" },
++    { SBUS_DEVICE_FFB, FBTYPE_CREATOR, "ffb", "sunffb", "Sun FFB" },
++    { SBUS_DEVICE_FFB, FBTYPE_CREATOR, "afb", "sunffb", "Sun Elite3D" },
+     { 0, 0, NULL }
+ };
+ 
+@@ -240,6 +240,60 @@ sparcPromGetBool(sbusPromNodePtr pnode, 
+     return promGetBool(prop);
+ }
+ 
++static char *
++promWalkGetDriverName(int node, int oldnode)
++{
++    int nextnode;
++    int len;
++    char *prop;
++    int devId, i;
++
++    prop = promGetProperty("device_type", &len);
++    if (prop && (len > 0)) do {
++	if (!strcmp(prop, "display")) {
++	    prop = promGetProperty("name", &len);
++	    if (!prop || len <= 0)
++		break;
++	    while ((*prop >= 'A' && *prop <= 'Z') || *prop == ',')
++		prop++;
++	    for (i = 0; sbusDeviceTable[i].devId; i++)
++		if (!strcmp(prop, sbusDeviceTable[i].promName))
++		    break;
++	    devId = sbusDeviceTable[i].devId;
++	    if (!devId)
++		break;
++	    if (sbusDeviceTable[i].driverName)
++		return sbusDeviceTable[i].driverName;
++	}
++    } while (0);
++
++    nextnode = promGetChild(node);
++    if (nextnode) {
++	char *name;
++	name = promWalkGetDriverName(nextnode, node);
++	if (name)
++	    return name;
++    }
++
++    nextnode = promGetSibling(node);
++    if (nextnode)
++	return promWalkGetDriverName(nextnode, node);
++    return NULL;
++}
++
++char *
++sparcDriverName(void)
++{
++    char *name;
++
++    if (sparcPromInit() < 0)
++	return NULL;
++    promGetSibling(0);
++    name = promWalkGetDriverName(promRootNode, 0);
++    sparcPromClose();
++    return name;
++}
++
+ static void
+ promWalkAssignNodes(int node, int oldnode, int flags, sbusDevicePtr *devicePtrs)
+ {

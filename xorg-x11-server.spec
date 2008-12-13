@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.2
-Release:   3%{?dist}
+Release:   4%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -58,6 +58,10 @@ Patch5011:  xserver-1.5.2-mieq-backtrace.patch
 
 # Bug 434807 quick-fix, stops segfaults.
 Patch5012: xserver-1.5.0-more-sanity-checks.patch
+
+# SBUS autodetection from upstream
+# http://cgit.freedesktop.org/xorg/xserver/diff/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
+Patch5013: xserver-1.5.2-sbusAutoDetection.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -463,6 +467,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Dec 13 2008 Tom "spot" Callaway <tcallawa@redhat.com> 1.5.2-4
+- sbusAutoDetection from upstream 
+  http://cgit.freedesktop.org/xorg/xserver/commit/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
+
 * Mon Nov 3 2008 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-3
 - xserver-1.5.0-no-evdev-keyboards-kthnx.patch: disable AllowEmptyInput by
   default again (got inadvertently removed). (#462606)
