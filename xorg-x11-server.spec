@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   6%{?dist}
+Release:   7%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -90,6 +90,10 @@ Patch6003: xserver-1.5.2-more-sanity-checks.patch
 Patch6004: xserver-1.5.3-AEI-on-by-default.patch
 
 Patch6005: xserver-1.5.3-idletime-fix.patch
+
+# fix SBUS autodetection, from upstream git
+# http://cgit.freedesktop.org/xorg/xserver/commit/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
+Patch6006: xserver-1.5.2-sbusAutoDetection.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -521,6 +525,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Dec 13 2008 Tom "spot" Callaway <tcallawa@redhat.com> 1.5.3-7
+- sbusAutoDetection from upstream
+  http://cgit.freedesktop.org/xorg/xserver/commit/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
+
 * Thu Dec 11 2008 Adam Jackson <ajax@redhat.com> 1.5.3-6
 - xserver-1.5.3-idletime-fix.patch: Fix IDLETIME infinite CPU usage.
 
