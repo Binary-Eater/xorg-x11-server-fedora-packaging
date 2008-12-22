@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   7%{?dist}
+Release:   8%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -94,6 +94,8 @@ Patch6005: xserver-1.5.3-idletime-fix.patch
 # fix SBUS autodetection, from upstream git
 # http://cgit.freedesktop.org/xorg/xserver/commit/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
 Patch6006: xserver-1.5.2-sbusAutoDetection.patch
+
+Patch6007: xserver-1.5.3-aspect-me-harder.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -298,6 +300,7 @@ git checkout -b fedora
 sed -i 's/git/&+ssh/' .git/config
 %else
 git-init-db
+git config --add apply.whitespace nowarn
 if [ -z "$GIT_COMMITTER_NAME" ]; then
     git-config user.email "x@fedoraproject.org"
     git-config user.name "Fedora X Ninjas"
@@ -525,6 +528,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 22 2008 Adam Jackson <ajax@redhat.com> 1.5.3-8
+- xserver-1.5.3-aspect-me-harder.patch: Fix mode selection when only one
+  monitor is present and it doesn't claim a preferred mode.
+- xserver-1.5.0-bad-fbdev-thats-mine.patch: Do the same for sbus that we do
+  for pci.
+- xserver-1.5.0-hide-cursor.patch: Backport fixes to unhide logic from
+  master.
+
 * Sat Dec 13 2008 Tom "spot" Callaway <tcallawa@redhat.com> 1.5.3-7
 - sbusAutoDetection from upstream
   http://cgit.freedesktop.org/xorg/xserver/commit/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
