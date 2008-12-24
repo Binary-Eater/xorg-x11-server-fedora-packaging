@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.2
-Release:   4%{?dist}
+Release:   5%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -467,6 +467,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Dec 22 2008 Adam Jackson <ajax@redhat.com> 1.5.2-5
+- xserver-1.5.0-bad-fbdev-thats-mine.patch: Do the same for sbus that we do
+  for pci.
+
 * Sat Dec 13 2008 Tom "spot" Callaway <tcallawa@redhat.com> 1.5.2-4
 - sbusAutoDetection from upstream 
   http://cgit.freedesktop.org/xorg/xserver/commit/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
