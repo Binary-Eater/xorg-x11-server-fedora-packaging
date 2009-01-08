@@ -11,7 +11,7 @@ diff --git a/xfixes/cursor.c b/xfixes/cursor.c
 index d51251f..26a5d61 100755
 --- a/xfixes/cursor.c
 +++ b/xfixes/cursor.c
-@@ -70,7 +70,7 @@ static void deleteCursorHideCountsForScreen (ScreenPtr pScreen);
+@@ -70,7 +70,7 @@
  	return BadCursor; \
      } \
  }
@@ -20,17 +20,18 @@ index d51251f..26a5d61 100755
  /*
   * There is a global list of windows selecting for cursor events
   */
-@@ -119,6 +119,9 @@ typedef struct _CursorScreen {
+@@ -119,6 +119,10 @@
  #define Wrap(as,s,elt,func)	(((as)->elt = (s)->elt), (s)->elt = func)
  #define Unwrap(as,s,elt)	((s)->elt = (as)->elt)
  
 +/* The cursor doesn't show up until the first XDefineCursor() */
++extern void *ConnectionInfo;
 +static Bool CursorVisible = FALSE;
 +
  static Bool
  CursorDisplayCursor (ScreenPtr pScreen,
  		     CursorPtr pCursor)
-@@ -128,7 +131,14 @@ CursorDisplayCursor (ScreenPtr pScreen,
+@@ -128,7 +132,14 @@
  
      Unwrap (cs, pScreen, DisplayCursor);
  
