@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   8%{?dist}
+Release:   9%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -528,6 +528,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jan 27 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-9
+- replace fedora-setup-keyboard with pure python one (#478431)
+
 * Mon Dec 22 2008 Adam Jackson <ajax@redhat.com> 1.5.3-8
 - xserver-1.5.3-aspect-me-harder.patch: Fix mode selection when only one
   monitor is present and it doesn't claim a preferred mode.
