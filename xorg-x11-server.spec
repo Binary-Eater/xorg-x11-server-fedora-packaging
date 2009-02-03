@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   9%{?dist}
+Release:   10%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -96,6 +96,9 @@ Patch6005: xserver-1.5.3-idletime-fix.patch
 Patch6006: xserver-1.5.2-sbusAutoDetection.patch
 
 Patch6007: xserver-1.5.3-aspect-me-harder.patch
+
+# pushed upstream
+Patch6008: xserver-1.5.3-xinerama-events.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -528,6 +531,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 04 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-10
+- xserver-1.5.3-xinerama-events.patch: Don't call UpdateSpriteForScreen if
+  Xinerama is present (#473825)
+
 * Tue Jan 27 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-9
 - replace fedora-setup-keyboard with pure python one (#478431)
 
