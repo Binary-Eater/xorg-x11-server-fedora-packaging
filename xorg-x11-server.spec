@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   11%{?dist}
+Release:   12%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -99,6 +99,8 @@ Patch6007: xserver-1.5.3-aspect-me-harder.patch
 
 # pushed upstream
 Patch6008: xserver-1.5.3-xinerama-events.patch
+# RH 469572, FDO 20081
+Patch6009: xserver-1.5.3-xkb-colors.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -531,6 +533,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 16 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-12
+- xserver-1.5.3-xkb-colors.patch: fix color copying in XKB geometry
+  (#469572)
+
 * Fri Feb 06 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-11
 - Update 10-x11-keymap.fdi: only call fedora-setup-keyboard for devices with
   input.capabilities = keyboard (#484217)
