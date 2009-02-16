@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   12%{?dist}
+Release:   13%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -124,6 +124,7 @@ Patch6009: xserver-1.5.3-xkb-colors.patch
 BuildRequires: git-core
 BuildRequires: automake autoconf libtool pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.1.5
+BuildRequires: freetype-devel
 
 BuildRequires: xorg-x11-proto-devel >= 7.4-3
 BuildRequires: damageproto >= 1.1
@@ -533,6 +534,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Feb 16 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-13
+- Add freetype-devel to build requires.
+
 * Mon Feb 16 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-12
 - xserver-1.5.3-xkb-colors.patch: fix color copying in XKB geometry
   (#469572)
