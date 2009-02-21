@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   13%{?dist}
+Release:   14%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -101,6 +101,8 @@ Patch6007: xserver-1.5.3-aspect-me-harder.patch
 Patch6008: xserver-1.5.3-xinerama-events.patch
 # RH 469572, FDO 20081
 Patch6009: xserver-1.5.3-xkb-colors.patch
+# #485557
+Patch6010: xserver-1.5.3-hdmi.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -305,20 +307,20 @@ Xserver source code needed to build VNC server (Xvnc)
 git checkout -b fedora
 sed -i 's/git/&+ssh/' .git/config
 %else
-git-init-db
+git init-db
 git config --add apply.whitespace nowarn
 if [ -z "$GIT_COMMITTER_NAME" ]; then
-    git-config user.email "x@fedoraproject.org"
-    git-config user.name "Fedora X Ninjas"
+    git config user.email "x@fedoraproject.org"
+    git config user.name "Fedora X Ninjas"
 fi
 cp %{SOURCE1} .gitignore
-git-add .
-git-commit -a -q -m "%{version} baseline."
+git add .
+git commit -a -q -m "%{version} baseline."
 %endif
 
 # Apply all the patches.
 #git-am -p1 %{patches}
-git-am -p1 $(awk '/^Patch.*:/ { print "%{_sourcedir}/"$2 }' %{_specdir}/%{name}.spec)
+git am -p1 %{lua: for i, p in ipairs(patches) do print(p.." ") end}
 
 %build
 
@@ -534,6 +536,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sat Feb 21 2009 Adam Jackson <ajax@redhat.com> 1.5.3-14
+- xserver-1.5.3-hdmi.patch: Add xf86MonitorIsHDMI(). (#485557)
+
 * Mon Feb 16 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-13
 - Add freetype-devel to build requires.
 

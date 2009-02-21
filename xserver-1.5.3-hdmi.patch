@@ -1,0 +1,101 @@
+From 0da8fee7b68257fcf60460f2c97cf1ac51c9e4be Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Sat, 21 Feb 2009 13:57:42 -0500
+Subject: [PATCH] Add xf86MonitorIsHDMI()
+
+---
+ hw/xfree86/ddc/interpret_edid.c |   53 +++++++++++++++++++++++++++++++++++++++
+ hw/xfree86/ddc/xf86DDC.h        |    5 ++-
+ hw/xfree86/loader/xf86sym.c     |    1 +
+ 3 files changed, 57 insertions(+), 2 deletions(-)
+
+diff --git a/hw/xfree86/ddc/interpret_edid.c b/hw/xfree86/ddc/interpret_edid.c
+index f2c94d3..d080bd4 100644
+--- a/hw/xfree86/ddc/interpret_edid.c
++++ b/hw/xfree86/ddc/interpret_edid.c
+@@ -459,3 +459,56 @@ validate_version(int scrnIndex, struct edid_version *r)
+ 
+     return TRUE;
+ }
++
++/*
++ * Returns true if HDMI, false if definitely not or unknown.
++ */
++_X_EXPORT Bool
++xf86MonitorIsHDMI(xf86MonPtr mon)
++{
++    int i = 0, version, offset;
++    char *edid = NULL;
++
++    if (!mon)
++       return FALSE;
++
++    if (!(mon->flags & EDID_COMPLETE_RAWDATA))
++       return FALSE;
++
++    if (!mon->no_sections)
++       return FALSE;
++
++    edid = (char *)mon->rawData;
++    if (!edid)
++       return FALSE;
++
++    /* find the CEA extension block */
++    for (i = 1; i <= mon->no_sections; i++)
++       if (edid[i * 128] == 0x02)
++           break;
++    if (i == mon->no_sections + 1)
++       return FALSE;
++    edid += (i * 128);
++
++    version = edid[1];
++    offset = edid[2];
++    if (version < 3 || offset < 4)
++       return FALSE;
++
++    /* walk the cea data blocks */
++    for (i = 4; i < offset; i += (edid[i] & 0x1f) + 1) {
++       char *x = edid + i;
++
++       /* find a vendor specific block */
++       if ((x[0] & 0xe0) >> 5 == 0x03) {
++           int oui = (x[3] << 16) + (x[2] << 8) + x[1];
++
++           /* find the HDMI vendor OUI */
++           if (oui == 0x000c03)
++               return TRUE;
++       }
++    }
++
++    /* guess it's not HDMI after all */
++    return FALSE;
++}
+diff --git a/hw/xfree86/ddc/xf86DDC.h b/hw/xfree86/ddc/xf86DDC.h
+index 42d9ce6..3172b55 100644
+--- a/hw/xfree86/ddc/xf86DDC.h
++++ b/hw/xfree86/ddc/xf86DDC.h
+@@ -59,6 +59,7 @@ extern Bool xf86SetDDCproperties(
+ 
+ DisplayModePtr xf86DDCGetModes(int scrnIndex, xf86MonPtr DDC);
+ 
+-#endif
+-
++extern Bool
++xf86MonitorIsHDMI(xf86MonPtr mon);
+ 
++#endif
+diff --git a/hw/xfree86/loader/xf86sym.c b/hw/xfree86/loader/xf86sym.c
+index 77d7d45..8a87080 100644
+--- a/hw/xfree86/loader/xf86sym.c
++++ b/hw/xfree86/loader/xf86sym.c
+@@ -1012,6 +1012,7 @@ _X_HIDDEN void *xfree86LookupTab[] = {
+     SYMFUNC(xf86DoEEDID)
+     SYMFUNC(xf86DDCMonitorSet)
+     SYMFUNC(xf86SetDDCproperties)
++    SYMFUNC(xf86MonitorIsHDMI)
+ 
+     SYMFUNC(xf86CreateI2CBusRec)
+     SYMFUNC(xf86CreateI2CDevRec)
+-- 
+1.6.1.3
+
