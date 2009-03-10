@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   14%{?dist}
+Release:   15%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -536,6 +536,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 11 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-15
+- Revert to 1.5.3-10 version of 10-x11-keymap.fdi. (#484488)
+
 * Sat Feb 21 2009 Adam Jackson <ajax@redhat.com> 1.5.3-14
 - xserver-1.5.3-hdmi.patch: Add xf86MonitorIsHDMI(). (#485557)
 
