@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.2
-Release:   5%{?dist}
+Release:   6%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -63,6 +63,9 @@ Patch5012: xserver-1.5.0-more-sanity-checks.patch
 # http://cgit.freedesktop.org/xorg/xserver/diff/?id=24e863b0eb6ff11010a14cfd252a39df87a09d0e
 Patch5013: xserver-1.5.2-sbusAutoDetection.patch
 
+# From upstream.
+Patch5014: xserver-1.5.3-xinerama-events.patch
+
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
 %define sdkdir		%{_includedir}/xorg
@@ -85,6 +88,7 @@ Patch5013: xserver-1.5.2-sbusAutoDetection.patch
 BuildRequires: git-core
 BuildRequires: automake autoconf libtool pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.1.5
+BuildRequires: freetype-devel
 
 BuildRequires: xorg-x11-proto-devel >= 7.3-10
 BuildRequires: damageproto >= 1.1
@@ -467,6 +471,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Mar 18 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-6
+- xserver-1.5.3-xinerama-events.patch: Don't call UpdateSpriteForScreen if
+  Xinerama is present (#473825)
+- add freetype-devel to build requires.
+
 * Mon Dec 22 2008 Adam Jackson <ajax@redhat.com> 1.5.2-5
 - xserver-1.5.0-bad-fbdev-thats-mine.patch: Do the same for sbus that we do
   for pci.
