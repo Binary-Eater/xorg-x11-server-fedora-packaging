@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -102,6 +102,8 @@ Patch6027: xserver-1.6.0-displayfd.patch
 
 Patch6028: xserver-1.6.0-restore-zap.patch
 Patch6029: xserver-1.6.0-no-i810.patch
+
+Patch6030: xserver-1.6.0-randr-xinerama-crash.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -533,6 +535,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 15 2009 Dave Airlie <airlied@redhat.com> 1.6.1-2
+- xserver-1.6.0-randr-xinerama-crash.patch - fix xinerama vs randr crash
+
 * Tue Apr 14 2009 Adam Jackson <ajax@redhat.com> 1.6.1-1
 - xserver 1.6.1
 
