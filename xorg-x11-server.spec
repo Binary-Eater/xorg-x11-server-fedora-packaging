@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   3%{?dist}
+Release:   4%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -105,6 +105,7 @@ Patch6029: xserver-1.6.0-no-i810.patch
 
 Patch6030: xserver-1.6.0-randr-xinerama-crash.patch
 Patch6031: xserver-1.6.1-exa-avoid-swapped-out.patch
+Patch6032: xserver-1.6.1-randr-gamma.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -536,6 +537,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 16 2009 Adam Jackson <ajax@redhat.com> 1.6.1-4
+- xserver-1.6.1-randr-gamma.patch: Hook up XF86VidMode's gamma control to
+  RANDR's per-crtc gamma controls.
+
 * Thu Apr 16 2009 Dave Airlie <airlied@redhat.com> 1.6.1-3
 - xserver-1.6.1-exa-avoid-swapped-out.patch - make FUS not suck in theory
 

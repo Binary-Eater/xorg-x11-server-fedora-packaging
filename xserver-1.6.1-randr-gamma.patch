@@ -1,0 +1,156 @@
+From feaa2623530296ccb783b63ec7b06105f0795af9 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Wed, 15 Apr 2009 15:50:18 -0400
+Subject: [PATCH] Hook up RANDR gamma to xf86vm
+
+---
+ hw/xfree86/common/xf86RandR.c  |    1 +
+ hw/xfree86/common/xf86cmap.c   |   13 ++++++++-
+ hw/xfree86/modes/xf86RandR12.c |   55 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 67 insertions(+), 2 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86RandR.c b/hw/xfree86/common/xf86RandR.c
+index de2f78c..58e5cc5 100644
+--- a/hw/xfree86/common/xf86RandR.c
++++ b/hw/xfree86/common/xf86RandR.c
+@@ -30,6 +30,7 @@
+ #include "mibank.h"
+ #include "globals.h"
+ #include "xf86.h"
++#include "xf86str.h"
+ #include "xf86Priv.h"
+ #include "xf86DDC.h"
+ #include "mipointer.h"
+diff --git a/hw/xfree86/common/xf86cmap.c b/hw/xfree86/common/xf86cmap.c
+index e578447..0e3cac7 100644
+--- a/hw/xfree86/common/xf86cmap.c
++++ b/hw/xfree86/common/xf86cmap.c
+@@ -84,6 +84,7 @@ typedef struct {
+   Bool				(*EnterVT)(int, int);
+   Bool				(*SwitchMode)(int, DisplayModePtr, int);
+   int				(*SetDGAMode)(int, int, DGADevicePtr);
++  xf86ChangeGammaProc		*ChangeGamma;
+   int				maxColors;
+   int				sigRGBbits;
+   int				gammaElements;
+@@ -190,6 +191,7 @@ _X_EXPORT Bool xf86HandleColormaps(
+     pScreenPriv->EnterVT = pScrn->EnterVT;
+     pScreenPriv->SwitchMode = pScrn->SwitchMode;
+     pScreenPriv->SetDGAMode = pScrn->SetDGAMode;    
++    pScreenPriv->ChangeGamma = pScrn->ChangeGamma;
+ 
+     if (!(flags & CMAP_LOAD_EVEN_IF_OFFSCREEN)) {
+ 	pScrn->EnterVT = CMapEnterVT;
+@@ -819,6 +821,7 @@ CMapUnwrapScreen(ScreenPtr pScreen)
+     pScrn->EnterVT = pScreenPriv->EnterVT; 
+     pScrn->SwitchMode = pScreenPriv->SwitchMode; 
+     pScrn->SetDGAMode = pScreenPriv->SetDGAMode; 
++    pScrn->ChangeGamma = pScreenPriv->ChangeGamma;
+ 
+     xfree(pScreenPriv->gamma);
+     xfree(pScreenPriv->PreAllocIndices);
+@@ -884,6 +887,7 @@ CMapChangeGamma(
+    int index,
+    Gamma gamma
+ ){
++    int ret = Success;
+     ScrnInfoPtr pScrn = xf86Screens[index];
+     ScreenPtr pScreen = pScrn->pScreen;
+     CMapColormapPtr pColPriv;
+@@ -949,7 +953,12 @@ CMapChangeGamma(
+ 	    CMapReinstallMap(pMap);
+     }
+ 
+-    return Success;
++    pScrn->ChangeGamma = pScreenPriv->ChangeGamma;
++    if (pScrn->ChangeGamma)
++	ret = pScrn->ChangeGamma(index, gamma);
++    pScrn->ChangeGamma = CMapChangeGamma;
++
++    return ret;
+ }
+ 
+ 
+@@ -1108,5 +1117,5 @@ xf86ChangeGamma(
+     if(pScrn->ChangeGamma)
+ 	return (*pScrn->ChangeGamma)(pScreen->myNum, gamma);
+ 
+-    return Success; /* Success? */
++    return BadImplementation;
+ }
+diff --git a/hw/xfree86/modes/xf86RandR12.c b/hw/xfree86/modes/xf86RandR12.c
+index 4546492..0266c25 100644
+--- a/hw/xfree86/modes/xf86RandR12.c
++++ b/hw/xfree86/modes/xf86RandR12.c
+@@ -1647,6 +1647,60 @@ xf86RandR13SetPanning (ScreenPtr           pScreen,
+     }
+ }
+ 
++/*
++ * Compatibility with XF86VidMode's gamma changer.  This necessarily clobbers
++ * any per-crtc setup.  You asked for it...
++ */
++
++static void
++gamma_to_ramp(float gamma, CARD16 *ramp, int size)
++{
++    int i;
++
++    for (i = 0; i < size; i++) {
++	if (gamma == 1.0)
++	    ramp[i] = i << 8;
++	else
++	    ramp[i] = (CARD16)(pow((double)i / (double)(size - 1), gamma)
++			       * (double)(size - 1) * 256);
++    }
++}
++
++static int
++xf86RandR12ChangeGamma(int scrnIndex, Gamma gamma)
++{
++    int i, size = 0;
++    CARD16 *points, *red, *green, *blue;
++    ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
++    rrScrPrivPtr rp = rrGetScrPriv(pScrn->pScreen);
++    ErrorF("xf86RandR12ChangeGamma called\n");
++    for (i = 0; i < rp->numCrtcs; i++)
++	size = max(size, rp->crtcs[i]->gammaSize);
++
++    if (!size)
++	return Success;
++
++    points = xcalloc(size, 3 * sizeof(CARD16));
++    if (!points)
++	return BadAlloc;
++
++    red = points;
++    green = points + size;
++    blue = points + 2 * size;
++
++    for (i = 0; i < rp->numCrtcs; i++) {
++	gamma_to_ramp(gamma.red, red, rp->crtcs[i]->gammaSize);
++	gamma_to_ramp(gamma.green, green, rp->crtcs[i]->gammaSize);
++	gamma_to_ramp(gamma.blue, blue, rp->crtcs[i]->gammaSize);
++	RRCrtcGammaSet(rp->crtcs[i], red, green, blue);
++	memset(points, 0, 3 * size * sizeof(CARD16));
++    }
++
++    xfree(points);
++
++    return Success;
++}
++
+ static Bool
+ xf86RandR12Init12 (ScreenPtr pScreen)
+ {
+@@ -1667,6 +1721,7 @@ xf86RandR12Init12 (ScreenPtr pScreen)
+     rp->rrModeDestroy = xf86RandR12ModeDestroy;
+     rp->rrSetConfig = NULL;
+     pScrn->PointerMoved = xf86RandR12PointerMoved;
++    pScrn->ChangeGamma = xf86RandR12ChangeGamma;
+     if (!xf86RandR12CreateObjects12 (pScreen))
+ 	return FALSE;
+ 
+-- 
+1.6.2.2
+
