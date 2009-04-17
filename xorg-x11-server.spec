@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   4%{?dist}
+Release:   5%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -106,6 +106,9 @@ Patch6029: xserver-1.6.0-no-i810.patch
 Patch6030: xserver-1.6.0-randr-xinerama-crash.patch
 Patch6031: xserver-1.6.1-exa-avoid-swapped-out.patch
 Patch6032: xserver-1.6.1-randr-gamma.patch
+
+# Nominated for 1.6.2
+Patch6033: xserver-1.6.1-activate-device.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -537,6 +540,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 17 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.1-5
+- xserver-1.6.1-activate-device.patch: remove the device if activation fails.
+  This fixes crashes if wacom tablets are added through hal _and_ have an
+  xorg.conf section.
+
 * Thu Apr 16 2009 Adam Jackson <ajax@redhat.com> 1.6.1-4
 - xserver-1.6.1-randr-gamma.patch: Hook up XF86VidMode's gamma control to
   RANDR's per-crtc gamma controls.
