@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   5%{?dist}
+Release:   6%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -540,6 +540,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Apr 17 2009 Adam Jackson <ajax@redhat.com> 1.6.1-6
+- xserver-1.6.1-randr-gamma.patch: Silence debugging messages.
+
 * Fri Apr 17 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.1-5
 - xserver-1.6.1-activate-device.patch: remove the device if activation fails.
   This fixes crashes if wacom tablets are added through hal _and_ have an

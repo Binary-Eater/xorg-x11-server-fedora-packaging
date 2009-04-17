@@ -22,7 +22,6 @@ index de2f78c..58e5cc5 100644
  #include "xf86DDC.h"
  #include "mipointer.h"
 diff --git a/hw/xfree86/common/xf86cmap.c b/hw/xfree86/common/xf86cmap.c
-index e578447..0e3cac7 100644
 --- a/hw/xfree86/common/xf86cmap.c
 +++ b/hw/xfree86/common/xf86cmap.c
 @@ -84,6 +84,7 @@ typedef struct {
@@ -79,7 +78,6 @@ index e578447..0e3cac7 100644
 +    return BadImplementation;
  }
 diff --git a/hw/xfree86/modes/xf86RandR12.c b/hw/xfree86/modes/xf86RandR12.c
-index 4546492..0266c25 100644
 --- a/hw/xfree86/modes/xf86RandR12.c
 +++ b/hw/xfree86/modes/xf86RandR12.c
 @@ -1647,6 +1647,60 @@ xf86RandR13SetPanning (ScreenPtr           pScreen,
@@ -112,7 +110,7 @@ index 4546492..0266c25 100644
 +    CARD16 *points, *red, *green, *blue;
 +    ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
 +    rrScrPrivPtr rp = rrGetScrPriv(pScrn->pScreen);
-+    ErrorF("xf86RandR12ChangeGamma called\n");
++
 +    for (i = 0; i < rp->numCrtcs; i++)
 +	size = max(size, rp->crtcs[i]->gammaSize);
 +
