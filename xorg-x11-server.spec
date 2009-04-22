@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   6%{?dist}
+Release:   7%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -208,6 +208,8 @@ Obsoletes: xorg-x11-drv-summa <= 1.2.0-2.fc10
 Obsoletes: xorg-x11-drv-tek4957 <= 1.2.0-1.fc9
 Obsoletes: xorg-x11-drv-ur98 <= 1.1.0-5.fc9
 Obsoletes: xorg-x11-drv-wiimote <= 0.0.1-1.fc9
+# old driver metapackages would Require the above, so force them out
+Conflicts: xorg-x11-drivers < 7.3-11.fc11
 # Force sufficiently new libpciaccess
 Conflicts: libpciaccess < 0.10.3-5
 
@@ -540,6 +542,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Apr 22 2009 Adam Jackson <ajax@redhat.com> 1.6.1-7
+- Conflict with too-old versions of xorg-x11-drivers. (#497144)
+
 * Fri Apr 17 2009 Adam Jackson <ajax@redhat.com> 1.6.1-6
 - xserver-1.6.1-randr-gamma.patch: Silence debugging messages.
 
