@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   7%{?dist}
+Release:   8%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -109,6 +109,7 @@ Patch6032: xserver-1.6.1-randr-gamma.patch
 
 # Nominated for 1.6.2
 Patch6033: xserver-1.6.1-activate-device.patch
+Patch6034: xserver-1.6.1-exa-create-pixmap2.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -542,6 +543,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 23 2009 Dave Airlie <airlied@redhat.com> 1.6.1-8
+- xserver-1.6.1-exa-create-pixmap2.patch - add support for tiling create
+  pixmap hook - need to fix firefox on ati rs690 crashes
+
 * Wed Apr 22 2009 Adam Jackson <ajax@redhat.com> 1.6.1-7
 - Conflict with too-old versions of xorg-x11-drivers. (#497144)
 
