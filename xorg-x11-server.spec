@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   8%{?dist}
+Release:   9%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -110,6 +110,7 @@ Patch6032: xserver-1.6.1-randr-gamma.patch
 # Nominated for 1.6.2
 Patch6033: xserver-1.6.1-activate-device.patch
 Patch6034: xserver-1.6.1-exa-create-pixmap2.patch
+Patch6035: xserver-1.6.1-avoid-malloc-for-logging.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -543,6 +544,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Apr 23 2009 Adam Jackson <ajax@redhat.com> 1.6.1-9
+- xserver-1.6.1-avoid-malloc-for-logging.patch: Don't malloc when logging,
+  since that makes it unsafe to do from a signal handler.
+
 * Thu Apr 23 2009 Dave Airlie <airlied@redhat.com> 1.6.1-8
 - xserver-1.6.1-exa-create-pixmap2.patch - add support for tiling create
   pixmap hook - need to fix firefox on ati rs690 crashes
