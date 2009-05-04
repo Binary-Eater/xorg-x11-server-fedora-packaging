@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   10%{?dist}
+Release:   11%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -53,7 +53,7 @@ Patch103:  xserver-1.5.0-bg-none-root.patch
 # XXX move these to the end of the list
 Patch1003:  xserver-1.4.99-pic-libxf86config.patch
 
-Patch2013:  xserver-1.4.99-document-fontpath-correctly.patch
+Patch2013:  xserver-1.6.1-document-fontpath-correctly.patch
 Patch2014:  xserver-1.5.0-projector-fb-size.patch
 
 # Trivial things to never merge upstream ever:
@@ -544,6 +544,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 04 2009 Adam Jackson <ajax@redhat.com> 1.6.1-11
+- xserver-1.6.1-document-fontpath-correctly.patch: Typo fixes.
+
 * Mon May 04 2009 Adam Jackson <ajax@redhat.com> 1.6.1-10
 - xserver-1.6.1-nouveau.patch: Update the autoconfig logic for nv3 and other
   historical oddities.
