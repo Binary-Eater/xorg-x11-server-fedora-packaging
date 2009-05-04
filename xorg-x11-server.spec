@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   9%{?dist}
+Release:   10%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,7 +89,7 @@ Patch6013: xserver-1.6.0-selinux-less.patch
 Patch6015: xserver-1.5.99.902-vnc.patch
 
 # Make autoconfiguration chose nouveau driver for NVIDIA GPUs
-Patch6016: xserver-1.5.99.902-nouveau.patch
+Patch6016: xserver-1.6.1-nouveau.patch
 
 Patch6022: xserver-1.6.0-primary.patch
 
@@ -544,6 +544,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 04 2009 Adam Jackson <ajax@redhat.com> 1.6.1-10
+- xserver-1.6.1-nouveau.patch: Update the autoconfig logic for nv3 and other
+  historical oddities.
+
 * Thu Apr 23 2009 Adam Jackson <ajax@redhat.com> 1.6.1-9
 - xserver-1.6.1-avoid-malloc-for-logging.patch: Don't malloc when logging,
   since that makes it unsafe to do from a signal handler.
