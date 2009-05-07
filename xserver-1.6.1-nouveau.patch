@@ -1,12 +1,79 @@
-From 10a3e677aa00d1fbeb4ec8cd5c77d609bc7091a7 Mon Sep 17 00:00:00 2001
+From d14ad659451a9fbc45156095d1672c3bf61ed647 Mon Sep 17 00:00:00 2001
 From: Fedora X Ninjas <x@fedoraproject.org>
 Date: Mon, 16 Feb 2009 15:50:14 +1000
 Subject: [PATCH] autoconfig: select nouveau by default for NVIDIA GPUs
 
+Also, don't treat DRI setup failure as an error for nouveau.
 ---
+ glx/glxdri.c                       |    7 +++++--
+ glx/glxdri2.c                      |    7 +++++--
  hw/xfree86/common/xf86AutoConfig.c |   21 ++++++++++++++++++++-
- 1 files changed, 20 insertions(+), 1 deletions(-)
+ 3 files changed, 30 insertions(+), 5 deletions(-)
 
+diff --git a/glx/glxdri.c b/glx/glxdri.c
+index 8d614d0..e1525fd 100644
+--- a/glx/glxdri.c
++++ b/glx/glxdri.c
+@@ -965,6 +965,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+     const __DRIconfig **driConfigs;
+     const __DRIextension **extensions;
+     int i;
++    int from = X_ERROR;
+ 
+     if (!xf86LoaderCheckSymbol("DRIQueryDirectRenderingCapable") ||
+ 	!DRIQueryDirectRenderingCapable(pScreen, &isCapable) ||
+@@ -1044,7 +1045,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 
+     screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
+     if (screen->driver == NULL) {
+-	LogMessage(X_ERROR, "AIGLX error: dlopen of %s failed (%s)\n",
++	if (!strcmp(driverName, "nouveau"))
++	    from = X_INFO;
++	LogMessage(from, "AIGLX error: dlopen of %s failed (%s)\n",
+ 		   filename, dlerror());
+         goto handle_error;
+     }
+@@ -1176,7 +1179,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 
+     xfree(screen);
+ 
+-    LogMessage(X_ERROR, "AIGLX: reverting to software rendering\n");
++    LogMessage(from, "AIGLX: reverting to software rendering\n");
+ 
+     return NULL;
+ }
+diff --git a/glx/glxdri2.c b/glx/glxdri2.c
+index 4544a2c..f22119d 100644
+--- a/glx/glxdri2.c
++++ b/glx/glxdri2.c
+@@ -476,6 +476,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+     const __DRIextension **extensions;
+     const __DRIconfig **driConfigs;
+     int i;
++    int from = X_ERROR;
+ 
+     screen = xcalloc(1, sizeof *screen);
+     if (screen == NULL)
+@@ -502,7 +503,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 
+     screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
+     if (screen->driver == NULL) {
+-	LogMessage(X_ERROR, "AIGLX error: dlopen of %s failed (%s)\n",
++	if (!strcmp(driverName, "nouveau"))
++	    from = X_INFO;
++	LogMessage(from, "AIGLX error: dlopen of %s failed (%s)\n",
+ 		   filename, dlerror());
+         goto handle_error;
+     }
+@@ -577,7 +580,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 
+     xfree(screen);
+ 
+-    LogMessage(X_ERROR, "AIGLX: reverting to software rendering\n");
++    LogMessage(from, "AIGLX: reverting to software rendering\n");
+ 
+     return NULL;
+ }
 diff --git a/hw/xfree86/common/xf86AutoConfig.c b/hw/xfree86/common/xf86AutoConfig.c
 index 19c06c8..e40551e 100644
 --- a/hw/xfree86/common/xf86AutoConfig.c

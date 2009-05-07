@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   11%{?dist}
+Release:   12%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -544,6 +544,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu May 07 2009 Adam Jackson <ajax@redhat.com> 1.6.1-12
+- xserver-1.6.1-nouveau.patch: AIGLX setup failure is not an error for
+  nouveau.
+
 * Mon May 04 2009 Adam Jackson <ajax@redhat.com> 1.6.1-11
 - xserver-1.6.1-document-fontpath-correctly.patch: Typo fixes.
 
