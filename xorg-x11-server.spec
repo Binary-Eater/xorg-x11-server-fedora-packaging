@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   12%{?dist}
+Release:   13%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -111,6 +111,8 @@ Patch6032: xserver-1.6.1-randr-gamma.patch
 Patch6033: xserver-1.6.1-activate-device.patch
 Patch6034: xserver-1.6.1-exa-create-pixmap2.patch
 Patch6035: xserver-1.6.1-avoid-malloc-for-logging.patch
+
+Patch6040: xserver-1.6.1-vt-switch.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -544,6 +546,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri May 08 2009 Adam Jackson <ajax@redhat.com> 1.6.1-13
+- xserver-1.6.1-vt-switch.patch: Synthesize key releases on vt switch away,
+  not just on return.  Fixes CPU usage bug while switched away. (#484393)
+
 * Thu May 07 2009 Adam Jackson <ajax@redhat.com> 1.6.1-12
 - xserver-1.6.1-nouveau.patch: AIGLX setup failure is not an error for
   nouveau.
