@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1
-Release:   13%{?dist}
+Release:   14%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -113,6 +113,8 @@ Patch6034: xserver-1.6.1-exa-create-pixmap2.patch
 Patch6035: xserver-1.6.1-avoid-malloc-for-logging.patch
 
 Patch6040: xserver-1.6.1-vt-switch.patch
+# from upstream, nominated for 1.6.2 (#499792)
+Patch6041: xserver-1.6.1-synaptics.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -546,6 +548,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 11 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.1-14
+- xserver-1.6.1-synaptics.patch: Don't synthesize a mouse section if
+  unreferenced synaptics devices are found in the xorg.conf (#499792)
+
 * Fri May 08 2009 Adam Jackson <ajax@redhat.com> 1.6.1-13
 - xserver-1.6.1-vt-switch.patch: Synthesize key releases on vt switch away,
   not just on return.  Fixes CPU usage bug while switched away. (#484393)
