@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.6.1
-Release:   14%{?dist}
+Version:   1.6.1.901
+Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -52,6 +52,7 @@ Patch103:  xserver-1.5.0-bg-none-root.patch
 # Red Hat specific tweaking, not intended for upstream
 # XXX move these to the end of the list
 Patch1003:  xserver-1.4.99-pic-libxf86config.patch
+Patch1004:  xserver-1.6.1-hush-warning.patch
 
 Patch2013:  xserver-1.6.1-document-fontpath-correctly.patch
 Patch2014:  xserver-1.5.0-projector-fb-size.patch
@@ -82,9 +83,6 @@ Patch6012: xserver-1.5.99.902-sod-off-poulsbo.patch
 # don't do selinux if we're not told to
 Patch6013: xserver-1.6.0-selinux-less.patch
 
-# selinux performance hack
-#Patch6014: xserver-1.6.0-selinux-nlfd.patch
-
 # https://bugs.freedesktop.org/show_bug.cgi?id=20087
 Patch6015: xserver-1.5.99.902-vnc.patch
 
@@ -94,8 +92,6 @@ Patch6016: xserver-1.6.1-nouveau.patch
 Patch6022: xserver-1.6.0-primary.patch
 
 Patch6024: xserver-1.6.0-xinerama-cursors.patch
-# http://bugs.freedesktop.org/show_bug.cgi?id=20557
-Patch6026: xserver-1.6.0-xinerama-crashes.patch
 
 # ajax needs to upstream this
 Patch6027: xserver-1.6.0-displayfd.patch
@@ -108,13 +104,13 @@ Patch6031: xserver-1.6.1-exa-avoid-swapped-out.patch
 Patch6032: xserver-1.6.1-randr-gamma.patch
 
 # Nominated for 1.6.2
-Patch6033: xserver-1.6.1-activate-device.patch
 Patch6034: xserver-1.6.1-exa-create-pixmap2.patch
 Patch6035: xserver-1.6.1-avoid-malloc-for-logging.patch
 
 Patch6040: xserver-1.6.1-vt-switch.patch
 # from upstream, nominated for 1.6.2 (#499792)
 Patch6041: xserver-1.6.1-synaptics.patch
+Patch6042: xserver-1.6.1-proc-cmdline.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -418,22 +414,6 @@ xargs tar cf - | (cd %{inst_srcdir} && tar xf -)
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%if %{with_hw_servers}
-%pre Xorg
-{
-    pushd /etc/X11
-
-    [ -e xorg.conf ] || return 0
-
-    sed -i 's/^.*Load.*"(pex5|xie|xtt).*\n$"//gi' xorg.conf
-    sed -i 's/^\s*Driver(.*)"keyboard"/Driver\1"kbd"/gi' xorg.conf
-    sed -i 's/^.*Option.*"XkbRules".*"(xfree86|xorg)".*\n$//gi' xorg.conf
-    sed -i 's#^\s*RgbPath.*$##gi' xorg.conf
-
-    popd
-} &> /dev/null || :
-%endif
-
 %files common
 %defattr(-,root,root,-)
 %{_mandir}/man1/Xserver.1*
@@ -548,6 +528,17 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 18 2009 Adam Jackson <ajax@redhat.com> 1.6.1.901-1
+- Rebase to 1.6.2 pre-release
+- xserver-1.6.1-hush-warning.patch: Silence the prerelease warning spew.
+- xserver-1.6.0-xinerama-crashes.patch: merged
+- xserver-1.6.1-activate-device.patch: merged
+- xserver-1.6.1-proc-cmdline.patch: Print /proc/cmdline in the log
+- xserver-1.6.0-primary.patch: Don't include prehistoric PCI devices in the
+  candidate list for primary video. (#500057)
+- Drop the %%pre scriptlet from the Xorg subpackage, it's been there since
+  FC5, if you haven't upgraded by now you're quite doomed.
+
 * Mon May 11 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.1-14
 - xserver-1.6.1-synaptics.patch: Don't synthesize a mouse section if
   unreferenced synaptics devices are found in the xorg.conf (#499792)
