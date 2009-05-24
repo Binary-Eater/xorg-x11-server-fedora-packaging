@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.3
-Release:   16%{?dist}
+Release:   17%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -105,6 +105,8 @@ Patch6009: xserver-1.5.3-xkb-colors.patch
 Patch6010: xserver-1.5.3-hdmi.patch
 
 Patch6011: xserver-1.5.3-dga-crash-fix.patch
+# #456378, patch from upstream
+Patch6012: xserver-1.6.1-xkbsendmap.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -538,6 +540,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 25 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.3-17
+- xserver-1.6.1-xkbsendmap.patch: Fix crash due to uninitialized VModMap fields.
+
 * Wed Apr 08 2009 Adam Jackson <ajax@redhat.com> 1.5.3-16
 - xserver-1.5.3-dga-crash-fix.patch: Track client state even for DGA1
   clients, and recover correctly.
