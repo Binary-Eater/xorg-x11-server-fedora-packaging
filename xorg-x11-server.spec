@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.5.2
-Release:   6%{?dist}
+Release:   7%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -65,6 +65,8 @@ Patch5013: xserver-1.5.2-sbusAutoDetection.patch
 
 # From upstream.
 Patch5014: xserver-1.5.3-xinerama-events.patch
+# (#456376) patch from upstream
+Patch5015: xserver-1.6.1-xkbsendmap.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -471,6 +473,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 25 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-7
+- xserver-1.6.1-xkbsendmap.patch: Fix crash due to uninitialized VModMap
+  fields (#456376).
+
 * Wed Mar 18 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.5.2-6
 - xserver-1.5.3-xinerama-events.patch: Don't call UpdateSpriteForScreen if
   Xinerama is present (#473825)
