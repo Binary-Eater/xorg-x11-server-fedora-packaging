@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1.901
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -111,6 +111,10 @@ Patch6040: xserver-1.6.1-vt-switch.patch
 # from upstream, nominated for 1.6.2 (#499792)
 Patch6041: xserver-1.6.1-synaptics.patch
 Patch6042: xserver-1.6.1-proc-cmdline.patch
+# second part to xserver-1.6.1-synaptics.patch
+Patch6043: xserver-1.6.1-mousedrivers.patch
+# #456376, patch from upstream
+Patch6044: xserver-1.6.1-xkbsendmap.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -528,6 +532,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon May 25 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.1.901-2
+- xserver-1.6.1-mousedrivers.patch: treat other drivers as mouse drivers too
+  when parsing the config file (complements xserver-1.6.1-synaptics.patch)
+- xserver-1.6.1-xkbsendmap.patch: Fix crash due to uninitialized VModMap fields.
+
 * Mon May 18 2009 Adam Jackson <ajax@redhat.com> 1.6.1.901-1
 - Rebase to 1.6.2 pre-release
 - xserver-1.6.1-hush-warning.patch: Silence the prerelease warning spew.
