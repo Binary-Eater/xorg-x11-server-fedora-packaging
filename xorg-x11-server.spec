@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1.901
-Release:   2%{?dist}
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -115,6 +115,8 @@ Patch6042: xserver-1.6.1-proc-cmdline.patch
 Patch6043: xserver-1.6.1-mousedrivers.patch
 # #456376, patch from upstream
 Patch6044: xserver-1.6.1-xkbsendmap.patch
+# #492359, monitor doesn't set first detailed timing preferred bit
+Patch6045: xserver-1.6.1-pea-quirk.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -532,6 +534,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed May 27 2009 Ben Skeggs <bskeggs@redhat.com> 1.6.1.901-3
+- xserver-1.6.1-pea-quirk.patch: edid quirk for PEA prod 9003 (rh#492359)
+
 * Mon May 25 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.1.901-2
 - xserver-1.6.1-mousedrivers.patch: treat other drivers as mouse drivers too
   when parsing the config file (complements xserver-1.6.1-synaptics.patch)
