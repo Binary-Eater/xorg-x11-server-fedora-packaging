@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1.901
-Release:   3%{?dist}
+Release:   4%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -117,6 +117,8 @@ Patch6043: xserver-1.6.1-mousedrivers.patch
 Patch6044: xserver-1.6.1-xkbsendmap.patch
 # #492359, monitor doesn't set first detailed timing preferred bit
 Patch6045: xserver-1.6.1-pea-quirk.patch
+
+Patch6046: xserver-1.6.1-fix-glx-drawable.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -534,6 +536,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Jun 09 2009 Dave Airlie <airlied@redhat.com> 1.6.1.901-4
+- backport a GLX drawable fixes
+
 * Wed May 27 2009 Ben Skeggs <bskeggs@redhat.com> 1.6.1.901-3
 - xserver-1.6.1-pea-quirk.patch: edid quirk for PEA prod 9003 (rh#492359)
 
