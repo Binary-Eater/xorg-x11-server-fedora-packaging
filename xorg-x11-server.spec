@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.1.901
-Release:   4%{?dist}
+Release:   5%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -536,6 +536,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jun 11 2009 Ben Skeggs <bskeggs@redhat.com> 1.6.1.901-5
+- xserver-1.6.1-nouveau.patch: fix detection of earlier chipsets
+
 * Tue Jun 09 2009 Dave Airlie <airlied@redhat.com> 1.6.1.901-4
 - backport a GLX drawable fixes
 
