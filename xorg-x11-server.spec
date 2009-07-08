@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.6.1.901
-Release:   5%{?dist}
+Version:   1.6.2
+Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -91,21 +91,16 @@ Patch6016: xserver-1.6.1-nouveau.patch
 
 Patch6022: xserver-1.6.0-primary.patch
 
-Patch6024: xserver-1.6.0-xinerama-cursors.patch
-
 # ajax needs to upstream this
 Patch6027: xserver-1.6.0-displayfd.patch
 
-Patch6028: xserver-1.6.0-restore-zap.patch
 Patch6029: xserver-1.6.0-no-i810.patch
 
-Patch6030: xserver-1.6.0-randr-xinerama-crash.patch
 Patch6031: xserver-1.6.1-exa-avoid-swapped-out.patch
 Patch6032: xserver-1.6.1-randr-gamma.patch
 
 # Nominated for 1.6.2
 Patch6034: xserver-1.6.1-exa-create-pixmap2.patch
-Patch6035: xserver-1.6.1-avoid-malloc-for-logging.patch
 
 Patch6040: xserver-1.6.1-vt-switch.patch
 # from upstream, nominated for 1.6.2 (#499792)
@@ -113,8 +108,6 @@ Patch6041: xserver-1.6.1-synaptics.patch
 Patch6042: xserver-1.6.1-proc-cmdline.patch
 # second part to xserver-1.6.1-synaptics.patch
 Patch6043: xserver-1.6.1-mousedrivers.patch
-# #456376, patch from upstream
-Patch6044: xserver-1.6.1-xkbsendmap.patch
 # #492359, monitor doesn't set first detailed timing preferred bit
 Patch6045: xserver-1.6.1-pea-quirk.patch
 
@@ -143,7 +136,7 @@ BuildRequires: git-core
 BuildRequires: automake autoconf libtool pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.1.5
 
-BuildRequires: xorg-x11-proto-devel >= 7.4-10
+BuildRequires: xorg-x11-proto-devel >= 7.4-15
 
 BuildRequires: xorg-x11-xtrans-devel >= 1.2.2-1
 BuildRequires: libXfont-devel libXau-devel libxkbfile-devel libXres-devel
@@ -536,6 +529,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 08 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.2-1
+- xserver 1.6.2
+
 * Thu Jun 11 2009 Ben Skeggs <bskeggs@redhat.com> 1.6.1.901-5
 - xserver-1.6.1-nouveau.patch: fix detection of earlier chipsets
 
