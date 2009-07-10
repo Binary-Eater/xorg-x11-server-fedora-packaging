@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.2
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -112,6 +112,9 @@ Patch6043: xserver-1.6.1-mousedrivers.patch
 Patch6045: xserver-1.6.1-pea-quirk.patch
 
 Patch6046: xserver-1.6.1-fix-glx-drawable.patch
+
+# #510238, already upstream
+Patch6047: xserver-1.6.2-vboxvideo.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -529,6 +532,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul 10 2009 Lubomir Rintel <lkundrak@v3.sk> 1.6.2-2
+- Add vboxvideo driver to the autodetection routine
+
 * Wed Jul 08 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.2-1
 - xserver 1.6.2
 
