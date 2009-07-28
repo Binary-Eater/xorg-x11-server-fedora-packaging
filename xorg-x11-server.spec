@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.2
-Release:   2%{?dist}
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -532,6 +532,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Jul 29 2009 Ben Skeggs <bskeggs@redhat.com> 1.6.2-3
+- Fix nouveau autoconfig patch (rh#512851)
+
 * Fri Jul 10 2009 Lubomir Rintel <lkundrak@v3.sk> 1.6.2-2
 - Add vboxvideo driver to the autodetection routine
 

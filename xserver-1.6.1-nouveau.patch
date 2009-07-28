@@ -78,7 +78,7 @@ diff --git a/hw/xfree86/common/xf86AutoConfig.c b/hw/xfree86/common/xf86AutoConf
 index 19c06c8..e40551e 100644
 --- a/hw/xfree86/common/xf86AutoConfig.c
 +++ b/hw/xfree86/common/xf86AutoConfig.c
-@@ -181,7 +181,31 @@ videoPtrToDriverList(struct pci_device *dev,
+@@ -181,7 +181,32 @@ videoPtrToDriverList(struct pci_device *dev,
  	case 0x102b:		    driverList[0] = "mga";	break;
  	case 0x10c8:		    driverList[0] = "neomagic"; break;
  	case 0x105d:		    driverList[0] = "i128";	break;
@@ -108,6 +108,7 @@ index 19c06c8..e40551e 100644
 +		}
 +		break;
 +	    }
++	    break;
  	case 0x1163:		    driverList[0] = "rendition"; break;
  	case 0x5333:
  	    switch (dev->device_id)
