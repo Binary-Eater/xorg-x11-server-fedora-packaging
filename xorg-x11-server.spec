@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.3
-Release:   1%{?dist}
+Release:   2%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -110,6 +110,9 @@ Patch6046: xserver-1.6.1-fix-glx-drawable.patch
 
 # #510238, already upstream
 Patch6047: xserver-1.6.2-vboxvideo.patch
+
+# 501601, upstream, nominated for 1.6.4
+Patch6048: xserver-1.6.3-sync-conditions.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -527,6 +530,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Aug 13 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-2
+- xserver-1.6.3-sync-conditions.patch: Fix conditions when checking
+  negative transition triggers in the sync extension (#501601)
+
 * Thu Aug 13 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-1
 - xserver 1.6.3
 - xserver-1.6.0-selinux-less.patch: Drop
