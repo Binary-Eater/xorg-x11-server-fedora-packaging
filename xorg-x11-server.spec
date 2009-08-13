@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.6.2
-Release:   3%{?dist}
+Version:   1.6.3
+Release:   1%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -80,9 +80,6 @@ Patch6011: xserver-1.6.0-less-acpi-brokenness.patch
 # don't try intel on poulsbo
 Patch6012: xserver-1.5.99.902-sod-off-poulsbo.patch
 
-# don't do selinux if we're not told to
-Patch6013: xserver-1.6.0-selinux-less.patch
-
 # https://bugs.freedesktop.org/show_bug.cgi?id=20087
 Patch6015: xserver-1.5.99.902-vnc.patch
 
@@ -108,8 +105,6 @@ Patch6041: xserver-1.6.1-synaptics.patch
 Patch6042: xserver-1.6.1-proc-cmdline.patch
 # second part to xserver-1.6.1-synaptics.patch
 Patch6043: xserver-1.6.1-mousedrivers.patch
-# #492359, monitor doesn't set first detailed timing preferred bit
-Patch6045: xserver-1.6.1-pea-quirk.patch
 
 Patch6046: xserver-1.6.1-fix-glx-drawable.patch
 
@@ -532,6 +527,11 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Aug 13 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-1
+- xserver 1.6.3
+- xserver-1.6.0-selinux-less.patch: Drop
+  xserver-1.6.1-pea-quirk.patch: Drop
+
 * Wed Jul 29 2009 Ben Skeggs <bskeggs@redhat.com> 1.6.2-3
 - Fix nouveau autoconfig patch (rh#512851)
 
