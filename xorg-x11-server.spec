@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.3
-Release:   2%{?dist}
+Release:   3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -113,6 +113,8 @@ Patch6047: xserver-1.6.2-vboxvideo.patch
 
 # 501601, upstream, nominated for 1.6.4
 Patch6048: xserver-1.6.3-sync-conditions.patch
+# 501601, part 2.
+Patch6049: xserver-1.6.99-dpms.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -530,6 +532,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Mon Aug 17 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-3
+- xserver-1.6.99-dpms.patch: don't reset last event time on DPMS changes.
+
 * Thu Aug 13 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-2
 - xserver-1.6.3-sync-conditions.patch: Fix conditions when checking
   negative transition triggers in the sync extension (#501601)
