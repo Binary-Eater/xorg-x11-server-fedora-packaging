@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.3
-Release:   3%{?dist}
+Release:   4%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -113,8 +113,10 @@ Patch6047: xserver-1.6.2-vboxvideo.patch
 
 # 501601, upstream, nominated for 1.6.4
 Patch6048: xserver-1.6.3-sync-conditions.patch
-# 501601, part 2.
+# 501601, part 2, upstream.
 Patch6049: xserver-1.6.99-dpms.patch
+# 501601, part 3, upstream.
+Patch6050: xserver-1.6.99-eventtime.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -532,6 +534,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Aug 18 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-4
+- xserver-1.6.99-eventtime.patch: don't reset the last event time when the
+  screen saver activates.
+
 * Mon Aug 17 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.3-3
 - xserver-1.6.99-dpms.patch: don't reset last event time on DPMS changes.
 
