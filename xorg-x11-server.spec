@@ -323,6 +323,10 @@ Xserver source code needed to build VNC server (Xvnc)
 %if 0%{?gitdate}
 git checkout -b fedora
 sed -i 's/git/&+ssh/' .git/config
+if [ -z "$GIT_COMMITTER_NAME" ]; then
+    git config user.email "x@fedoraproject.org"
+    git config user.name "Fedora X Ninjas"
+fi
 %else
 git init-db
 if [ -z "$GIT_COMMITTER_NAME" ]; then
