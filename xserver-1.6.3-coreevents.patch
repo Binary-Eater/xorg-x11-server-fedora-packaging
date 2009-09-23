@@ -1,0 +1,63 @@
+From 764159be06c8c812d07e07917031b927a9f99f31 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Wed, 16 Sep 2009 15:46:55 +1000
+Subject: [PATCH] Don't send events through the master if the device has SendCoreEvents off.
+
+In server 1.6, all devices are attached to the master device (VCP or VCK).
+Sending an event through the master device means the device is sending core
+events. If a device is configured as SendCoreEvents, just send through the
+device, not through the master.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ dix/getevents.c |    4 ++--
+ mi/mieq.c       |    4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/dix/getevents.c b/dix/getevents.c
+index 9747b35..eadcbeb 100644
+--- a/dix/getevents.c
++++ b/dix/getevents.c
+@@ -536,7 +536,7 @@ static EventListPtr
+ updateFromMaster(EventListPtr events, DeviceIntPtr dev, int *num_events)
+ {
+     DeviceIntPtr master = dev->u.master;
+-    if (master && master->u.lastSlave != dev)
++    if (master && master->u.lastSlave != dev && dev->coreEvents)
+     {
+         updateSlaveDeviceCoords(master, dev);
+         master->u.lastSlave = dev;
+@@ -674,7 +674,7 @@ positionSprite(DeviceIntPtr dev, int *x, int *y,
+      * to the current screen. */
+     miPointerSetPosition(dev, &dev->last.valuators[0], &dev->last.valuators[1]);
+ 
+-    if (dev->u.master) {
++    if (dev->u.master && dev->coreEvents) {
+         dev->u.master->last.valuators[0] = dev->last.valuators[0];
+         dev->u.master->last.valuators[1] = dev->last.valuators[1];
+     }
+diff --git a/mi/mieq.c b/mi/mieq.c
+index 213ad5b..478e68b 100644
+--- a/mi/mieq.c
++++ b/mi/mieq.c
+@@ -446,7 +446,7 @@ mieqProcessInputEvents(void)
+             NewCurrentScreen (dev, DequeueScreen(dev), x, y);
+         }
+         else {
+-            if (master) {
++            if (master && dev->coreEvents) {
+                 /* Force a copy of the key class into the VCK so that the layout
+                    is transferred. */
+                 if (event->u.u.type == DeviceKeyPress ||
+@@ -473,7 +473,7 @@ mieqProcessInputEvents(void)
+                 /* process slave first, then master */
+                 dev->public.processInputProc(event, dev, nevents);
+ 
+-                if (master)
++                if (master && dev->coreEvents)
+                     master->public.processInputProc(masterEvents->event, master,
+                                                     nevents);
+             }
+-- 
+1.6.3.rc1.2.g0164.dirty
+
