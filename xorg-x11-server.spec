@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.99.903
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -72,6 +72,10 @@ Patch6028: xserver-1.6.99-randr-error-debugging.patch
 Patch6030: xserver-1.6.99-right-of.patch
 Patch6033: xserver-1.6.99-default-modes.patch
 Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
+
+# upstream already
+Patch7000: xserver-1.6.99-rotate-wrapping-fix.patch
+Patch7001: xserver-1.6.99-exa-infinite-loop.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -500,6 +504,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Oct 01 2009 Dave Airlie <airlied@redhat.com> 1.6.99.903-2
+- backport EXA and rotate crash fixes
+
 * Mon Sep 28 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.99.903-1
 - xserver 1.6.99.903 
 

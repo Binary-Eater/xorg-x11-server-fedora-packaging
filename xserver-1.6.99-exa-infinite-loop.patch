@@ -1,0 +1,44 @@
+From fc599ab01ccaaff3c0bfc5a4d623efe725f175db Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Michel=20D=C3=A4nzer?= <daenzer@vmware.com>
+Date: Thu, 1 Oct 2009 15:15:19 +1000
+Subject: [PATCH] exa: avoid infinite loops if UTS sw fallbacks.
+
+The upload in finish access can cause an infinite loop if
+UTS returns FALSE in here.
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+---
+ exa/exa_migration_classic.c |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/exa/exa_migration_classic.c b/exa/exa_migration_classic.c
+index 4819af8..6d7b9f5 100644
+--- a/exa/exa_migration_classic.c
++++ b/exa/exa_migration_classic.c
+@@ -242,11 +242,6 @@ exaCopyDirty(ExaMigrationPtr migrate, RegionPtr pValidDst, RegionPtr pValidSrc,
+ 	pBox++;
+     }
+ 
+-    if (access_prepared)
+-	exaFinishAccess(&pPixmap->drawable, fallback_index);
+-    else if (need_sync && sync)
+-	sync (pPixmap->drawable.pScreen);
+-
+     pExaPixmap->offscreen = save_offscreen;
+     pPixmap->devKind = save_pitch;
+ 
+@@ -261,6 +256,11 @@ exaCopyDirty(ExaMigrationPtr migrate, RegionPtr pValidDst, RegionPtr pValidSrc,
+     REGION_UNION(pScreen, pValidDst, pValidDst, &CopyReg);
+ 
+     REGION_UNINIT(pScreen, &CopyReg);
++
++    if (access_prepared)
++	exaFinishAccess(&pPixmap->drawable, fallback_index);
++    else if (need_sync && sync)
++	sync (pPixmap->drawable.pScreen);
+ }
+ 
+ /**
+-- 
+1.6.5.rc2
+

@@ -1,0 +1,39 @@
+From f1893a5a434e483ab40001e5a765902f7ce5ed4e Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Thu, 1 Oct 2009 15:24:04 +1000
+Subject: [PATCH] rotate: drop unwrapping inside block handler.
+
+Keith has shown half the block handlers wrappers are wrong, also
+dynamic wrapping/unwrapping from what I can see will happen after
+the drivers, so its really accidental ABI, that we can't change
+now without modifing drivers. So be safe for 1.7.
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+---
+ hw/xfree86/modes/xf86Rotate.c |   10 +++-------
+ 1 files changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/hw/xfree86/modes/xf86Rotate.c b/hw/xfree86/modes/xf86Rotate.c
+index 9e65c99..5de6b0c 100644
+--- a/hw/xfree86/modes/xf86Rotate.c
++++ b/hw/xfree86/modes/xf86Rotate.c
+@@ -268,13 +268,9 @@ xf86RotateBlockHandler(int screenNum, pointer blockData,
+     rotation_active = xf86RotateRedisplay(pScreen);
+     pScreen->BlockHandler = xf86_config->BlockHandler;
+     (*pScreen->BlockHandler) (screenNum, blockData, pTimeout, pReadmask);
+-    if (rotation_active) {
+-	/* Re-wrap if rotation is still happening */
+-	xf86_config->BlockHandler = pScreen->BlockHandler;
+-	pScreen->BlockHandler = xf86RotateBlockHandler;
+-    } else {
+-	xf86_config->BlockHandler = NULL;
+-    }
++    /* cannot avoid re-wrapping until all wrapping is audited */
++    xf86_config->BlockHandler = pScreen->BlockHandler;
++    pScreen->BlockHandler = xf86RotateBlockHandler;
+ }
+ 
+ void
+-- 
+1.6.5.rc2
+
