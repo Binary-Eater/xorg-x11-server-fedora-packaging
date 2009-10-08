@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.0
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -72,6 +72,7 @@ Patch6028: xserver-1.6.99-randr-error-debugging.patch
 Patch6030: xserver-1.6.99-right-of.patch
 Patch6033: xserver-1.6.99-default-modes.patch
 Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
+Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -500,6 +501,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Oct 08 2009 Adam Jackson <ajax@redhat.com> 1.7.0-2
+- xserver-1.7.0-randr-gamma-restore.patch: Restore CRTC gamma on EnterVT.
+
 * Mon Oct 05 2009 Dave Airlie <airlied@redhat.com> 1.7.0-1
 - rebase to 1.7.0 upstream release - were 99% this already
 
