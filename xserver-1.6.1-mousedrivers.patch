@@ -59,7 +59,7 @@ index 2ecb639..844e04a 100644
  				  xf86configptr->conf_input_lst);
 -	if (!confInput) {
 -	    confInput = xf86findInputByDriver("mouse",
-+	while (driver && !confInput) {
++	while (*driver && !confInput) {
 +	    confInput = xf86findInputByDriver(*driver,
  					      xf86configptr->conf_input_lst);
 +	    driver++;

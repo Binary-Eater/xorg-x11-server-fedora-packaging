@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.4
-Release:   0.2%{?dist}
+Release:   0.3%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -535,6 +535,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Oct 08 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.4-0.3
+- xserver-1.6.1-mousedrivers.patch: fix typo causing invalid memory access
+  (#522936)
+
 * Wed Sep 23 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.4-0.2
 - xserver-1.6.3-coreevents.patch: dont send events for devices with
   SendCoreEvents off.
