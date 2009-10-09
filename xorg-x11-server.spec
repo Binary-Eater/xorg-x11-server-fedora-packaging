@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.0
-Release:   2%{dist}
+Release:   3%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -73,6 +73,8 @@ Patch6030: xserver-1.6.99-right-of.patch
 Patch6033: xserver-1.6.99-default-modes.patch
 Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 Patch6045: xserver-1.7.0-randr-gamma-restore.patch
+
+Patch6046: xserver-1.7.0-exa-looping-forever-is-evil.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -501,6 +503,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Oct 09 2009 Ben Skeggs <bskeggs@redhat.com> 1.7.0-3
+- xserver-1.7.0-exa-looping-forever-is-evil.patch: Fix rendercheck hang
+
 * Thu Oct 08 2009 Adam Jackson <ajax@redhat.com> 1.7.0-2
 - xserver-1.7.0-randr-gamma-restore.patch: Restore CRTC gamma on EnterVT.
 
