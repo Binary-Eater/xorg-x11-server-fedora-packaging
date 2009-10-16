@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.0
-Release:   3%{dist}
+Release:   4%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -75,6 +75,7 @@ Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 
 Patch6046: xserver-1.7.0-exa-looping-forever-is-evil.patch
+Patch6047: xserver-1.7.0-glx-versioning.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -503,6 +504,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Oct 16 2009 Dave Airlie <airlied@redhat.com> 1.7.0-4
+- update GLX for 1.4 version reporting
+
 * Fri Oct 09 2009 Ben Skeggs <bskeggs@redhat.com> 1.7.0-3
 - xserver-1.7.0-exa-looping-forever-is-evil.patch: Fix rendercheck hang
 
