@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.0
-Release:   4%{dist}
+Release:   5%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -76,6 +76,7 @@ Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 
 Patch6046: xserver-1.7.0-exa-looping-forever-is-evil.patch
 Patch6047: xserver-1.7.0-glx-versioning.patch
+Patch6048: xserver-1.7.0-exa-fix-mixed.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -504,6 +505,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sat Oct 24 2009 Ben Skeggs <bskegg@redhat.com> 1.7.0-5
+- Fix unbalancing of Prepare/FinishAccess in EXA mixed pixmaps (rh#528005)
+
 * Fri Oct 16 2009 Dave Airlie <airlied@redhat.com> 1.7.0-4
 - update GLX for 1.4 version reporting
 

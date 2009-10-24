@@ -1,0 +1,48 @@
+From 7efbe71629d31d79ab95cc1dae93f0fa742e9533 Mon Sep 17 00:00:00 2001
+From: Ben Skeggs <bskeggs@redhat.com>
+Date: Thu, 22 Oct 2009 11:31:22 +1000
+Subject: [PATCH] EXA: fix mixed-pixmaps issue where we could do accel with pixmap mapped
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The problem occurs in the following situation:
+
+1. Create Pixmap
+2. Software fallback on pixmap: pExaPixmap->pDamage created
+3. Accel to pixmap: driver pixmap created, exaPixmapIsOffscreen() now true
+4. Software fallback on pixmap
+4.1: PrepareAccess() from driver succeeds, so no DFS to system memory copy
+4.2: Software rendering...
+4.3: (pExaPixmap->pDamage && exaPixmapIsOffscreen()) is true, so we try
+     to (incorrectly) UTS the data back to the driver pixmap, when we
+     should just call the driver's FinishAccess() hook.
+4.4: fail
+
+The patch adds an additional check on pExaPixmap->offscreen, which should
+(for the cases exaPixmapIsOffscreen() will return true) only be FALSE
+when we haven't used PrepareAccess() on the pixmap.
+
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Acked-By: Michel Dänzer <michel@daenzer.net>
+---
+ exa/exa_migration_mixed.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/exa/exa_migration_mixed.c b/exa/exa_migration_mixed.c
+index f42c9c2..52b18b4 100644
+--- a/exa/exa_migration_mixed.c
++++ b/exa/exa_migration_mixed.c
+@@ -202,7 +202,8 @@ void exaFinishAccess_mixed(PixmapPtr pPixmap, int index)
+ {
+     ExaPixmapPriv(pPixmap);
+ 
+-    if (pExaPixmap->pDamage && exaPixmapIsOffscreen(pPixmap)) {
++    if (pExaPixmap->pDamage && exaPixmapIsOffscreen(pPixmap) &&
++	!pExaPixmap->offscreen) {
+ 	DamageRegionProcessPending(&pPixmap->drawable);
+ 	exaMoveInPixmap_mixed(pPixmap);
+     }
+-- 
+1.6.5.rc2
+
