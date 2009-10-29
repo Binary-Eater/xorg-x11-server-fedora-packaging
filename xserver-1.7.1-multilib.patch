@@ -1,0 +1,52 @@
+From 566ed8932ab153e8918b4496a0ac1765beb4e7e9 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 29 Oct 2009 19:04:10 -0400
+Subject: [PATCH] multilib fix for -devel subpackage
+
+---
+ include/colormapst.h     |    6 ++++--
+ include/xorg-server.h.in |    3 ---
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/include/colormapst.h b/include/colormapst.h
+index f1fc8eb..c4a1710 100644
+--- a/include/colormapst.h
++++ b/include/colormapst.h
+@@ -99,16 +99,18 @@ typedef struct _CMEntry
+  * The padN variables are unfortunate ABI BC. See fdo bug #6924.
+  */
+ 
++#define LP64 (__SIZEOF_LONG__ == 8)
++
+ typedef struct _ColormapRec
+ {
+     VisualPtr	pVisual;
+     short	class;		/* PseudoColor or DirectColor */
+-#if defined(_XSERVER64)
++#if LP64
+     short	pad0;
+     XID		pad1;
+ #endif
+     XID		mid;		/* client's name for colormap */
+-#if defined(_XSERVER64) && (X_BYTE_ORDER == X_LITTLE_ENDIAN)
++#if LP64 && (X_BYTE_ORDER == X_LITTLE_ENDIAN)
+     XID		pad2;
+ #endif
+     ScreenPtr	pScreen;	/* screen map is associated with */
+diff --git a/include/xorg-server.h.in b/include/xorg-server.h.in
+index 76cab16..3e79529 100644
+--- a/include/xorg-server.h.in
++++ b/include/xorg-server.h.in
+@@ -157,9 +157,6 @@
+ /* Name of X server */
+ #undef __XSERVERNAME__
+ 
+-/* Define to 1 if unsigned long is 64 bits. */
+-#undef _XSERVER64
+-
+ /* Building vgahw module */
+ #undef WITH_VGAHW
+ 
+-- 
+1.6.4.4
+

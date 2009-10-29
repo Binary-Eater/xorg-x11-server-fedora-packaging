@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -76,6 +76,7 @@ Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 
 Patch6047: xserver-1.7.0-glx-versioning.patch
 Patch6048: xserver-1.7.0-exa-fix-mixed.patch
+Patch6049: xserver-1.7.1-multilib.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -504,6 +505,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Oct 29 2009 Adam Jackson <ajax@redhat.com> 1.7.1-2
+- xserver-1.7.1-multilib.patch: Fix silly multilib issue. (#470885)
+
 * Mon Oct 26 2009 Adam Jackson <ajax@redhat.com> 1.7.1-1
 - xserver 1.7.1
 
