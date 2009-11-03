@@ -1,0 +1,126 @@
+From 9baca08d9f0b1e2902d39fd98805a4c37cb4eab6 Mon Sep 17 00:00:00 2001
+From: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date: Wed, 28 Oct 2009 02:54:03 -0400
+Subject: [PATCH] fix Render with window sources
+
+---
+ fb/fbpict.c |   78 +++++++++++++++++++++++++---------------------------------
+ 1 files changed, 34 insertions(+), 44 deletions(-)
+
+diff --git a/fb/fbpict.c b/fb/fbpict.c
+index 2fbef15..2d91f2f 100644
+--- a/fb/fbpict.c
++++ b/fb/fbpict.c
+@@ -268,54 +268,41 @@ create_conical_gradient_image (PictGradient *gradient)
+ 	gradient->nstops);
+ }
+ 
+-static DrawablePtr 
+-copy_drawable (DrawablePtr pDraw)
++static pixman_image_t *
++image_from_window (pixman_format_code_t format, DrawablePtr pDraw)
+ {
+     ScreenPtr pScreen = pDraw->pScreen;
+-    PixmapPtr pPixmap;
+-    GCPtr pGC;
++    pixman_image_t *image;
+     int width, height;
+-    ChangeGCVal gcv[2];
+-    
++    uint32_t *bits;
++
+     width = pDraw->width;
+     height = pDraw->height;
+     
+-    pPixmap = (*pScreen->CreatePixmap) (pScreen, width, height, pDraw->depth, 0);
+-    
+-    if (!pPixmap)
+-	return NULL;
+-    
+-    pGC = GetScratchGC (pDraw->depth, pScreen);
+-    
+-    if (!pGC)
+-    {
+-	(*pScreen->DestroyPixmap) (pPixmap);
++    image = pixman_image_create_bits (format, width, height, NULL, -1);
++
++    if (!image)
+ 	return NULL;
+-    }
+     
+-    /* First fill the pixmap with zeros */
+-    gcv[0].val = 0x00000000;
+-    gcv[1].val = IncludeInferiors;
+-    dixChangeGC (NullClient, pGC, GCBackground | GCSubwindowMode, NULL, gcv);
+-    ValidateGC ((DrawablePtr)pPixmap, pGC);
+-    miClearDrawable ((DrawablePtr)pPixmap, pGC);
++    bits = pixman_image_get_data (image);
+     
+-    /* Then copy the window there */
+-    ValidateGC(&pPixmap->drawable, pGC);
+-    (* pGC->ops->CopyArea) (pDraw, &pPixmap->drawable, pGC, 0, 0, width, height, 0, 0);
+-    
+-    FreeScratchGC (pGC);
+-    
+-    return &pPixmap->drawable;
++    (*pScreen->GetImage) (pDraw,
++			  0, 0, width, height, ZPixmap,
++			  ~0L,
++			  (pointer) bits);
++
++    return image;
+ }
+ 
+ static void
+ destroy_drawable (pixman_image_t *image, void *data)
+ {
+     DrawablePtr pDrawable = data;
+-    ScreenPtr pScreen = pDrawable->pScreen;
+ 
+-    pScreen->DestroyPixmap ((PixmapPtr)pDrawable);
++    if (!pDrawable)
++        return;
++
++    pDrawable->pScreen->DestroyPixmap ((PixmapPtr)pDrawable);
+ }
+ 
+ static pixman_image_t *
+@@ -330,20 +317,23 @@ create_bits_picture (PicturePtr pict,
+     DrawablePtr drawable;
+ 
+     if (is_src && pict->pDrawable->type == DRAWABLE_WINDOW)
+-	drawable = copy_drawable (pict->pDrawable);
++    {
++	image = image_from_window (pict->format, pict->pDrawable);
++    }
+     else
++    {
+ 	drawable = pict->pDrawable;
+-    
+-    fbGetDrawable (drawable, bits, stride, bpp, xoff, yoff);
+-
+-    bits = (FbBits*)((CARD8*)bits +
+-		     (drawable->y + yoff) * stride * sizeof(FbBits) +
+-		     (drawable->x + xoff) * (bpp / 8));
+-
+-    image = pixman_image_create_bits (
+-	pict->format, drawable->width, drawable->height,
+-	(uint32_t *)bits, stride * sizeof (FbStride));
+-    
++	
++	fbGetDrawable (drawable, bits, stride, bpp, xoff, yoff);
++	
++	bits = (FbBits*)((CARD8*)bits +
++			 (drawable->y + yoff) * stride * sizeof(FbBits) +
++			 (drawable->x + xoff) * (bpp / 8));
++	
++	image = pixman_image_create_bits (
++	    pict->format, drawable->width, drawable->height,
++	    (uint32_t *)bits, stride * sizeof (FbStride));
++    }
+     
+ #ifdef FB_ACCESS_WRAPPER
+ #if FB_SHIFT==5
+-- 
+1.6.5.1
+

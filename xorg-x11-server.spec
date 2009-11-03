@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   2%{dist}
+Release:   3%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -77,6 +77,7 @@ Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 Patch6047: xserver-1.7.0-glx-versioning.patch
 Patch6048: xserver-1.7.0-exa-fix-mixed.patch
 Patch6049: xserver-1.7.1-multilib.patch
+Patch6050: xserver-1.7.1-window-pictures.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -505,6 +506,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Nov  3 2009 Adam Jackson <ajax@redhat.com> 1.7.1-3
+- xserver-1.7.1-window-pictures.patch: Fix Render from Pictures backed by
+  Windows to not crash in the presence of KMS. (#524244)
+
 * Thu Oct 29 2009 Adam Jackson <ajax@redhat.com> 1.7.1-2
 - xserver-1.7.1-multilib.patch: Fix silly multilib issue. (#470885)
 
