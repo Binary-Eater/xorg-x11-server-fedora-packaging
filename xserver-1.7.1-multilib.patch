@@ -46,7 +46,7 @@ index 76cab16..081b8f3 100644
  #undef XACE
  
 +#ifdef __LP64__
-+#define _XSERVER64
++#define _XSERVER64 1
 +#endif
 +
  #endif /* _XORG_SERVER_H_ */
