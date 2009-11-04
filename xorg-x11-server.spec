@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   3%{dist}
+Release:   5%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -506,6 +506,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Nov  4 2009 Soren Sandmann <ssp@redhat.com> 1.7.1-5
+- Update xserver-1.7.1-window-pictures.patch. Instead of calling
+  GetImage(), simply call fb* functions rather than the screen
+  hooks. (#524244)
+
 * Tue Nov  3 2009 Adam Jackson <ajax@redhat.com> 1.7.1-3
 - xserver-1.7.1-window-pictures.patch: Fix Render from Pictures backed by
   Windows to not crash in the presence of KMS. (#524244)

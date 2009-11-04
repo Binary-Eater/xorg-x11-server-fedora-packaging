@@ -1,124 +1,50 @@
-From 154b717f261a37af95f09e6645db0ceeb6b22d6a Mon Sep 17 00:00:00 2001
+From 7d1378e2631e0d400943d2d05b5b79a3c631a12f Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?S=C3=B8ren=20Sandmann=20Pedersen?= <sandmann@redhat.com>
-Date: Wed, 28 Oct 2009 02:54:03 -0400
-Subject: [PATCH] fix Render with window sources
+Date: Wed, 4 Nov 2009 07:46:05 -0500
+Subject: [PATCH] fb: Use fb functions to copy the window to a temporary pixmap.
 
+Previously, it would use the screen ops, but this meant that the new
+pixmap would be created by the DDX and then immediately accessed by
+software fallbacks without the DDX having a chance to map the drawable
+correctly.
+
+Instead, use fbCreatePixmap() and fbCopyArea() directly, without going
+through the DDX hooks.
 ---
- fb/fbpict.c |   74 +++++++++++++++++++++++++---------------------------------
- 1 files changed, 32 insertions(+), 42 deletions(-)
+ fb/fbpict.c |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/fb/fbpict.c b/fb/fbpict.c
-index 2fbef15..08bb537 100644
+index 2fbef15..b9fe32a 100644
 --- a/fb/fbpict.c
 +++ b/fb/fbpict.c
-@@ -268,54 +268,41 @@ create_conical_gradient_image (PictGradient *gradient)
- 	gradient->nstops);
- }
- 
--static DrawablePtr 
--copy_drawable (DrawablePtr pDraw)
-+static pixman_image_t *
-+image_from_window (pixman_format_code_t format, DrawablePtr pDraw)
- {
-     ScreenPtr pScreen = pDraw->pScreen;
--    PixmapPtr pPixmap;
--    GCPtr pGC;
-+    pixman_image_t *image;
-     int width, height;
--    ChangeGCVal gcv[2];
--    
-+    uint32_t *bits;
-+
+@@ -280,7 +280,7 @@ copy_drawable (DrawablePtr pDraw)
      width = pDraw->width;
      height = pDraw->height;
      
 -    pPixmap = (*pScreen->CreatePixmap) (pScreen, width, height, pDraw->depth, 0);
--    
--    if (!pPixmap)
--	return NULL;
--    
--    pGC = GetScratchGC (pDraw->depth, pScreen);
--    
--    if (!pGC)
--    {
--	(*pScreen->DestroyPixmap) (pPixmap);
-+    image = pixman_image_create_bits (format, width, height, NULL, -1);
-+
-+    if (!image)
++    pPixmap = fbCreatePixmap (pScreen, width, height, pDraw->depth, 0);
+     
+     if (!pPixmap)
  	return NULL;
--    }
--    
--    /* First fill the pixmap with zeros */
--    gcv[0].val = 0x00000000;
--    gcv[1].val = IncludeInferiors;
--    dixChangeGC (NullClient, pGC, GCBackground | GCSubwindowMode, NULL, gcv);
--    ValidateGC ((DrawablePtr)pPixmap, pGC);
--    miClearDrawable ((DrawablePtr)pPixmap, pGC);
+@@ -289,7 +289,7 @@ copy_drawable (DrawablePtr pDraw)
      
--    /* Then copy the window there */
--    ValidateGC(&pPixmap->drawable, pGC);
+     if (!pGC)
+     {
+-	(*pScreen->DestroyPixmap) (pPixmap);
++	fbDestroyPixmap (pPixmap);
+ 	return NULL;
+     }
+     
+@@ -302,7 +302,7 @@ copy_drawable (DrawablePtr pDraw)
+     
+     /* Then copy the window there */
+     ValidateGC(&pPixmap->drawable, pGC);
 -    (* pGC->ops->CopyArea) (pDraw, &pPixmap->drawable, pGC, 0, 0, width, height, 0, 0);
-+    bits = pixman_image_get_data (image);
++    fbCopyArea (pDraw, &pPixmap->drawable, pGC, 0, 0, width, height, 0, 0);
      
--    FreeScratchGC (pGC);
--    
--    return &pPixmap->drawable;
-+    (*pScreen->GetImage) (pDraw,
-+			  0, 0, width, height, ZPixmap,
-+			  ~0L,
-+			  (pointer) bits);
-+
-+    return image;
- }
- 
- static void
- destroy_drawable (pixman_image_t *image, void *data)
- {
-     DrawablePtr pDrawable = data;
--    ScreenPtr pScreen = pDrawable->pScreen;
- 
--    pScreen->DestroyPixmap ((PixmapPtr)pDrawable);
-+    if (!pDrawable)
-+        return;
-+
-+    pDrawable->pScreen->DestroyPixmap ((PixmapPtr)pDrawable);
- }
- 
- static pixman_image_t *
-@@ -330,20 +317,23 @@ create_bits_picture (PicturePtr pict,
-     DrawablePtr drawable;
- 
-     if (is_src && pict->pDrawable->type == DRAWABLE_WINDOW)
--	drawable = copy_drawable (pict->pDrawable);
-+    {
-+	image = image_from_window (pict->format, pict->pDrawable);
-+    }
-     else
-+    {
- 	drawable = pict->pDrawable;
--    
--    fbGetDrawable (drawable, bits, stride, bpp, xoff, yoff);
- 
--    bits = (FbBits*)((CARD8*)bits +
--		     (drawable->y + yoff) * stride * sizeof(FbBits) +
--		     (drawable->x + xoff) * (bpp / 8));
-+	fbGetDrawable (drawable, bits, stride, bpp, xoff, yoff);
- 
--    image = pixman_image_create_bits (
--	pict->format, drawable->width, drawable->height,
--	(uint32_t *)bits, stride * sizeof (FbStride));
--    
-+	bits = (FbBits*)((CARD8*)bits +
-+			 (drawable->y + yoff) * stride * sizeof(FbBits) +
-+			 (drawable->x + xoff) * (bpp / 8));
-+
-+	image = pixman_image_create_bits (
-+	    pict->format, drawable->width, drawable->height,
-+	    (uint32_t *)bits, stride * sizeof (FbStride));
-+    }
+     FreeScratchGC (pGC);
      
- #ifdef FB_ACCESS_WRAPPER
- #if FB_SHIFT==5
 -- 
-1.6.4.4
+1.6.5.1
 
