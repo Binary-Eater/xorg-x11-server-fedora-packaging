@@ -507,8 +507,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Nov 06 2009 Adam Jackson <ajax@redhat.com>
+- Fix the previous changelog entry to name the right patch
+
 * Fri Nov 06 2009 Dave Airlie <airlied@redhat.com> 1.7.1-7
-- xserver-1.7.1-multilib.patch: remove the miClearDrawable (fingers crossed) (#533236)
+- xserver-1.7.1-window-pictures.patch: remove the miClearDrawable (fingers crossed) (#533236)
 - xserver-1.7.1-gamma-kdm-fix.patch: fix KDM vt gamma (#533217)
 
 * Wed Nov 04 2009 Adam Jackson <ajax@redhat.com> 1.7.1-6
