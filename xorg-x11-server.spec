@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   6%{dist}
+Release:   7%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -78,6 +78,7 @@ Patch6047: xserver-1.7.0-glx-versioning.patch
 Patch6048: xserver-1.7.0-exa-fix-mixed.patch
 Patch6049: xserver-1.7.1-multilib.patch
 Patch6050: xserver-1.7.1-window-pictures.patch
+Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -506,6 +507,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Nov 06 2009 Dave Airlie <airlied@redhat.com> 1.7.1-7
+- xserver-1.7.1-multilib.patch: remove the miClearDrawable (fingers crossed) (#533236)
+- xserver-1.7.1-gamma-kdm-fix.patch: fix KDM vt gamma (#533217)
+
 * Wed Nov 04 2009 Adam Jackson <ajax@redhat.com> 1.7.1-6
 - xserver-1.7.1-multilib.patch: Keep defining _XSERVER64, it's needed in
   some of the shared client/server headers.
