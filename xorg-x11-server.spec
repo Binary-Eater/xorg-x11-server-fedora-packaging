@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   7%{dist}
+Release:   8%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -79,6 +79,8 @@ Patch6048: xserver-1.7.0-exa-fix-mixed.patch
 Patch6049: xserver-1.7.1-multilib.patch
 Patch6050: xserver-1.7.1-window-pictures.patch
 Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
+Patch6052: xserver-1.7.1-libcrypto.patch
+Patch6053: xserver-1.7.1-sigaction.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -118,7 +120,6 @@ BuildRequires: libXi-devel libXpm-devel libXaw-devel libXfixes-devel
 # Broken, this is global, should be Xephyr-only
 BuildRequires: libXv-devel
 
-# openssl? really?
 BuildRequires: pixman-devel >= 0.15.14
 BuildRequires: libpciaccess-devel >= 0.10.6-1 openssl-devel byacc flex
 BuildRequires: mesa-libGL-devel >= 7.6-0.6
@@ -507,6 +508,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Nov 16 2009 Adam Jackson <ajax@redhat.com> 1.7.1-8
+- xserver-1.7.1-libcrypto.patch: Avoid linking against libssl, which is huge
+  and drags in dependent libs we don't care about.
+- xserver-1.7.1-sigaction.patch: Microoptimization to SIGIO handling.
+
 * Fri Nov 06 2009 Adam Jackson <ajax@redhat.com>
 - Fix the previous changelog entry to name the right patch
 
