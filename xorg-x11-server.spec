@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   8%{dist}
+Release:   9%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -81,6 +81,7 @@ Patch6050: xserver-1.7.1-window-pictures.patch
 Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 Patch6052: xserver-1.7.1-libcrypto.patch
 Patch6053: xserver-1.7.1-sigaction.patch
+Patch6054: xserver-1.7.1-stat-sanity.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -508,6 +509,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Nov 20 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.7.1-9
+- xserver-1.7.1-stat-sanity.patch: stat directories that actually exist
+  (possibly #537737).
+
 * Mon Nov 16 2009 Adam Jackson <ajax@redhat.com> 1.7.1-8
 - xserver-1.7.1-libcrypto.patch: Avoid linking against libssl, which is huge
   and drags in dependent libs we don't care about.

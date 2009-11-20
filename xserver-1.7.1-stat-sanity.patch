@@ -1,0 +1,43 @@
+From 2db157924b582933c4b6897505e6f4170e23b56f Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Tue, 13 Oct 2009 10:15:00 +1000
+Subject: [PATCH] loader: actually stat something that has some chance of existing. (v2)
+
+FindModuleInSubdir seems to expect a / at the end of the subdir its
+finding for, so we add the / early, the stat will fail if its
+not a subdir, I'm leaving the S_ISDIR in just in case there is another
+reason it could return 0. This does look a bit silly in strace
+but it seems to work fine.
+
+I have a very intermittent issue where drivers loses its / that
+I've been seeing on/off for a while, this may or may not fix it.
+
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Reviewed-by: Julien Cristau <jcristau@debian.org>
+Signed-off-by: Keith Packard <keithp@keithp.com>
+(cherry picked from commit d85ab6b6483d6ca7d9d22298d05ed1fa3076b042)
+---
+ hw/xfree86/loader/loadmod.c |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/hw/xfree86/loader/loadmod.c b/hw/xfree86/loader/loadmod.c
+index 0b220f1..5b175a5 100644
+--- a/hw/xfree86/loader/loadmod.c
++++ b/hw/xfree86/loader/loadmod.c
+@@ -399,8 +399,11 @@ FindModuleInSubdir(const char *dirpath, const char *module)
+     while ((direntry = readdir(dir))) {
+         if (direntry->d_name[0] == '.')
+             continue;
+-        if ((stat(direntry->d_name, &stat_buf) == 0) && S_ISDIR(stat_buf.st_mode)) {
+-            snprintf(tmpBuf, PATH_MAX, "%s/%s", dirpath, direntry->d_name);
++        snprintf(tmpBuf, PATH_MAX, "%s%s/", dirpath, direntry->d_name);
++	/* the stat with the appended / fails for normal files,
++	   and works for sub dirs fine, looks a bit strange in strace
++	   but does seem to work */
++        if ((stat(tmpBuf, &stat_buf) == 0) && S_ISDIR(stat_buf.st_mode)) {
+             if ((ret = FindModuleInSubdir(tmpBuf, module)))
+                 break;
+             continue;
+-- 
+1.6.5.2
+
