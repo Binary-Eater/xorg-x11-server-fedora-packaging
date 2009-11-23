@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   9%{dist}
+Release:   10%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -324,7 +324,7 @@ git am -p1 %{lua: for i, p in ipairs(patches) do print(p.." ") end}
 %endif
 
 %if 0%{?fedora}
-%define bodhi_flags --with-vendor-web="http://bodhi.fedoraproject.org/"
+%define bodhi_flags --with-vendor-web="http://bodhi.fedoraproject.org/" --with-vendor-name="Fedora Project"
 %endif
 
 # --with-pie ?
@@ -509,6 +509,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Nov 23 2009 Adam Jackson <ajax@redhat.com> 1.7.1-10
+- Fix crash message output. (#539401)
+
 * Fri Nov 20 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.7.1-9
 - xserver-1.7.1-stat-sanity.patch: stat directories that actually exist
   (possibly #537737).
