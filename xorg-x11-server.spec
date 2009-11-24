@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   10%{dist}
+Release:   11%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -82,6 +82,7 @@ Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 Patch6052: xserver-1.7.1-libcrypto.patch
 Patch6053: xserver-1.7.1-sigaction.patch
 Patch6054: xserver-1.7.1-stat-sanity.patch
+Patch6055: xserver-1.7.1-window-picture-performance-regression.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -509,6 +510,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Nov 24 2009 Adam Jackson <ajax@redhat.com> 1.7.1-11
+- xserver-1.7.1-window-picture-performance-regression.patch: Paper over a
+  performance regression caused by the window picture fixes.
+
 * Mon Nov 23 2009 Adam Jackson <ajax@redhat.com> 1.7.1-10
 - Fix crash message output. (#539401)
 
