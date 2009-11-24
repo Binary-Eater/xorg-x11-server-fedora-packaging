@@ -1,0 +1,57 @@
+From 8940385270d2752e03117fa6c24adafff7586422 Mon Sep 17 00:00:00 2001
+From: Aaron Plattner <aaronp@nvidia.com>
+Date: Tue, 24 Nov 2009 11:08:42 -0500
+Subject: [PATCH] Patch over performance regression in KDE
+
+---
+ fb/fbpict.c |   27 ++++++++++++++++++++++++++-
+ 1 files changed, 26 insertions(+), 1 deletions(-)
+
+diff --git a/fb/fbpict.c b/fb/fbpict.c
+index 5c96427..5799e37 100644
+--- a/fb/fbpict.c
++++ b/fb/fbpict.c
+@@ -317,6 +317,27 @@ destroy_drawable (pixman_image_t *image, void *data)
+     pScreen->DestroyPixmap ((PixmapPtr)pDrawable);
+ }
+ 
++/*
++ * Returns TRUE when the specified window is fully contained within its bounding
++ * pixmap.
++ */
++static Bool
++window_is_fully_contained(WindowPtr pWin)
++{
++    PixmapPtr pBoundingPix = (*pWin->drawable.pScreen->GetWindowPixmap)(pWin);
++    int x = pWin->drawable.x, y = pWin->drawable.y;
++
++#ifdef COMPOSITE
++    /* Translate from screen coordinates to pixmap coordinates */
++    x -= pBoundingPix->screen_x;
++    y -= pBoundingPix->screen_y;
++#endif
++
++    return x >= 0 && y >= 0 &&
++	   x + pWin->drawable.width <= pBoundingPix->drawable.width &&
++	   y + pWin->drawable.height <= pBoundingPix->drawable.height;
++}
++
+ static pixman_image_t *
+ create_bits_picture (PicturePtr pict,
+ 		     Bool	has_clip,
+@@ -328,7 +349,11 @@ create_bits_picture (PicturePtr pict,
+     pixman_image_t *image;
+     DrawablePtr drawable;
+ 
+-    if (is_src && pict->pDrawable->type == DRAWABLE_WINDOW)
++    /* Copy the source window if part of it lies outside its bounding pixmap to
++     * avoid reading outside that pixmap's bounds, since Pixman doesn't clip the
++     * source image per pixel */
++    if (is_src && pict->pDrawable->type == DRAWABLE_WINDOW &&
++	    !window_is_fully_contained((WindowPtr)pict->pDrawable))
+ 	drawable = copy_drawable (pict->pDrawable);
+     else
+ 	drawable = pict->pDrawable;
+-- 
+1.6.5.2
+

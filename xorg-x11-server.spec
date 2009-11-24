@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.1
-Release:   11%{dist}
+Release:   12%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -83,6 +83,7 @@ Patch6052: xserver-1.7.1-libcrypto.patch
 Patch6053: xserver-1.7.1-sigaction.patch
 Patch6054: xserver-1.7.1-stat-sanity.patch
 Patch6055: xserver-1.7.1-window-picture-performance-regression.patch
+Patch6066: xserver-1.7.1-glx14-swrast.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -510,6 +511,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Nov 24 2009 Adam Jackson <ajax@redhat.com> 1.7.1-12
+- xserver-1.7.1-glx14-swrast.patch: Enable GLX 1.4 for software GLX.
+
 * Tue Nov 24 2009 Adam Jackson <ajax@redhat.com> 1.7.1-11
 - xserver-1.7.1-window-picture-performance-regression.patch: Paper over a
   performance regression caused by the window picture fixes.
