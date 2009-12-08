@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.7.1
-Release:   12%{dist}
+Version:   1.7.3
+Release:   1%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -77,12 +77,9 @@ Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 Patch6047: xserver-1.7.0-glx-versioning.patch
 Patch6048: xserver-1.7.0-exa-fix-mixed.patch
 Patch6049: xserver-1.7.1-multilib.patch
-Patch6050: xserver-1.7.1-window-pictures.patch
 Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 Patch6052: xserver-1.7.1-libcrypto.patch
 Patch6053: xserver-1.7.1-sigaction.patch
-Patch6054: xserver-1.7.1-stat-sanity.patch
-Patch6055: xserver-1.7.1-window-picture-performance-regression.patch
 Patch6066: xserver-1.7.1-glx14-swrast.patch
 
 %define moduledir	%{_libdir}/xorg/modules
@@ -511,6 +508,14 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Dec 08 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.7.3-1
+- xserver 1.7.3
+- xserver-1.7.1-stat-sanity.patch: Drop, merged upstream.
+- xserver-1.7.1-window-pictures.patch: Drop, code it bases on reverted
+  upstream
+- xserver-1.7.1-window-picture-performance-regression.patch: Drop, code it
+  bases on reverted upstream.
+
 * Tue Nov 24 2009 Adam Jackson <ajax@redhat.com> 1.7.1-12
 - xserver-1.7.1-glx14-swrast.patch: Enable GLX 1.4 for software GLX.
 
