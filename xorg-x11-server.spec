@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.3
-Release:   3%{dist}
+Release:   4%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -82,6 +82,7 @@ Patch6052: xserver-1.7.1-libcrypto.patch
 Patch6066: xserver-1.7.1-glx14-swrast.patch
 
 Patch6067: xserver-1.7.3-exa-master.patch
+Patch6068: xserver-1.7.3-fb-backport.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -509,6 +510,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Dec 21 2009 Dave Airlie <airlied@redhat.com> 1.7.3-4
+- Backport FB changes from master.
+
 * Wed Dec 17 2009 Dave Airlie <airlied@redhat.com> 1.7.3-3
 - backport EXA fixes from master, should fix xfig crashes X server
 
