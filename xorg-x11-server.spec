@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.3
-Release:   4%{dist}
+Release:   5%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -368,6 +368,7 @@ install -m 644 %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/xserver
 %define inst_srcdir %{buildroot}/%{xserver_source_dir}
 mkdir -p %{inst_srcdir}/{Xext,xkb,GL,hw/{xquartz/bundle,xfree86/common}}
 cp cpprules.in %{inst_srcdir}
+cp shave*in %{inst_srcdir}
 cp {,%{inst_srcdir}/}hw/xquartz/bundle/cpprules.in
 cp xkb/README.compiled %{inst_srcdir}/xkb
 cp hw/xfree86/xorgconf.cpp %{inst_srcdir}/hw/xfree86
@@ -510,6 +511,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Dec 21 2009 Adam Tkac <atkac redhat com> 1.7.3-5
+- ship shave.in and shave-libtool.in in the -source subpackage
+
 * Mon Dec 21 2009 Dave Airlie <airlied@redhat.com> 1.7.3-4
 - Backport FB changes from master.
 
