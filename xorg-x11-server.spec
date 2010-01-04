@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.3
-Release:   5%{dist}
+Release:   6%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -345,7 +345,7 @@ export CFLAGS="${RPM_OPT_FLAGS} -Wstrict-overflow -rdynamic $CFLAGS"
 	%{dri_flags} %{?bodhi_flags} \
 	${CONFIGURE}
         
-make %{?_smp_mflags}
+make V=1 %{?_smp_mflags}
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -511,6 +511,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Jan 04 2010 Adam Jackson <ajax@redhat.com> 1.7.3-6
+- Build with V=1 for debugging.
+
 * Mon Dec 21 2009 Adam Tkac <atkac redhat com> 1.7.3-5
 - ship shave.in and shave-libtool.in in the -source subpackage
 
