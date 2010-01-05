@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.3
-Release:   7%{dist}
+Release:   8%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -83,6 +83,9 @@ Patch6066: xserver-1.7.1-glx14-swrast.patch
 
 Patch6067: xserver-1.7.3-exa-master.patch
 Patch6068: xserver-1.7.3-fb-backport.patch
+
+# sent to list, should be upstream with next release
+Patch6069: xserver-1.7.3-cursor-jumps.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -511,6 +514,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Jan 05 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.3-8
+- xserver-1.7.3-cursor-jumps.patch: don't jump to 0/0 after hitting a key
+  one a key+valuator device (#548938)
+
 * Tue Jan 05 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.3-7
 - Require xkeyboard-config, not xkbdata. xkbdata has been replaced by
   xkeyboard-config.

@@ -1,0 +1,38 @@
+From 84842964462a61e524ceb3cf9f9a2999a6c89b92 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 5 Jan 2010 13:15:25 +1000
+Subject: [PATCH] dix: don't update the slave coordinates from the VCK.
+
+A keyboard event from a device with both valuators and keys will be posted
+through the VCK. In this case, do not update the slave device coordinates
+from the VCK - they're always 0/0. Leave them as-is, for the next pointer
+event will continue where it left.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ dix/getevents.c |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/dix/getevents.c b/dix/getevents.c
+index 2df32e8..85518b2 100644
+--- a/dix/getevents.c
++++ b/dix/getevents.c
+@@ -630,9 +630,12 @@ updateFromMaster(EventListPtr events, DeviceIntPtr dev, int type, int *num_event
+     if (master && master->last.slave != dev)
+     {
+         CreateClassesChangedEvent(events, master, dev, type);
+-        updateSlaveDeviceCoords(master, dev);
+-        master->last.slave = dev;
+-        master->last.numValuators = dev->last.numValuators;
++        if (IsPointerDevice(master))
++        {
++            updateSlaveDeviceCoords(master, dev);
++            master->last.slave = dev;
++            master->last.numValuators = dev->last.numValuators;
++        }
+         (*num_events)++;
+         events++;
+     }
+-- 
+1.6.5.2
+
