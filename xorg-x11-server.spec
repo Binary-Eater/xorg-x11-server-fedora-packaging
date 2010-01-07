@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.3
-Release:   8%{dist}
+Release:   9%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -86,6 +86,7 @@ Patch6068: xserver-1.7.3-fb-backport.patch
 
 # sent to list, should be upstream with next release
 Patch6069: xserver-1.7.3-cursor-jumps.patch
+Patch6070: xserver-1.7.3-no-free-on-abort.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -514,6 +515,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Jan 07 2010 Adam Jackson <ajax@redhat.com> 1.7.3-9
+- xserver-1.7.3-no-free-on-abort.patch: Elide calling free() on abnormal
+  server exit, since if we're exiting due to malloc arena corruption, that
+  will deadlock.
+
 * Tue Jan 05 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.3-8
 - xserver-1.7.3-cursor-jumps.patch: don't jump to 0/0 after hitting a key
   one a key+valuator device (#548938)
