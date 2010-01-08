@@ -1,4 +1,4 @@
-From 84842964462a61e524ceb3cf9f9a2999a6c89b92 Mon Sep 17 00:00:00 2001
+From 6f265d55a61f9be323583b8acacae783be72bda9 Mon Sep 17 00:00:00 2001
 From: Peter Hutterer <peter.hutterer@who-t.net>
 Date: Tue, 5 Jan 2010 13:15:25 +1000
 Subject: [PATCH] dix: don't update the slave coordinates from the VCK.
@@ -9,12 +9,14 @@ from the VCK - they're always 0/0. Leave them as-is, for the next pointer
 event will continue where it left.
 
 Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+Reviewed-by: Keith Packard <keithp@keithp.com>
+Signed-off-by: Keith Packard <keithp@keithp.com>
 ---
- dix/getevents.c |    9 ++++++---
- 1 files changed, 6 insertions(+), 3 deletions(-)
+ dix/getevents.c |    7 +++++--
+ 1 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/dix/getevents.c b/dix/getevents.c
-index 2df32e8..85518b2 100644
+index 2df32e8..bfde2e9 100644
 --- a/dix/getevents.c
 +++ b/dix/getevents.c
 @@ -630,9 +630,12 @@ updateFromMaster(EventListPtr events, DeviceIntPtr dev, int type, int *num_event
@@ -22,17 +24,16 @@ index 2df32e8..85518b2 100644
      {
          CreateClassesChangedEvent(events, master, dev, type);
 -        updateSlaveDeviceCoords(master, dev);
--        master->last.slave = dev;
--        master->last.numValuators = dev->last.numValuators;
 +        if (IsPointerDevice(master))
 +        {
 +            updateSlaveDeviceCoords(master, dev);
-+            master->last.slave = dev;
 +            master->last.numValuators = dev->last.numValuators;
 +        }
+         master->last.slave = dev;
+-        master->last.numValuators = dev->last.numValuators;
          (*num_events)++;
          events++;
      }
 -- 
-1.6.5.2
+1.6.6
 

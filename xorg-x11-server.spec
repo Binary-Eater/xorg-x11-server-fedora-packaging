@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.7.3
-Release:   9%{dist}
+Version:   1.7.4
+Release:   1%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -82,9 +82,8 @@ Patch6052: xserver-1.7.1-libcrypto.patch
 Patch6066: xserver-1.7.1-glx14-swrast.patch
 
 Patch6067: xserver-1.7.3-exa-master.patch
-Patch6068: xserver-1.7.3-fb-backport.patch
 
-# sent to list, should be upstream with next release
+# FIXME: merged upstream, but not quite correct yet
 Patch6069: xserver-1.7.3-cursor-jumps.patch
 Patch6070: xserver-1.7.3-no-free-on-abort.patch
 
@@ -515,6 +514,12 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Jan 08 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.4-1
+- xserver 1.7.4
+- update exa-master patch to current diff against master.
+- update cursor-jumps patch to the one merged to master, still not perfect
+  but better than the previous one.
+
 * Thu Jan 07 2010 Adam Jackson <ajax@redhat.com> 1.7.3-9
 - xserver-1.7.3-no-free-on-abort.patch: Elide calling free() on abnormal
   server exit, since if we're exiting due to malloc arena corruption, that
