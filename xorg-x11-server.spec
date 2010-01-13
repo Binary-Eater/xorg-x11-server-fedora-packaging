@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4
-Release:   2%{dist}
+Release:   3%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -87,6 +87,8 @@ Patch6067: xserver-1.7.3-exa-master.patch
 # FIXME: merged upstream, but not quite correct yet
 Patch6069: xserver-1.7.3-cursor-jumps.patch
 Patch6070: xserver-1.7.3-no-free-on-abort.patch
+# 540584
+Patch6071: xserver-1.7.4-reset-sli-pointers.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -518,6 +520,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Jan 14 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.4-3
+- xserver-1.7.4-reset-sli-pointers.patch: reset the server LED indicator
+  pointers after device class copying (#540584) 
+
 * Wed Jan 13 2010 Adam Jackson <ajax@redhat.com> 1.7.4-2
 - Add RHEL conditional for bodhi_flags
 - Build with -z relro
