@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -47,6 +47,7 @@ Source30: find-provides
 #define __find_provides {nil}
 
 Patch5: xserver-1.4.99-pic-libxf86config.patch
+Patch6: xserver-1.7.4-z-now.patch
 
 # OpenGL compositing manager feature/optimization patches.
 Patch103:  xserver-1.5.0-bg-none-root.patch
@@ -330,10 +331,13 @@ git am -p1 %{lua: for i, p in ipairs(patches) do print(p.." ") end}
 %if 0%{?fedora}
 %define bodhi_flags --with-vendor-web="http://bodhi.fedoraproject.org/" --with-vendor-name="Fedora Project"
 %endif
+%if 0%{?rhel}
+%define bodhi_flags --with-vendor-web="https://www.redhat.com/apps/support/" --with-vendor-name="Red Hat"
+%endif
 
 # --with-pie ?
 autoreconf -v --install || exit 1
-export CFLAGS="${RPM_OPT_FLAGS} -Wstrict-overflow -rdynamic $CFLAGS"
+export CFLAGS="${RPM_OPT_FLAGS} -Wstrict-overflow -rdynamic $CFLAGS -Wl,-z,relro"
 %configure --enable-maintainer-mode %{xservers} \
 	--disable-static \
 	--with-pic \
@@ -514,6 +518,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Jan 13 2010 Adam Jackson <ajax@redhat.com> 1.7.4-2
+- Add RHEL conditional for bodhi_flags
+- Build with -z relro
+- xserver-1.7.4-z-now.patch: Link Xorg with -z now
+
 * Fri Jan 08 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.4-1
 - xserver 1.7.4
 - update exa-master patch to current diff against master.
