@@ -1,0 +1,337 @@
+From b4dd7e0c5a10bf11c6e4c8aca6d352d24e4f9f34 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 14 Jan 2010 16:50:01 -0500
+Subject: [PATCH] randr compat/primary unify
+
+---
+ hw/xfree86/common/xf86cmap.c   |   10 +--
+ hw/xfree86/modes/xf86Crtc.c    |  133 ++++++++++++++++------------------------
+ hw/xfree86/modes/xf86Crtc.h    |   18 +++--
+ hw/xfree86/modes/xf86RandR12.c |    7 +-
+ 4 files changed, 72 insertions(+), 96 deletions(-)
+
+diff --git a/hw/xfree86/common/xf86cmap.c b/hw/xfree86/common/xf86cmap.c
+index 08f557c..1f4a1c6 100644
+--- a/hw/xfree86/common/xf86cmap.c
++++ b/hw/xfree86/common/xf86cmap.c
+@@ -1001,8 +1001,7 @@ xf86ChangeGammaRamp(
+     CMapLinkPtr pLink;
+ 
+     if (xf86_crtc_supports_gamma(pScrn)) {
+-	xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+-	RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
++        RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScreen)->randr_crtc;
+ 
+ 	if (crtc->gammaSize != size)
+ 	    return BadValue;
+@@ -1074,9 +1073,7 @@ xf86GetGammaRampSize(ScreenPtr pScreen)
+     CMapScreenPtr pScreenPriv;
+ 
+     if (xf86_crtc_supports_gamma(pScrn)) {
+-	xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+-	RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
+-
++        RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScreen)->randr_crtc;
+ 	return crtc->gammaSize;
+     }
+ 
+@@ -1103,8 +1100,7 @@ xf86GetGammaRamp(
+     int shift, sigbits;
+ 
+     if (xf86_crtc_supports_gamma(pScrn)) {
+-	xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+-	RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
++        RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScreen)->randr_crtc;
+ 
+ 	if (crtc->gammaSize < size)
+ 	    return BadValue;
+diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
+index 0062d06..ea520c2 100644
+--- a/hw/xfree86/modes/xf86Crtc.c
++++ b/hw/xfree86/modes/xf86Crtc.c
+@@ -1801,88 +1801,58 @@ biggestMode(DisplayModePtr a, DisplayModePtr b)
+     return b;
+ }
+ 
+-static xf86OutputPtr
+-SetCompatOutput(xf86CrtcConfigPtr config)
++/*
++ * vidmode modeset has to operate on something.  give it the RANDR primary
++ * if defined, or else the first connected one.  There might not be any,
++ * in which case modeset will just have to fail, since where else are we
++ * going to get a mode list from.
++ */
++xf86OutputPtr
++xf86GetPrimaryOutput(ScreenPtr pScreen)
+ {
+-    xf86OutputPtr output = NULL, test = NULL;
+-    DisplayModePtr maxmode = NULL, testmode, mode;
+-    int o, compat = -1, count, mincount = 0;
++    rrScrPrivPtr rrScrPriv = rrGetScrPriv(pScreen);
++    int i, j;
+ 
+-    /* Look for one that's definitely connected */
+-    for (o = 0; o < config->num_output; o++)
+-    {
+-	test = config->output[o];
+-	if (!test->crtc)
+-	    continue;
+-	if (test->status != XF86OutputStatusConnected)
+-	    continue;
+-	if (!test->probed_modes)
+-	    continue;
++    /* defaults to NULL */
++    if (rrScrPriv->primaryOutput)
++        return rrScrPriv->primaryOutput->devPrivate;
+ 
+-	testmode = mode = test->probed_modes;
+-	for (count = 0; mode; mode = mode->next, count++)
+-	    testmode = biggestMode(testmode, mode);
+-
+-	if (!output) {
+-	    output = test;
+-	    compat = o;
+-	    maxmode = testmode;
+-	    mincount = count;
+-	} else if (maxmode == biggestMode(maxmode, testmode)) {
+-	    output = test;
+-	    compat = o;
+-	    maxmode = testmode;
+-	    mincount = count;
+-	} else if ((maxmode->HDisplay == testmode->HDisplay) && 
+-		(maxmode->VDisplay == testmode->VDisplay) &&
+-		count <= mincount) {
+-	    output = test;
+-	    compat = o;
+-	    maxmode = testmode;
+-	    mincount = count;
+-	}
++    for (i = 0; i < rrScrPriv->numCrtcs; i++) {
++        for (j = 0; j < rrScrPriv->crtcs[i]->numOutputs; j++) {
++            RROutputPtr output = rrScrPriv->crtcs[i]->outputs[j];
++            if (output->connection == RR_Connected)
++                return output->devPrivate;
++        }
+     }
+ 
+-    /* If we didn't find one, take anything we can get */
+-    if (!output)
+-    {
+-	for (o = 0; o < config->num_output; o++)
+-	{
+-	    test = config->output[o];
+-	    if (!test->crtc)
+-		continue;
+-	    if (!test->probed_modes)
+-		continue;
++    return NULL;
++}
+ 
+-	    if (!output) {
+-		output = test;
+-		compat = o;
+-	    } else if (test->probed_modes->HDisplay < output->probed_modes->HDisplay) {
+-		output = test;
+-		compat = o;
+-	    }
+-	}
+-    }
++/*
++ * vidmode gamma, however, operates on a CRTC, and those always exist.  Pick
++ * the one attached to the vidmode primary output (as above), or else just
++ * the first one we've got.
++ */
++xf86CrtcPtr
++xf86GetPrimaryCrtc(ScreenPtr pScreen)
++{
++    rrScrPrivPtr rrScrPriv = rrGetScrPriv(pScreen);
++    xf86OutputPtr output;
+ 
+-    if (compat >= 0) {
+-	config->compat_output = compat;
+-    } else {
+-	/* Don't change the compat output when no valid outputs found */
+-	output = config->output[config->compat_output];
+-    }
++    if ((output = xf86GetPrimaryOutput(pScreen)))
++        return output->randr_output->crtc->devPrivate;
+ 
+-    return output;
++    return rrScrPriv->crtcs[0]->devPrivate;
+ }
+ 
+ void
+ xf86SetScrnInfoModes (ScrnInfoPtr scrn)
+ {
+-    xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(scrn);
+     xf86OutputPtr	output;
+     xf86CrtcPtr		crtc;
+     DisplayModePtr	last, mode = NULL;
+ 
+-    output = SetCompatOutput(config);
++    output = xf86GetPrimaryOutput(scrn->pScreen);
+ 
+     if (!output)
+ 	return; /* punt */
+@@ -2214,7 +2184,7 @@ xf86TargetFallback(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
+     DisplayModePtr target_mode = NULL;
+     Rotation target_rotation = RR_Rotate_0;
+     DisplayModePtr default_mode;
+-    int default_preferred, target_preferred = 0, o;
++    int o, default_preferred, target_preferred = 0, target_output = 0;
+ 
+     /* User preferred > preferred > other modes */
+     for (o = -1; nextEnabledOutput(config, enabled, &o); ) {
+@@ -2229,12 +2199,12 @@ xf86TargetFallback(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
+ 	    target_mode = default_mode;
+ 	    target_preferred = default_preferred;
+ 	    target_rotation = config->output[o]->initial_rotation;
+-	    config->compat_output = o;
++            target_output = o;
+ 	}
+     }
+ 
+     if (target_mode)
+-	modes[config->compat_output] = target_mode;
++	modes[target_output] = target_mode;
+ 
+     /* Fill in other output modes */
+     for (o = -1; nextEnabledOutput(config, enabled, &o); ) {
+@@ -2629,7 +2599,7 @@ xf86SetDesiredModes (ScrnInfoPtr scrn)
+ 
+     for (c = 0; c < config->num_crtc; c++)
+     {
+-	xf86OutputPtr	output = NULL;
++	xf86OutputPtr	output = NULL, primary_output;
+ 	int		o;
+ 	RRTransformPtr	transform;
+ 
+@@ -2639,8 +2609,9 @@ xf86SetDesiredModes (ScrnInfoPtr scrn)
+ 	if (!crtc->enabled)
+ 	    continue;
+ 
+-	if (config->output[config->compat_output]->crtc == crtc)
+-	    output = config->output[config->compat_output];
++        primary_output = xf86GetPrimaryOutput(scrn->pScreen);
++        if (primary_output && primary_output->crtc == crtc)
++	    output = primary_output;
+ 	else
+ 	{
+ 	    for (o = 0; o < config->num_output; o++)
+@@ -2749,7 +2720,7 @@ xf86OutputFindClosestMode (xf86OutputPtr output, DisplayModePtr desired)
+ 
+ /**
+  * When setting a mode through XFree86-VidModeExtension or XFree86-DGA,
+- * take the specified mode and apply it to the crtc connected to the compat
++ * take the specified mode and apply it to the crtc connected to the primary
+  * output. Then, find similar modes for the other outputs, as with the
+  * InitialConfiguration code above. The goal is to clone the desired
+  * mode across all outputs that are currently active.
+@@ -2760,16 +2731,19 @@ xf86SetSingleMode (ScrnInfoPtr pScrn, DisplayModePtr desired, Rotation rotation)
+ {
+     xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(pScrn);
+     Bool		ok = TRUE;
+-    xf86OutputPtr	compat_output = config->output[config->compat_output];
+-    DisplayModePtr	compat_mode;
++    xf86OutputPtr	primary_output = xf86GetPrimaryOutput(pScrn->pScreen);
++    DisplayModePtr	primary_mode;
+     int			c;
+ 
++    if (!primary_output)
++        return FALSE;
++
+     /*
+      * Let the compat output drive the final mode selection
+      */
+-    compat_mode = xf86OutputFindClosestMode (compat_output, desired);
+-    if (compat_mode)
+-	desired = compat_mode;
++    primary_mode = xf86OutputFindClosestMode (primary_output, desired);
++    if (primary_mode)
++	desired = primary_mode;
+     
+     for (c = 0; c < config->num_crtc; c++)
+     {
+@@ -2946,6 +2920,7 @@ xf86OutputSetEDID (xf86OutputPtr output, xf86MonPtr edid_mon)
+     ScrnInfoPtr		scrn = output->scrn;
+     xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(scrn);
+     int			i;
++    rrScrPrivPtr        rrScrPriv = rrGetScrPriv(scrn->pScreen);
+ #ifdef RANDR_12_INTERFACE
+     int			size;
+ #endif
+@@ -2961,8 +2936,8 @@ xf86OutputSetEDID (xf86OutputPtr output, xf86MonPtr edid_mon)
+ 	xf86PrintEDID(edid_mon);
+     }
+ 
+-    /* Set the DDC properties for the 'compat' output */
+-    if (output == config->output[config->compat_output])
++    /* if this is the primary output, set the screen properties */
++    if (output->randr_output == rrScrPriv->primaryOutput)
+         xf86SetDDCproperties(scrn, edid_mon);
+ 
+ #ifdef RANDR_12_INTERFACE
+diff --git a/hw/xfree86/modes/xf86Crtc.h b/hw/xfree86/modes/xf86Crtc.h
+index 9baa956..9e7babb 100644
+--- a/hw/xfree86/modes/xf86Crtc.h
++++ b/hw/xfree86/modes/xf86Crtc.h
+@@ -631,13 +631,7 @@ typedef void (*xf86_crtc_notify_proc_ptr) (ScreenPtr pScreen);
+ typedef struct _xf86CrtcConfig {
+     int			num_output;
+     xf86OutputPtr	*output;
+-    /**
+-     * compat_output is used whenever we deal
+-     * with legacy code that only understands a single
+-     * output. pScrn->modes will be loaded from this output,
+-     * adjust frame will whack this output, etc.
+-     */
+-    int			compat_output;
++    int			unused;
+ 
+     int			num_crtc;
+     xf86CrtcPtr		*crtc;
+@@ -690,6 +684,16 @@ extern _X_EXPORT int xf86CrtcConfigPrivateIndex;
+ #define XF86_CRTC_CONFIG_PTR(p)	((xf86CrtcConfigPtr) ((p)->privates[xf86CrtcConfigPrivateIndex].ptr))
+ 
+ /*
++ * Compat functions
++ */
++
++extern _X_EXPORT xf86OutputPtr
++xf86GetPrimaryOutput(ScreenPtr pScreen);
++
++extern _X_EXPORT xf86CrtcPtr
++xf86GetPrimaryCrtc(ScreenPtr pScreen);
++
++/*
+  * Initialize xf86CrtcConfig structure
+  */
+ 
+diff --git a/hw/xfree86/modes/xf86RandR12.c b/hw/xfree86/modes/xf86RandR12.c
+index 1b47a65..739e5a1 100644
+--- a/hw/xfree86/modes/xf86RandR12.c
++++ b/hw/xfree86/modes/xf86RandR12.c
+@@ -805,7 +805,8 @@ xf86RandR12CreateScreenResources (ScreenPtr pScreen)
+ 	}
+ 	else
+ 	{
+-	    xf86OutputPtr   output = config->output[config->compat_output];
++            rrScrPrivPtr rrScrPriv = rrGetScrPriv(pScreen);
++	    xf86OutputPtr output = rrScrPriv->primaryOutput->devPrivate;
+ 
+ 	    if (output->conf_monitor &&
+ 		(output->conf_monitor->mon_width  > 0 &&
+@@ -1719,8 +1720,8 @@ xf86RandR12ChangeGamma(int scrnIndex, Gamma gamma)
+ {
+     CARD16 *points, *red, *green, *blue;
+     ScrnInfoPtr pScrn = xf86Screens[scrnIndex];
+-    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+-    RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
++    RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScrn->pScreen)->randr_crtc;
++
+     int size = max(0, crtc->gammaSize);
+ 
+     if (!size)
+-- 
+1.6.5.2
+
