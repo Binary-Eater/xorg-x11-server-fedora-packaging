@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4
-Release:   4%{dist}
+Release:   5%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,7 +89,7 @@ Patch6069: xserver-1.7.3-cursor-jumps.patch
 Patch6070: xserver-1.7.3-no-free-on-abort.patch
 # 540584
 Patch6071: xserver-1.7.4-reset-sli-pointers.patch
-Patch6072: xserver-1.7.4-randr-unify-primary-compat.patch
+#Patch6072: xserver-1.7.4-randr-unify-primary-compat.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -521,6 +521,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Jan 26 2010 Dave Airlie <airlied@redhat.com> 1.7.4-5
+- drop randr unify for now oops radeon for hansg (#558724)
+
 * Thu Jan 14 2010 Adam Jackson <ajax@redhat.com> 1.7.4-4
 - xserver-1.7.4-randr-unify-primary-compat.patch: Unify RANDR's primary and
   compat output concepts
