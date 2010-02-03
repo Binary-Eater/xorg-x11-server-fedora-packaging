@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4
-Release:   6%{dist}
+Release:   7%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,9 +89,9 @@ Patch6069: xserver-1.7.3-cursor-jumps.patch
 Patch6070: xserver-1.7.3-no-free-on-abort.patch
 # 540584
 Patch6071: xserver-1.7.4-reset-sli-pointers.patch
-#Patch6072: xserver-1.7.4-randr-unify-primary-compat.patch
+Patch6072: xserver-1.7.4-randr-unify-primary-compat.patch
 # 543647
-Patch6072: xserver-1.7.4-owner-events.patch
+Patch6073: xserver-1.7.4-owner-events.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -523,6 +523,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Feb 03 2010 Adam Jackson <ajax@redhat.com> 1.7.4-7
+- Fix randr unify patch and re-enable.
+
 * Mon Feb 01 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.4-6
 - xserver-1.7.4-owner-events.patch: if owner-events is true for passive
   grabs, add the window mask (#543647)
