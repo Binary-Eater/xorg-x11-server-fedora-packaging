@@ -1,17 +1,17 @@
-From ecb485efa4d572f42432d5559c323037b4be3a7b Mon Sep 17 00:00:00 2001
+From 8223378890b5cce20d79a58098221017f87e7e85 Mon Sep 17 00:00:00 2001
 From: Adam Jackson <ajax@redhat.com>
 Date: Thu, 14 Jan 2010 16:50:01 -0500
 Subject: [PATCH] randr compat/primary unify
 
 ---
- hw/xfree86/common/xf86cmap.c   |   28 +++-----
+ hw/xfree86/common/xf86cmap.c   |   27 +++----
  hw/xfree86/modes/xf86Crtc.c    |  151 +++++++++++++++++++---------------------
  hw/xfree86/modes/xf86Crtc.h    |   18 +++--
  hw/xfree86/modes/xf86RandR12.c |    6 +-
- 5 files changed, 101 insertions(+), 105 deletions(-)
+ 4 files changed, 98 insertions(+), 104 deletions(-)
 
 diff --git a/hw/xfree86/common/xf86cmap.c b/hw/xfree86/common/xf86cmap.c
-index 08f557c..3d17965 100644
+index edd5ae9..25ece4a 100644
 --- a/hw/xfree86/common/xf86cmap.c
 +++ b/hw/xfree86/common/xf86cmap.c
 @@ -1001,8 +1001,7 @@ xf86ChangeGammaRamp(
@@ -22,9 +22,9 @@ index 08f557c..3d17965 100644
 -	RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
 +        RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScrn)->randr_crtc;
  
- 	if (crtc->gammaSize != size)
- 	    return BadValue;
-@@ -1015,8 +1014,7 @@ xf86ChangeGammaRamp(
+ 	if (crtc) {
+ 	    if (crtc->gammaSize != size)
+@@ -1017,8 +1016,7 @@ xf86ChangeGammaRamp(
      if(CMapScreenKey == NULL)
          return BadImplementation;
  
@@ -34,25 +34,26 @@ index 08f557c..3d17965 100644
      if(!pScreenPriv)
          return BadImplementation;
  
-@@ -1028,8 +1026,7 @@ xf86ChangeGammaRamp(
+@@ -1030,8 +1028,7 @@ xf86ChangeGammaRamp(
      /* mark all colormaps on this screen */
      pLink = pScreenPriv->maps;
      while(pLink) {
 -    	pColPriv = (CMapColormapPtr)dixLookupPrivate(&pLink->cmap->devPrivates,
 -						     CMapColormapKey);
-+    	pColPriv = dixLookupPrivate(&pLink->cmap->devPrivates, CMapColormapKey);
++	pColPriv = dixLookupPrivate(&pLink->cmap->devPrivates, CMapColormapKey);
          pColPriv->recalculate = TRUE;
          pLink = pLink->next;
      }
-@@ -1074,17 +1071,16 @@ xf86GetGammaRampSize(ScreenPtr pScreen)
+@@ -1076,18 +1073,18 @@ xf86GetGammaRampSize(ScreenPtr pScreen)
      CMapScreenPtr pScreenPriv;
  
      if (xf86_crtc_supports_gamma(pScrn)) {
 -	xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
 -	RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
--
 +        RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScrn)->randr_crtc;
- 	return crtc->gammaSize;
+ 
+ 	if (crtc)
+ 	    return crtc->gammaSize;
      }
  
 -    if(CMapScreenKey == NULL) return 0;
@@ -68,7 +69,7 @@ index 08f557c..3d17965 100644
  
      return pScreenPriv->gammaElements;
  }
-@@ -1103,8 +1099,7 @@ xf86GetGammaRamp(
+@@ -1106,8 +1103,7 @@ xf86GetGammaRamp(
      int shift, sigbits;
  
      if (xf86_crtc_supports_gamma(pScrn)) {
@@ -76,9 +77,9 @@ index 08f557c..3d17965 100644
 -	RRCrtcPtr crtc = config->output[config->compat_output]->crtc->randr_crtc;
 +        RRCrtcPtr crtc = xf86GetPrimaryCrtc(pScrn)->randr_crtc;
  
- 	if (crtc->gammaSize < size)
- 	    return BadValue;
-@@ -1122,8 +1117,7 @@ xf86GetGammaRamp(
+ 	if (crtc) {
+ 	    if (crtc->gammaSize < size)
+@@ -1127,8 +1123,7 @@ xf86GetGammaRamp(
      if(CMapScreenKey == NULL) 
  	return BadImplementation;
  
@@ -89,10 +90,10 @@ index 08f557c..3d17965 100644
  	return BadImplementation;
  
 diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index 0062d06..7d806d0 100644
+index 9370640..ef9cbb7 100644
 --- a/hw/xfree86/modes/xf86Crtc.c
 +++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -1801,88 +1801,74 @@ biggestMode(DisplayModePtr a, DisplayModePtr b)
+@@ -1780,88 +1780,74 @@ biggestMode(DisplayModePtr a, DisplayModePtr b)
      return b;
  }
  
@@ -186,7 +187,7 @@ index 0062d06..7d806d0 100644
 -    } else {
 -	/* Don't change the compat output when no valid outputs found */
 -	output = config->output[config->compat_output];
-+    /* desperation */   
++    /* desperation */
 +    for (i = 0; i < config->num_output; i++) {
 +        xf86OutputPtr output = config->output[i];
 +        if (output->status == XF86OutputStatusUnknown)
@@ -231,7 +232,7 @@ index 0062d06..7d806d0 100644
  
      if (!output)
  	return; /* punt */
-@@ -2214,7 +2200,7 @@ xf86TargetFallback(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
+@@ -2149,7 +2135,7 @@ xf86TargetFallback(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
      DisplayModePtr target_mode = NULL;
      Rotation target_rotation = RR_Rotate_0;
      DisplayModePtr default_mode;
@@ -240,7 +241,7 @@ index 0062d06..7d806d0 100644
  
      /* User preferred > preferred > other modes */
      for (o = -1; nextEnabledOutput(config, enabled, &o); ) {
-@@ -2229,12 +2215,12 @@ xf86TargetFallback(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
+@@ -2164,12 +2150,12 @@ xf86TargetFallback(ScrnInfoPtr scrn, xf86CrtcConfigPtr config,
  	    target_mode = default_mode;
  	    target_preferred = default_preferred;
  	    target_rotation = config->output[o]->initial_rotation;
@@ -255,7 +256,7 @@ index 0062d06..7d806d0 100644
  
      /* Fill in other output modes */
      for (o = -1; nextEnabledOutput(config, enabled, &o); ) {
-@@ -2629,7 +2615,7 @@ xf86SetDesiredModes (ScrnInfoPtr scrn)
+@@ -2561,7 +2547,7 @@ xf86SetDesiredModes (ScrnInfoPtr scrn)
  
      for (c = 0; c < config->num_crtc; c++)
      {
@@ -264,7 +265,7 @@ index 0062d06..7d806d0 100644
  	int		o;
  	RRTransformPtr	transform;
  
-@@ -2639,8 +2625,9 @@ xf86SetDesiredModes (ScrnInfoPtr scrn)
+@@ -2571,8 +2557,9 @@ xf86SetDesiredModes (ScrnInfoPtr scrn)
  	if (!crtc->enabled)
  	    continue;
  
@@ -276,7 +277,7 @@ index 0062d06..7d806d0 100644
  	else
  	{
  	    for (o = 0; o < config->num_output; o++)
-@@ -2749,7 +2736,7 @@ xf86OutputFindClosestMode (xf86OutputPtr output, DisplayModePtr desired)
+@@ -2681,7 +2668,7 @@ xf86OutputFindClosestMode (xf86OutputPtr output, DisplayModePtr desired)
  
  /**
   * When setting a mode through XFree86-VidModeExtension or XFree86-DGA,
@@ -285,7 +286,7 @@ index 0062d06..7d806d0 100644
   * output. Then, find similar modes for the other outputs, as with the
   * InitialConfiguration code above. The goal is to clone the desired
   * mode across all outputs that are currently active.
-@@ -2760,16 +2747,19 @@ xf86SetSingleMode (ScrnInfoPtr pScrn, DisplayModePtr desired, Rotation rotation)
+@@ -2692,16 +2679,19 @@ xf86SetSingleMode (ScrnInfoPtr pScrn, DisplayModePtr desired, Rotation rotation)
  {
      xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(pScrn);
      Bool		ok = TRUE;
@@ -310,7 +311,7 @@ index 0062d06..7d806d0 100644
      
      for (c = 0; c < config->num_crtc; c++)
      {
-@@ -2946,6 +2936,7 @@ xf86OutputSetEDID (xf86OutputPtr output, xf86MonPtr edid_mon)
+@@ -2878,6 +2868,7 @@ xf86OutputSetEDID (xf86OutputPtr output, xf86MonPtr edid_mon)
      ScrnInfoPtr		scrn = output->scrn;
      xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(scrn);
      int			i;
@@ -318,7 +319,7 @@ index 0062d06..7d806d0 100644
  #ifdef RANDR_12_INTERFACE
      int			size;
  #endif
-@@ -2961,8 +2952,12 @@ xf86OutputSetEDID (xf86OutputPtr output, xf86MonPtr edid_mon)
+@@ -2893,8 +2884,12 @@ xf86OutputSetEDID (xf86OutputPtr output, xf86MonPtr edid_mon)
  	xf86PrintEDID(edid_mon);
      }
  
@@ -370,7 +371,7 @@ index 9baa956..39ba81d 100644
   */
  
 diff --git a/hw/xfree86/modes/xf86RandR12.c b/hw/xfree86/modes/xf86RandR12.c
-index 1b47a65..1510735 100644
+index 1fc63c4..e2ba4d6 100644
 --- a/hw/xfree86/modes/xf86RandR12.c
 +++ b/hw/xfree86/modes/xf86RandR12.c
 @@ -805,7 +805,7 @@ xf86RandR12CreateScreenResources (ScreenPtr pScreen)
@@ -394,5 +395,5 @@ index 1b47a65..1510735 100644
  
      if (!size)
 -- 
-1.6.5.2
+1.6.6
 

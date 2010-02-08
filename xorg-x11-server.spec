@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.7.4
-Release:   7%{dist}
+Version:   1.7.4.902
+Release:   1%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -523,6 +523,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Feb 08 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.4.902-1
+- xserver 1.7.4.902 (1.7.5 RC2)
+
 * Wed Feb 03 2010 Adam Jackson <ajax@redhat.com> 1.7.4-7
 - Fix randr unify patch and re-enable.
 
