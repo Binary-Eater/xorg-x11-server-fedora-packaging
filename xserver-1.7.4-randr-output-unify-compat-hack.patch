@@ -1,0 +1,145 @@
+From 1240532ba6033494d02f41f631965eaad1b49c47 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Wed, 10 Feb 2010 13:12:47 -0500
+Subject: [PATCH] randr unify abi compat hack
+
+---
+ hw/xfree86/loader/sdksyms.c    |    3 +++
+ hw/xfree86/modes/xf86Crtc.c    |   19 +++++++++++++++----
+ hw/xfree86/modes/xf86Crtc.h    |    3 ++-
+ hw/xfree86/modes/xf86RandR12.c |   22 ++++++++++++++++++++++
+ 4 files changed, 42 insertions(+), 5 deletions(-)
+
+diff --git a/hw/xfree86/loader/sdksyms.c b/hw/xfree86/loader/sdksyms.c
+index 61ed4b9..54307c6 100644
+--- a/hw/xfree86/loader/sdksyms.c
++++ b/hw/xfree86/loader/sdksyms.c
+@@ -454,6 +454,7 @@ _X_HIDDEN void *xorg_symbols[] = {
+     (void *) &Ones,
+     (void *) &globalSerialNumber,
+     (void *) &serverGeneration,
++    (void *) &omg_wtf_aborting,
+     (void *) &AddScreen,
+     (void *) &GetScratchPixmapHeader,
+     (void *) &FreeScratchPixmapHeader,
+@@ -1506,6 +1507,8 @@ _X_HIDDEN void *xorg_symbols[] = {
+     (void *) &xf86DestroyCursorInfoRec,
+     (void *) &xf86ForceHWCursor,
+     (void *) &xf86CrtcConfigPrivateIndex,
++    (void *) &xf86GetPrimaryOutput,
++    (void *) &xf86GetPrimaryCrtc,
+     (void *) &xf86CrtcConfigInit,
+     (void *) &xf86CrtcSetSizeRange,
+     (void *) &xf86CrtcCreate,
+diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
+index 906981b..544d62a 100644
+--- a/hw/xfree86/modes/xf86Crtc.c
++++ b/hw/xfree86/modes/xf86Crtc.c
+@@ -1809,6 +1809,8 @@ biggestMode(DisplayModePtr a, DisplayModePtr b)
+  *
+  * hilariously, this can get called before ->pScreen is filled in.  that's
+  * way early in screen init, so we'll assume it just doesn't matter yet.
++ *
++ * for ABI compat with older drivers we also fill in ->compat_output.  weep.
+  */
+ xf86OutputPtr
+ xf86GetPrimaryOutput(ScrnInfoPtr scrn)
+@@ -1820,21 +1822,30 @@ xf86GetPrimaryOutput(ScrnInfoPtr scrn)
+         rrScrPrivPtr rrScrPriv = rrGetScrPriv(scrn->pScreen);
+ 
+         /* defaults to NULL */
+-        if (rrScrPriv->primaryOutput)
+-            return rrScrPriv->primaryOutput->devPrivate;
++        if (rrScrPriv->primaryOutput) {
++            xf86OutputPtr ret = rrScrPriv->primaryOutput->devPrivate;
++            for (i = 0; i < config->num_output; i++)
++                if (config->output[i] == ret)
++                    config->compat_output = i;
++            return ret;
++        }
+     }
+ 
+     for (i = 0; i < config->num_output; i++) {
+         xf86OutputPtr output = config->output[i];
+-        if (output->status == XF86OutputStatusConnected)
++        if (output->status == XF86OutputStatusConnected) {
++            config->compat_output = i;
+             return output;
++        }
+     }
+ 
+     /* desperation */
+     for (i = 0; i < config->num_output; i++) {
+         xf86OutputPtr output = config->output[i];
+-        if (output->status == XF86OutputStatusUnknown)
++        if (output->status == XF86OutputStatusUnknown) {
++            config->compat_output = i;
+             return output;
++        }
+     }
+ 
+     return NULL;
+diff --git a/hw/xfree86/modes/xf86Crtc.h b/hw/xfree86/modes/xf86Crtc.h
+index 39ba81d..b497df7 100644
+--- a/hw/xfree86/modes/xf86Crtc.h
++++ b/hw/xfree86/modes/xf86Crtc.h
+@@ -631,7 +631,8 @@ typedef void (*xf86_crtc_notify_proc_ptr) (ScreenPtr pScreen);
+ typedef struct _xf86CrtcConfig {
+     int			num_output;
+     xf86OutputPtr	*output;
+-    int			unused;
++    /* ABI hack, sigh */
++    int			compat_output;
+ 
+     int			num_crtc;
+     xf86CrtcPtr		*crtc;
+diff --git a/hw/xfree86/modes/xf86RandR12.c b/hw/xfree86/modes/xf86RandR12.c
+index 1510735..a470429 100644
+--- a/hw/xfree86/modes/xf86RandR12.c
++++ b/hw/xfree86/modes/xf86RandR12.c
+@@ -62,6 +62,7 @@ typedef struct _xf86RandR12Info {
+      * See https://bugs.freedesktop.org/show_bug.cgi?id=21554
+      */
+     xf86EnterVTProc *orig_EnterVT;
++    xf86AdjustFrameProc *orig_AdjustFrame;
+ } XF86RandRInfoRec, *XF86RandRInfoPtr;
+ 
+ #ifdef RANDR_12_INTERFACE
+@@ -1766,6 +1767,24 @@ xf86RandR12EnterVT (int screen_index, int flags)
+     return RRGetInfo (pScreen, TRUE); /* force a re-probe of outputs and notify clients about changes */
+ }
+ 
++/*
++ * gross ABI hack.  need to ensure compat_output is current before calling
++ * down to driver AdjustFrame, which xf86GetPrimaryOutput does as a side effect
++ */
++static void
++xf86RandR12AdjustFrame(int scrnIndex, int x, int y, int flags)
++{
++    ScrnInfoPtr scrn = xf86Screens[scrnIndex];
++    XF86RandRInfoPtr randrp = XF86RANDRINFO(scrn->pScreen);
++    
++    (void) xf86GetPrimaryOutput(scrn);
++
++    scrn->AdjustFrame = randrp->orig_AdjustFrame;
++    scrn->AdjustFrame(scrnIndex, x, y, flags);
++    randrp->orig_AdjustFrame = scrn->AdjustFrame;
++    scrn->AdjustFrame = xf86RandR12AdjustFrame;
++}
++
+ static Bool
+ xf86RandR12Init12 (ScreenPtr pScreen)
+ {
+@@ -1794,6 +1813,9 @@ xf86RandR12Init12 (ScreenPtr pScreen)
+     randrp->orig_EnterVT = pScrn->EnterVT;
+     pScrn->EnterVT = xf86RandR12EnterVT;
+ 
++    randrp->orig_AdjustFrame = pScrn->AdjustFrame;
++    pScrn->AdjustFrame = xf86RandR12AdjustFrame;
++
+     if (!xf86RandR12CreateObjects12 (pScreen))
+ 	return FALSE;
+ 
+-- 
+1.6.5.2
+

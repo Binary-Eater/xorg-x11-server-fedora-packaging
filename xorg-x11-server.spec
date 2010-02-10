@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4.902
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -90,8 +90,9 @@ Patch6070: xserver-1.7.3-no-free-on-abort.patch
 # 540584
 Patch6071: xserver-1.7.4-reset-sli-pointers.patch
 Patch6072: xserver-1.7.4-randr-unify-primary-compat.patch
+Patch6073: xserver-1.7.4-randr-output-unify-compat-hack.patch
 # 543647
-Patch6073: xserver-1.7.4-owner-events.patch
+Patch6074: xserver-1.7.4-owner-events.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -109,7 +110,7 @@ Patch6073: xserver-1.7.4-owner-events.patch
 %define enable_xorg --disable-xorg
 %endif
 
-%define kdrive --enable-kdrive --enable-xephyr --disable-xsdl --disable-xfake --disable-xfbdev
+%define kdrive --enable-kdrive --enable-xephyr --disable-xsdl --disable-xfake --enable-xfbdev
 %define xservers --enable-xvfb --enable-xnest %{kdrive} %{enable_xorg}
 
 BuildRequires: git-core
@@ -504,6 +505,7 @@ rm -rf $RPM_BUILD_ROOT
 %files Xephyr
 %defattr(-,root,root,-)
 %{_bindir}/Xephyr
+%{_bindir}/Xfbdev
 %{_mandir}/man1/Xephyr.1*
 
 
@@ -523,6 +525,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Feb 10 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-2
+- xserver-1.7.4-randr-output-unify-compat-hack.patch: Restore the compat_output
+  field for API (and ABI) compat with drivers.
+
 * Mon Feb 08 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.4.902-1
 - xserver 1.7.4.902 (1.7.5 RC2)
 
