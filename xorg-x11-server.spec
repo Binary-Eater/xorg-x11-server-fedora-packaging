@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4.902
-Release:   3%{dist}
+Release:   4%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,6 +95,8 @@ Patch6073: xserver-1.7.4-randr-output-unify-compat-hack.patch
 Patch6074: xserver-1.7.4-owner-events.patch
 # 558613
 Patch6075: xserver-1.7.4-qxl-autoconfig.patch
+# 516918
+Patch6076: xserver-1.7.4-dpms-timeouts.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -527,6 +529,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Feb 12 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-4
+- xserver-1.7.4-dpms-timeouts.patch: Inherit the default DPMS timeouts from
+  the "-s" option to set the screensaver timeout. (#516918)
+
 * Fri Feb 12 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-3
 - xserver-1.7.4-qxl-autoconfig.patch: Add QXL to autoconfig logic. (#558613)
 
