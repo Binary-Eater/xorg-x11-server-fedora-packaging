@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4.902
-Release:   4%{dist}
+Release:   5%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -114,7 +114,7 @@ Patch6076: xserver-1.7.4-dpms-timeouts.patch
 %define enable_xorg --disable-xorg
 %endif
 
-%define kdrive --enable-kdrive --enable-xephyr --disable-xsdl --disable-xfake --enable-xfbdev
+%define kdrive --enable-kdrive --enable-xephyr --disable-xsdl --disable-xfake --disable-xfbdev
 %define xservers --enable-xvfb --enable-xnest %{kdrive} %{enable_xorg}
 
 BuildRequires: git-core
@@ -509,7 +509,6 @@ rm -rf $RPM_BUILD_ROOT
 %files Xephyr
 %defattr(-,root,root,-)
 %{_bindir}/Xephyr
-%{_bindir}/Xfbdev
 %{_mandir}/man1/Xephyr.1*
 
 
@@ -529,6 +528,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Feb 12 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-5
+- Remove accidental enabling of Xfbdev.
+
 * Fri Feb 12 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-4
 - xserver-1.7.4-dpms-timeouts.patch: Inherit the default DPMS timeouts from
   the "-s" option to set the screensaver timeout. (#516918)
