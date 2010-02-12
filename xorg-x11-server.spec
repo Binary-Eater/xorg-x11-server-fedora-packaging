@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.4.902
-Release:   2%{dist}
+Release:   3%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -93,6 +93,8 @@ Patch6072: xserver-1.7.4-randr-unify-primary-compat.patch
 Patch6073: xserver-1.7.4-randr-output-unify-compat-hack.patch
 # 543647
 Patch6074: xserver-1.7.4-owner-events.patch
+# 558613
+Patch6075: xserver-1.7.4-qxl-autoconfig.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -525,6 +527,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Feb 12 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-3
+- xserver-1.7.4-qxl-autoconfig.patch: Add QXL to autoconfig logic. (#558613)
+
 * Wed Feb 10 2010 Adam Jackson <ajax@redhat.com> 1.7.4.902-2
 - xserver-1.7.4-randr-output-unify-compat-hack.patch: Restore the compat_output
   field for API (and ABI) compat with drivers.
