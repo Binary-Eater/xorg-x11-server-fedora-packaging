@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.5
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -93,6 +93,8 @@ Patch6074: xserver-1.7.4-owner-events.patch
 Patch6075: xserver-1.7.4-qxl-autoconfig.patch
 # 516918
 Patch6076: xserver-1.7.4-dpms-timeouts.patch
+
+Patch7000: xserver-1.7.5-exa-mixed.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -524,6 +526,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Feb 22 2010 Ben Skeggs <bskeggs@redhat.com> 1.7.5-2
+- exa: fix gnome-panel corruption
+
 * Tue Feb 16 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5-1
 - xserver 1.7.5
 - xserver-1.7.4-reset-sli-pointers.patch: drop, upstream.
