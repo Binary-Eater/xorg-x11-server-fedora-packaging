@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.99.901
-Release:   6.%{gitdate}%{dist}
+Release:   7.%{gitdate}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -81,6 +81,8 @@ Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 
 # Remove this some day. Not today though.
 Patch6052: xserver-1.8-udev-warning.patch
+
+Patch7000: xserver-1.7.5-exa-mixed.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -517,6 +519,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Feb 22 2010 Ben Skeggs <bskeggs@redhat.com> 1.7.99.901-7.20100215
+- exa: fix gnome-panel corruption
+
 * Fri Feb 19 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.99.901-6.20100215
 - Only match device paths of /dev/input/event* for the evdev classes.
   Reduces the number of error messages seen in the log when evdev can't
