@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.5
-Release:   2%{dist}
+Release:   3%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,6 +95,7 @@ Patch6075: xserver-1.7.4-qxl-autoconfig.patch
 Patch6076: xserver-1.7.4-dpms-timeouts.patch
 
 Patch7000: xserver-1.7.5-exa-mixed.patch
+Patch7001: xserver-1.7.5-record.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -526,6 +527,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Feb 23 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5-3
+- xserver-1.7.5-record.patch: re-enable RECORD extension.
+
 * Mon Feb 22 2010 Ben Skeggs <bskeggs@redhat.com> 1.7.5-2
 - exa: fix gnome-panel corruption
 
