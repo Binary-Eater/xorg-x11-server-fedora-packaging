@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.99.901
-Release:   9.%{gitdate}%{dist}
+Release:   10.%{gitdate}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -81,6 +81,10 @@ Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 
 # Remove this some day. Not today though.
 Patch6052: xserver-1.8-udev-warning.patch
+
+# Use vesa for VirtualBox, since we don't ship vboxvideo and the
+# fallback to vesa when module is missing seems broken
+Patch6053: xserver-1.8-disable-vboxvideo.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -518,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Feb 25 2010 Adam Jackson <ajax@redhat.com> 1.7.99.901-10.20100223
+- xserver-1.8-disable-vboxvideo.patch: Disable vboxvideo. (adamw)
+
 * Thu Feb 25 2010 Dave Airlie <airlied@redhat.com> 1.7.99.901-9.20100223
 - fix right-of patch to allow driver to override right-of with clone
 
