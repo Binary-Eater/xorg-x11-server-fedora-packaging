@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.5
-Release:   4%{dist}
+Release:   5%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -527,6 +527,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Feb 25 2010 Dave Airlie <airlied@redhat.com> 1.7.5-5
+- fix right-of patch to allow for driver clone selection on servers
+
 * Thu Feb 25 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5-4
 - Update xserver-1.7.5-owner-events.patch, first one was rejected upstream.
 
