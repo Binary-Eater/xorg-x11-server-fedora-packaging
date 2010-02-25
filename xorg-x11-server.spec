@@ -109,7 +109,7 @@ BuildRequires: git-core
 BuildRequires: automake autoconf libtool pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.1.5
 
-BuildRequires: xorg-x11-proto-devel >= 7.4-27
+BuildRequires: xorg-x11-proto-devel >= 7.4-35
 BuildRequires: xorg-x11-font-utils
 
 BuildRequires: xorg-x11-xtrans-devel >= 1.2.2-1
