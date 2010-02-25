@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.99.901
-Release:   8.%{gitdate}%{dist}
+Release:   9.%{gitdate}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -518,6 +518,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Feb 25 2010 Dave Airlie <airlied@redhat.com> 1.7.99.901-9.20100223
+- fix right-of patch to allow driver to override right-of with clone
+
 * Tue Feb 23 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.99.901-8.0100215
 - Require udev >= 148-1 for xorg-x11-server-Xorg, otherwise we don't see any
   input devices (#566396). This requires is just needed now in the
