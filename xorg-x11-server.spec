@@ -14,12 +14,12 @@
 # Fix rhpxl to no longer need vesamodes/extramodes
 
 %define pkgname xorg-server
-%define gitdate 20100223
+%define gitdate 20100304
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.99.901
-Release:   10.%{gitdate}%{dist}
+Release:   11.%{gitdate}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -131,7 +131,7 @@ BuildRequires: mesa-libGL-devel >= 7.6-0.6
 # XXX silly...
 BuildRequires: libdrm-devel >= 2.4.0 kernel-headers
 
-BuildRequires: audit-libs-devel libselinux-devel >= 2.0.79-1
+BuildRequires: audit-libs-devel libselinux-devel >= 2.0.86-1
 BuildRequires: libudev-devel
 
 # All server subpackages have a virtual provide for the name of the server
@@ -522,6 +522,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Mar 04 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.99.901-11.20100304
+- Update to today's git.
+- BuildRequires libselinux-devel >= 2.0.86 
+
 * Thu Feb 25 2010 Adam Jackson <ajax@redhat.com> 1.7.99.901-10.20100223
 - xserver-1.8-disable-vboxvideo.patch: Disable vboxvideo. (adamw)
 
