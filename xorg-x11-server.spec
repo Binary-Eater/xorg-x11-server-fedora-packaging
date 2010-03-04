@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.99.901
-Release:   11.%{gitdate}%{dist}
+Release:   12.%{gitdate}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -522,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Mar 04 2010 Adam Jackson <ajax@redhat.com> 1.7.99.901-12.20100304
+- xserver-1.6.1-nouveau.patch: Fall back to nv if nouveau won't load. (#519298)
+
 * Thu Mar 04 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.99.901-11.20100304
 - Update to today's git.
 - BuildRequires libselinux-devel >= 2.0.86 
