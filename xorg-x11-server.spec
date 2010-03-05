@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.5.901
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -522,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Mar 05 2010 Adam Jackson <ajax@redhat.com> 1.7.5.901-2
+- xserver-1.6.1-nouveau.patch: Fall back to nv if nouveau fails.
+
 * Fri Mar 05 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5.901-1
 - xerver 1.7.5.901 (1.7.6RC1)
 
