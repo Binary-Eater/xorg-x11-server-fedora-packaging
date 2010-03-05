@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.7.5
-Release:   5%{dist}
+Version:   1.7.5.901
+Release:   1%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -84,18 +84,13 @@ Patch6066: xserver-1.7.1-glx14-swrast.patch
 
 Patch6067: xserver-1.7.3-exa-master.patch
 
-# FIXME: merged upstream, but not quite correct yet
-Patch6069: xserver-1.7.3-cursor-jumps.patch
 Patch6070: xserver-1.7.3-no-free-on-abort.patch
-# 543647
-Patch6074: xserver-1.7.4-owner-events.patch
 # 558613
 Patch6075: xserver-1.7.4-qxl-autoconfig.patch
 # 516918
 Patch6076: xserver-1.7.4-dpms-timeouts.patch
 
 Patch7000: xserver-1.7.5-exa-mixed.patch
-Patch7001: xserver-1.7.5-record.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -527,6 +522,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Mar 05 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5.901-1
+- xerver 1.7.5.901 (1.7.6RC1)
+
 * Thu Feb 25 2010 Dave Airlie <airlied@redhat.com> 1.7.5-5
 - fix right-of patch to allow for driver clone selection on servers
 
