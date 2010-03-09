@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.5.901
-Release:   2%{dist}
+Release:   3%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,6 +89,10 @@ Patch6070: xserver-1.7.3-no-free-on-abort.patch
 Patch6075: xserver-1.7.4-qxl-autoconfig.patch
 # 516918
 Patch6076: xserver-1.7.4-dpms-timeouts.patch
+
+# Revert upstream, apply our own one.
+Patch6077: xserver-1.7.5.901-revert-owner-events.patch
+Patch6078: xserver-1.7.4-owner-events.patch
 
 Patch7000: xserver-1.7.5-exa-mixed.patch
 
@@ -522,6 +526,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Mar 09 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5.901-3
+- Revert to previous version of xserver-1.7.5-owner-events.patch. The one in
+  git breaks fluxbox.
+
 * Fri Mar 05 2010 Adam Jackson <ajax@redhat.com> 1.7.5.901-2
 - xserver-1.6.1-nouveau.patch: Fall back to nv if nouveau fails.
 
