@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.5.901
-Release:   3%{dist}
+Release:   4%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -526,6 +526,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Mar 09 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5.901-4
+- cvs add the patches...
+
 * Tue Mar 09 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5.901-3
 - Revert to previous version of xserver-1.7.5-owner-events.patch. The one in
   git breaks fluxbox.
