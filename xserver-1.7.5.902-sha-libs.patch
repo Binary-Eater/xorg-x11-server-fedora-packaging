@@ -1,0 +1,29 @@
+From 5b4fabb910eefb393eb3bfb45df5e63fdeb71f26 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Mon, 15 Mar 2010 08:44:01 +1000
+Subject: [PATCH] configure: restore SHA1_LIB for XSERVER_SYS_LIBS
+
+Accidentally removed in ff5fb43a4b38c707a, caused by
+a botched merge when cherry-picking 178da6534fe7ab4b99fb.
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ configure.ac |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2046157..c215b5c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1326,7 +1326,7 @@ PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
+ #
+ XSERVER_CFLAGS="${XSERVERCFLAGS_CFLAGS} ${SHA1_CFLAGS}"
+ XSERVER_LIBS="$DIX_LIB $CONFIG_LIB $MI_LIB $OS_LIB"
+-XSERVER_SYS_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS}"
++XSERVER_SYS_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS} ${SHA1_LIB}"
+ AC_SUBST([XSERVER_LIBS])
+ AC_SUBST([XSERVER_SYS_LIBS])
+ 
+-- 
+1.6.6.1
+
