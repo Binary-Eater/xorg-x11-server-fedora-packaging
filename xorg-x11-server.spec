@@ -18,7 +18,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.7.5.902
+Version:   1.7.6
 Release:   1%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -92,8 +92,6 @@ Patch6076: xserver-1.7.4-dpms-timeouts.patch
 
 # 543647
 Patch6078: xserver-1.7.4-owner-events.patch
-# fix botched configure in 1.7.5.902, remove with 1.7.6
-Patch6079: xserver-1.7.5.902-sha-libs.patch
 
 
 Patch7000: xserver-1.7.5-exa-mixed.patch
@@ -528,6 +526,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Mar 17 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.6-1
+- xserver 1.7.6
+
 * Mon Mar 15 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.5.902-1
 - xerver 1.7.5.902 (1.7.6RC2)
 
