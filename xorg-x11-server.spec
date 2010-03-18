@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.6.4
-Release:   0.3%{?dist}
+Release:   0.4%{?dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -114,6 +114,8 @@ Patch6049: xserver-1.6.99-dpms.patch
 
 # Nominated for 1.6.4
 Patch6050: xserver-1.6.3-coreevents.patch
+
+Patch6051: xserver-1.6.4-sigprocmask-less.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -535,6 +537,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 18 2010 Adam Jackson <ajax@redhat.com> 1.6.4-0.4
+- xserver-1.6.4-sigprocmask-less.patch: Optimize input processing.
+
 * Thu Oct 08 2009 Peter Hutterer <peter.hutterer@redhat.com> 1.6.4-0.3
 - xserver-1.6.1-mousedrivers.patch: fix typo causing invalid memory access
   (#522936)
