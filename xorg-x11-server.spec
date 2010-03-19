@@ -14,12 +14,12 @@
 # Fix rhpxl to no longer need vesamodes/extramodes
 
 %define pkgname xorg-server
-%define gitdate 20100304
+%define gitdate 20100319
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.7.99.901
-Release:   12.%{gitdate}%{dist}
+Version:   1.7.99.902
+Release:   2.%{gitdate}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -85,6 +85,9 @@ Patch6052: xserver-1.8-udev-warning.patch
 # Use vesa for VirtualBox, since we don't ship vboxvideo and the
 # fallback to vesa when module is missing seems broken
 Patch6053: xserver-1.8-disable-vboxvideo.patch
+
+# 543647
+Patch6054: xserver-1.7.4-owner-events.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -522,6 +525,13 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Mar 19 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.99.902-2.20100319
+- xserver-1.7.4-owner-events.patch: if owner-events is true for passive
+  grabs, add the window mask (#543647)
+
+* Fri Mar 19 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.99.902-1.20100319
+- Update to today's git.
+
 * Thu Mar 04 2010 Adam Jackson <ajax@redhat.com> 1.7.99.901-12.20100304
 - xserver-1.6.1-nouveau.patch: Fall back to nv if nouveau won't load. (#519298)
 
