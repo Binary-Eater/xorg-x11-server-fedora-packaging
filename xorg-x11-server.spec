@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.6
-Release:   1%{dist}
+Release:   2%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -92,6 +92,8 @@ Patch6076: xserver-1.7.4-dpms-timeouts.patch
 
 # 543647
 Patch6078: xserver-1.7.4-owner-events.patch
+# VNC needs some functions exported to link.
+Patch6079: xserver-1.7.6-export-dix-functions.patch
 
 
 Patch7000: xserver-1.7.5-exa-mixed.patch
@@ -526,6 +528,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Apr 12 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.6-2
+- xserver-1.7.6-export-dix-functions: export some more functions for use by
+  VNC.
+
 * Wed Mar 17 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.6-1
 - xserver 1.7.6
 
