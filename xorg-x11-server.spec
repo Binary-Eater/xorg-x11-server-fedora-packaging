@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   3%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -87,6 +87,7 @@ Patch6052: xserver-1.8-udev-warning.patch
 Patch6053: xserver-1.8-disable-vboxvideo.patch
 
 Patch6054: xserver-1.8-no-hardcoded-etc.patch
+Patch6055: xserver-1.7.6-export-dix-functions.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -526,6 +527,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Apr 12 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-3
+- xserver-1.7.6-export-dix-functions: export some functions in use by VNC.
+
 * Mon Apr 12 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-2
 - Add Xen virtual pointer quirk to 10-quirks.conf (#523914)
 
