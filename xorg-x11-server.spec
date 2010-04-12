@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -526,6 +526,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Apr 12 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-2
+- Add Xen virtual pointer quirk to 10-quirks.conf (#523914)
+
 * Tue Apr 06 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-1
 - xserver 1.8.0
 - Drop merged patches.
