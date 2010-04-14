@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   3%{?gitdate:.%{gitdate}}%{dist}
+Release:   4%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -88,6 +88,7 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 
 Patch6054: xserver-1.8-no-hardcoded-etc.patch
 Patch6055: xserver-1.7.6-export-dix-functions.patch
+Patch6056: xserver-1.7.6-export-more-dix-functions.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -527,6 +528,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Apr 14 2010 Adam Tkac <atkac redhat com> 1.8.0-4
+- xserver-1.7.6-export-more-dix-functions.patch: export XkbCopyDeviceKeymap
+  function, needed by VNC
+
 * Mon Apr 12 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-3
 - xserver-1.7.6-export-dix-functions: export some functions in use by VNC.
 
