@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   4%{?gitdate:.%{gitdate}}%{dist}
+Release:   5%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -528,6 +528,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Apr 15 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-5
+- xserver-1.4.99-pic-libxf86config.patch: update, only merge CFLAGS for
+  libxf86config.a, not AM_CFLAGS. Makes patch mangling for the next set of
+  patches easier.
+
 * Wed Apr 14 2010 Adam Tkac <atkac redhat com> 1.8.0-4
 - xserver-1.7.6-export-more-dix-functions.patch: export XkbCopyDeviceKeymap
   function, needed by VNC
