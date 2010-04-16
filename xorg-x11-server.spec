@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.7.6
-Release:   3%{dist}
+Release:   4%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,6 +95,8 @@ Patch6078: xserver-1.7.4-owner-events.patch
 # VNC needs some functions exported to link.
 Patch6079: xserver-1.7.6-export-dix-functions.patch
 Patch6080: xserver-1.7.6-export-more-dix-functions.patch
+# 560356
+Patch6081: xserver-1.7.6-pointerkeys.patch
 
 
 Patch7000: xserver-1.7.5-exa-mixed.patch
@@ -529,6 +531,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Apr 16 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.7.6-4
+- xserver-1.7.6-pointerkeys.patch: post XKB PointerKeys through the XTEST
+  devices.
+
 * Wed Apr 14 2010 Adam Tkac <atkac redhat com> 1.7.6-3
 - xserver-1.7.6-export-more-dix-functions.patch: export XkbCopyDeviceKeymap
   function, needed by VNC
