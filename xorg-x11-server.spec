@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   6%{?gitdate:.%{gitdate}}%{dist}
+Release:   7%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,6 +89,7 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 Patch6055: xserver-1.7.6-export-dix-functions.patch
 Patch6056: xserver-1.7.6-export-more-dix-functions.patch
 Patch6057: xserver-1.8.0-xorg.conf.d-changes.patch
+Patch6058: xserver-1.8.0-glxdri2-resource-conversion.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -530,6 +531,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Apr 20 2010 Adam Jackson <ajax@redhat.com> 1.8.0-7
+- xserver-1.8.0-glxdri2-resource-conversion.patch: Fix crash on exit from
+  GLX apps with DRI2 drivers. (#579756)
+
 * Thu Apr 15 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-6
 - xserver-1.8.0-xorg.conf.d-changes.patch: push in the upcoming 1.8.1
   xorg.conf.d changes. The X server uses /etc/X11/xorg.conf now for custom
