@@ -1,0 +1,81 @@
+From 7e80526c1ce53d7228680ac403bf89d3874d198f Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Michel=20D=C3=A4nzer?= <michel@daenzer.net>
+Date: Fri, 23 Apr 2010 15:54:28 +0200
+Subject: [PATCH] DRI2: Fix handling of redirected pixmaps
+
+There's a problem with this change (and potentially in DRI2SwapEvent()
+even before it): at least the pixmaps backing redirected windows still
+have ->drawable.id == 0. This can result in weird behaviour with a GLX
+compositing manager, e.g. when running the same app twice in a row: the
+second window will show a static snapshot of the first one, because the
+compositing manager gets the DRI2 front buffer from the first, since
+destroyed window.
+---
+ glx/glxdri2.c             |    2 +-
+ hw/xfree86/dri2/dri2.c    |    5 ++++-
+ hw/xfree86/dri2/dri2.h    |    2 +-
+ hw/xfree86/dri2/dri2ext.c |    2 +-
+ 4 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/glx/glxdri2.c b/glx/glxdri2.c
+index bde519a..a70bc97 100644
+--- a/glx/glxdri2.c
++++ b/glx/glxdri2.c
+@@ -457,7 +457,7 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
+     private->base.waitGL	= __glXDRIdrawableWaitGL;
+     private->base.waitX		= __glXDRIdrawableWaitX;
+ 
+-    if (DRI2CreateDrawable(pDraw)) {
++    if (DRI2CreateDrawable(pDraw, drawId)) {
+ 	    xfree(private);
+ 	    return NULL;
+     }
+diff --git a/hw/xfree86/dri2/dri2.c b/hw/xfree86/dri2/dri2.c
+index 63bef28..5d02378 100644
+--- a/hw/xfree86/dri2/dri2.c
++++ b/hw/xfree86/dri2/dri2.c
+@@ -105,11 +105,14 @@ DRI2GetDrawable(DrawablePtr pDraw)
+ }
+ 
+ int
+-DRI2CreateDrawable(DrawablePtr pDraw)
++DRI2CreateDrawable(DrawablePtr pDraw, XID id)
+ {
+     DRI2DrawablePtr pPriv;
+     int rc;
+ 
++    if (!pDraw->id)
++       pDraw->id = id;
++
+     rc = dixLookupResourceByType((pointer *) &pPriv, pDraw->id,
+ 				 dri2DrawableRes, NULL, DixReadAccess);
+     if (rc == Success || rc != BadValue)
+diff --git a/hw/xfree86/dri2/dri2.h b/hw/xfree86/dri2/dri2.h
+index 1c8626b..4b7a65c 100644
+--- a/hw/xfree86/dri2/dri2.h
++++ b/hw/xfree86/dri2/dri2.h
+@@ -193,7 +193,7 @@ extern _X_EXPORT Bool DRI2Connect(ScreenPtr pScreen,
+ 
+ extern _X_EXPORT Bool DRI2Authenticate(ScreenPtr pScreen, drm_magic_t magic);
+ 
+-extern _X_EXPORT int DRI2CreateDrawable(DrawablePtr pDraw);
++extern _X_EXPORT int DRI2CreateDrawable(DrawablePtr pDraw, XID id);
+ 
+ extern _X_EXPORT void DRI2DestroyDrawable(DrawablePtr pDraw);
+ 
+diff --git a/hw/xfree86/dri2/dri2ext.c b/hw/xfree86/dri2/dri2ext.c
+index 1ac4a5f..35dac47 100644
+--- a/hw/xfree86/dri2/dri2ext.c
++++ b/hw/xfree86/dri2/dri2ext.c
+@@ -167,7 +167,7 @@ ProcDRI2CreateDrawable(ClientPtr client)
+ 		       &pDrawable, &status))
+ 	return status;
+ 
+-    status = DRI2CreateDrawable(pDrawable);
++    status = DRI2CreateDrawable(pDrawable, stuff->drawable);
+     if (status != Success)
+ 	return status;
+ 
+-- 
+1.6.6.1
+
