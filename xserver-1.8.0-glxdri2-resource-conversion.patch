@@ -1,21 +1,105 @@
-From 0eb88ae7bccdd38863d4599309ca07068386f415 Mon Sep 17 00:00:00 2001
-From: Adam Jackson <ajax@redhat.com>
-Date: Tue, 20 Apr 2010 13:43:52 -0400
-Subject: [PATCH] DRI2/GLX: Switch to resource system for drawable tracking
+From b75609ab65bf2aeee553435e43072d7f859162f7 Mon Sep 17 00:00:00 2001
+From: Owen Taylor <otaylor@redhat.com>
+Date: Fri, 30 Apr 2010 13:17:18 -0400
+Subject: [PATCH 2/2] Merge fixes for DRI drawable handling from master
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Signed-off-by: Adam Jackson <ajax@redhat.com>
+commit a92b2c2c8dd1e86ee852168146f01bdf72bfe2d0
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Fri Apr 16 05:55:35 2010 -0400
+
+glx: Drop DestroyWindow hook
+
+Now that glx doesn't call DRI2DestroyDrawable anymore, we don't need to
+force a specific resource destruction order in the DestroyWindow hook.
+
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+Reviewed-by: Michel Dänzer <michel@daenzer.net>
+
+https://bugs.freedesktop.org/show_bug.cgi?id=26394
+Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3ff8ba50a6a173bfb6d42dc7e2fd5da4e8706db8
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Thu, 29 Apr 2010 16:36:10 -0400
+
+dri2: Take an XID for tracking the DRI2 drawable
+
+Some pixmaps (window pixmaps and scratch pixmaps) don't have the
+drawable->id set and thus DRI2 gets confused when using that field
+for looking up the DRI2 drawable.  Go back to using privates for getting
+at the DRI2 drawable from a DrawablePtr.  We need to keep the resource
+tracking in place so we can remove the DRI2 drawable when the X resource
+it was created for goes away.  Additionally, we also now track the DRI2
+drawable using a client XID so we can reclaim the DRI2 drawable even if
+the client goes before the drawable and doesn't destroy the DRI2 drawable.
+
+commit 1da1f33f2dd5b437dd56cd9f5d6782de4ad5a1bc
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Fri Apr 16 05:55:34 2010 -0400
+
+DRI2: Track DRI2 drawables as resources, not privates
+
+The main motivation here is to have the resource system clean up the
+DRI2 drawable automatically so glx doesn't have to.  Right now, the
+glx drawable resource must be destroyed before the X drawable, so that
+calling DRI2DestroyDrawable doesn't crash.  By making the DRI2
+drawable a resource, GLX doesn't have to worry about that and the
+resource destruction order becomes irrelevant.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=26394
+
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit f0006aa58f6cf7552a239e169ff6e7e4fda532f4
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Fri Apr 16 05:55:32 2010 -0400
+
+glx: Track GLX 1.3 style GLX drawables under their X drawable ID as well
+
+This ensures that the DrawableGone callback gets called as necessary
+when the X drawable goes away.  Otherwise, using a GLX drawable
+(say, glXSwapBuffers) in indirect mode after the X drawable has been
+destroyed will crash the server.
+
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+Reviewed-by: Michel Dänzer <michel@daenzer.net>
+Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 22da7aa9d743deee198aaf6df5d370a446db9763
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Fri Apr 16 05:55:33 2010 -0400
+
+glx: Let the resource system destroy pixmaps
+
+GLX pbuffers are implemented using a pixmap allocated by the server.
+With the change to DRI2 to track DRI2 drawables as resources, we need to make
+sure that every drawable we create a DRI2 drawable for has an XID.  By
+using the XID of the pbuffer, the resource system will automatically
+reclaim the hidden pixmap and the DRI2 drawable when the pbuffer is
+destroyed or the client exits.
+
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+Signed-off-by: Keith Packard <keithp@keithp.com>
 ---
- glx/glxcmds.c             |   39 +++++++++-----
- glx/glxdri2.c             |    5 --
- glx/glxext.c              |   11 ++++
- glx/glxscreens.c          |   28 ----------
- glx/glxscreens.h          |    1 -
- hw/xfree86/dri2/dri2.c    |  131 ++++++++++++--------------------------------
- hw/xfree86/dri2/dri2ext.c |   22 --------
- 7 files changed, 73 insertions(+), 164 deletions(-)
+ glx/glxcmds.c             |   62 ++++++++-----
+ glx/glxdri.c              |    8 +-
+ glx/glxdri2.c             |   17 ++--
+ glx/glxdriswrast.c        |    8 +-
+ glx/glxext.c              |   11 +++
+ glx/glxscreens.c          |   40 +--------
+ glx/glxscreens.h          |    7 +-
+ hw/xfree86/dri2/dri2.c    |  221 +++++++++++++++++++++++++--------------------
+ hw/xfree86/dri2/dri2.h    |    3 +-
+ hw/xfree86/dri2/dri2ext.c |   24 +-----
+ include/list.h            |    6 ++
+ 11 files changed, 204 insertions(+), 203 deletions(-)
 
 diff --git a/glx/glxcmds.c b/glx/glxcmds.c
-index 77afbf4..087d52e 100644
+index 77afbf4..31a7d32 100644
 --- a/glx/glxcmds.c
 +++ b/glx/glxcmds.c
 @@ -161,7 +161,11 @@ validGlxDrawable(ClientPtr client, XID id, int type, int access_mode,
@@ -30,7 +114,19 @@ index 77afbf4..087d52e 100644
  	(type != GLX_DRAWABLE_ANY && type != (*drawable)->type)) {
  	client->errorValue = id;
  	switch (type) {
-@@ -1097,14 +1101,6 @@ __glXDrawableInit(__GLXdrawable *drawable,
+@@ -508,8 +512,9 @@ __glXGetDrawable(__GLXcontext *glxc, GLXDrawable drawId, ClientPtr client,
+     if (!validGlxFBConfigForWindow(client, glxc->config, pDraw, error))
+ 	return NULL;
+ 
+-    pGlxDraw = glxc->pGlxScreen->createDrawable(glxc->pGlxScreen,
+-						pDraw, GLX_DRAWABLE_WINDOW,
++    pGlxDraw = glxc->pGlxScreen->createDrawable(client, glxc->pGlxScreen,
++						pDraw, drawId,
++						GLX_DRAWABLE_WINDOW,
+ 						drawId, glxc->config);
+ 
+     /* since we are creating the drawablePrivate, drawId should be new */
+@@ -1097,28 +1102,20 @@ __glXDrawableInit(__GLXdrawable *drawable,
  void
  __glXDrawableRelease(__GLXdrawable *drawable)
  {
@@ -45,7 +141,11 @@ index 77afbf4..087d52e 100644
  }
  
  static int 
-@@ -1113,8 +1109,6 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *conf
+-DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config,
+-		    DrawablePtr pDraw, XID glxDrawableId, int type)
++DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen,
++		    __GLXconfig *config, DrawablePtr pDraw, XID drawableId,
++		    XID glxDrawableId, int type)
  {
      __GLXdrawable *pGlxDraw;
  
@@ -54,7 +154,13 @@ index 77afbf4..087d52e 100644
      if (pGlxScreen->pScreen != pDraw->pScreen)
  	return BadMatch;
  
-@@ -1128,6 +1122,15 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *conf
+-    pGlxDraw = pGlxScreen->createDrawable(pGlxScreen, pDraw, type,
++    pGlxDraw = pGlxScreen->createDrawable(client, pGlxScreen, pDraw,
++					  drawableId, type,
+ 					  glxDrawableId, config);
+     if (pGlxDraw == NULL)
+ 	return BadAlloc;
+@@ -1128,6 +1125,15 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *conf
  	return BadAlloc;
      }
  
@@ -70,7 +176,7 @@ index 77afbf4..087d52e 100644
      return Success;
  }
  
-@@ -1138,6 +1141,8 @@ DoCreateGLXPixmap(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config
+@@ -1138,6 +1144,8 @@ DoCreateGLXPixmap(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config
      DrawablePtr pDraw;
      int err;
  
@@ -79,8 +185,12 @@ index 77afbf4..087d52e 100644
      err = dixLookupDrawable(&pDraw, drawableId, client, 0, DixAddAccess);
      if (err != Success) {
  	client->errorValue = drawableId;
-@@ -1151,9 +1156,6 @@ DoCreateGLXPixmap(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config
-     err = DoCreateGLXDrawable(client, pGlxScreen, config, pDraw,
+@@ -1148,12 +1156,9 @@ DoCreateGLXPixmap(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config
+ 	return BadPixmap;
+     }
+ 
+-    err = DoCreateGLXDrawable(client, pGlxScreen, config, pDraw,
++    err = DoCreateGLXDrawable(client, pGlxScreen, config, pDraw, drawableId,
  			      glxDrawableId, GLX_DRAWABLE_PIXMAP);
  
 -    if (err == Success)
@@ -89,7 +199,16 @@ index 77afbf4..087d52e 100644
      return err;
  }
  
-@@ -1294,6 +1296,8 @@ DoCreatePbuffer(ClientPtr client, int screenNum, XID fbconfigId,
+@@ -1266,7 +1271,7 @@ static int DoDestroyDrawable(__GLXclientState *cl, XID glxdrawable, int type)
+ 			  DixDestroyAccess, &pGlxDraw, &err))
+ 	return err;
+ 
+-    FreeResource(glxdrawable, FALSE);
++    FreeResourceByType(glxdrawable, __glXDrawableRes, FALSE);
+ 
+     return Success;
+ }
+@@ -1294,6 +1299,8 @@ DoCreatePbuffer(ClientPtr client, int screenNum, XID fbconfigId,
      PixmapPtr		 pPixmap;
      int			 err;
  
@@ -98,7 +217,7 @@ index 77afbf4..087d52e 100644
      if (!validGlxScreen(client, screenNum, &pGlxScreen, &err))
  	return err;
      if (!validGlxFBConfig(client, pGlxScreen, fbconfigId, &config, &err))
-@@ -1304,6 +1308,13 @@ DoCreatePbuffer(ClientPtr client, int screenNum, XID fbconfigId,
+@@ -1304,8 +1311,16 @@ DoCreatePbuffer(ClientPtr client, int screenNum, XID fbconfigId,
  						    width, height, config->rgbBits, 0);
      __glXleaveServer(GL_FALSE);
  
@@ -110,9 +229,13 @@ index 77afbf4..087d52e 100644
 +	return BadAlloc;
 +
      return DoCreateGLXDrawable(client, pGlxScreen, config, &pPixmap->drawable,
- 			       glxDrawableId, GLX_DRAWABLE_PBUFFER);
+-			       glxDrawableId, GLX_DRAWABLE_PBUFFER);
++			       glxDrawableId, glxDrawableId,
++			       GLX_DRAWABLE_PBUFFER);
  }
-@@ -1411,6 +1422,8 @@ int __glXDisp_CreateWindow(__GLXclientState *cl, GLbyte *pc)
+ 
+ int __glXDisp_CreatePbuffer(__GLXclientState *cl, GLbyte *pc)
+@@ -1411,6 +1426,8 @@ int __glXDisp_CreateWindow(__GLXclientState *cl, GLbyte *pc)
      DrawablePtr		 pDraw;
      int			 err;
  
@@ -121,8 +244,46 @@ index 77afbf4..087d52e 100644
      if (!validGlxScreen(client, req->screen, &pGlxScreen, &err))
  	return err;
      if (!validGlxFBConfig(client, pGlxScreen, req->fbconfig, &config, &err))
+@@ -1426,7 +1443,8 @@ int __glXDisp_CreateWindow(__GLXclientState *cl, GLbyte *pc)
+ 	return err;
+ 
+     return DoCreateGLXDrawable(client, pGlxScreen, config,
+-			       pDraw, req->glxwindow, GLX_DRAWABLE_WINDOW);
++			       pDraw, req->window,
++			       req->glxwindow, GLX_DRAWABLE_WINDOW);
+ }
+ 
+ int __glXDisp_DestroyWindow(__GLXclientState *cl, GLbyte *pc)
+diff --git a/glx/glxdri.c b/glx/glxdri.c
+index 21e44d1..e4870c3 100644
+--- a/glx/glxdri.c
++++ b/glx/glxdri.c
+@@ -682,10 +682,12 @@ __glXDRIscreenCreateContext(__GLXscreen *baseScreen,
+ }
+ 
+ static __GLXdrawable *
+-__glXDRIscreenCreateDrawable(__GLXscreen *screen,
++__glXDRIscreenCreateDrawable(ClientPtr client,
++			     __GLXscreen *screen,
+ 			     DrawablePtr pDraw,
+-			     int type,
+ 			     XID drawId,
++			     int type,
++			     XID glxDrawId,
+ 			     __GLXconfig *glxConfig)
+ {
+     __GLXDRIscreen *driScreen = (__GLXDRIscreen *) screen;
+@@ -699,7 +701,7 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
+ 	return NULL;
+ 
+     if (!__glXDrawableInit(&private->base, screen,
+-			   pDraw, type, drawId, glxConfig)) {
++			   pDraw, type, glxDrawId, glxConfig)) {
+         xfree(private);
+ 	return NULL;
+     }
 diff --git a/glx/glxdri2.c b/glx/glxdri2.c
-index fd435ee..6449978 100644
+index e791bf6..38b52bd 100644
 --- a/glx/glxdri2.c
 +++ b/glx/glxdri2.c
 @@ -105,11 +105,6 @@ __glXDRIdrawableDestroy(__GLXdrawable *drawable)
@@ -137,6 +298,76 @@ index fd435ee..6449978 100644
      __glXDrawableRelease(drawable);
  
      xfree(private);
+@@ -435,10 +430,12 @@ __glXDRIscreenCreateContext(__GLXscreen *baseScreen,
+ }
+ 
+ static __GLXdrawable *
+-__glXDRIscreenCreateDrawable(__GLXscreen *screen,
++__glXDRIscreenCreateDrawable(ClientPtr client,
++			     __GLXscreen *screen,
+ 			     DrawablePtr pDraw,
+-			     int type,
+ 			     XID drawId,
++			     int type,
++			     XID glxDrawId,
+ 			     __GLXconfig *glxConfig)
+ {
+     __GLXDRIscreen *driScreen = (__GLXDRIscreen *) screen;
+@@ -451,7 +448,7 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
+ 
+     private->screen = driScreen;
+     if (!__glXDrawableInit(&private->base, screen,
+-			   pDraw, type, drawId, glxConfig)) {
++			   pDraw, type, glxDrawId, glxConfig)) {
+         xfree(private);
+ 	return NULL;
+     }
+@@ -462,7 +459,7 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
+     private->base.waitGL	= __glXDRIdrawableWaitGL;
+     private->base.waitX		= __glXDRIdrawableWaitX;
+ 
+-    if (DRI2CreateDrawable(pDraw)) {
++    if (DRI2CreateDrawable(client, pDraw, drawId)) {
+ 	    xfree(private);
+ 	    return NULL;
+     }
+@@ -722,7 +719,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+ 		screen->core = (const __DRIcoreExtension *) extensions[i];
+ 	}
+         if (strcmp(extensions[i]->name, __DRI_DRI2) == 0 &&
+-	    extensions[i]->version >= __DRI_DRI2_VERSION) {
++	    extensions[i]->version >= 1) {
+ 		screen->dri2 = (const __DRIdri2Extension *) extensions[i];
+ 	}
+     }
+diff --git a/glx/glxdriswrast.c b/glx/glxdriswrast.c
+index c647d83..6a34393 100644
+--- a/glx/glxdriswrast.c
++++ b/glx/glxdriswrast.c
+@@ -301,10 +301,12 @@ glxChangeGC(GCPtr gc, BITS32 mask, CARD32 val)
+ }
+ 
+ static __GLXdrawable *
+-__glXDRIscreenCreateDrawable(__GLXscreen *screen,
++__glXDRIscreenCreateDrawable(ClientPtr client,
++			     __GLXscreen *screen,
+ 			     DrawablePtr pDraw,
+-			     int type,
+ 			     XID drawId,
++			     int type,
++			     XID glxDrawId,
+ 			     __GLXconfig *glxConfig)
+ {
+     __GLXDRIscreen *driScreen = (__GLXDRIscreen *) screen;
+@@ -319,7 +321,7 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
+ 
+     private->screen = driScreen;
+     if (!__glXDrawableInit(&private->base, screen,
+-			   pDraw, type, drawId, glxConfig)) {
++			   pDraw, type, glxDrawId, glxConfig)) {
+         xfree(private);
+ 	return NULL;
+     }
 diff --git a/glx/glxext.c b/glx/glxext.c
 index 59bcfbe..89e58b0 100644
 --- a/glx/glxext.c
@@ -160,7 +391,7 @@ index 59bcfbe..89e58b0 100644
  	if (c->isCurrent && (c->drawPriv == glxPriv || c->readPriv == glxPriv)) {
  	    int i;
 diff --git a/glx/glxscreens.c b/glx/glxscreens.c
-index 58d8ee0..b75aea6 100644
+index 58d8ee0..da11834 100644
 --- a/glx/glxscreens.c
 +++ b/glx/glxscreens.c
 @@ -215,7 +215,6 @@ glxCloseScreen (int index, ScreenPtr pScreen)
@@ -212,11 +443,60 @@ index 58d8ee0..b75aea6 100644
  
      i = 0;
      for (m = pGlxScreen->fbconfigs; m != NULL; m = m->next) {
+@@ -427,31 +399,23 @@ void __glXScreenInit(__GLXscreen *pGlxScreen, ScreenPtr pScreen)
+      * an existing, appropriate visual.
+      */
+     for (config = pGlxScreen->fbconfigs; config != NULL; config = config->next) {
+-	int depth;
+-
+ 	VisualPtr visual;
+ 
+ 	if (config->visualID != 0)
+ 	    continue;
+ 
+-	/* Only count RGB bits and not alpha, as we're not trying to create
+-	 * visuals for compositing (that's what the 32-bit composite visual
+-	 * set up above is for.
+-	 */
+-	depth = config->redBits + config->greenBits + config->blueBits;
+-
+ 	/* Make sure that our FBconfig's depth can actually be displayed
+ 	 * (corresponds to an existing visual).
+ 	 */
+ 	for (i = 0; i < pScreen->numVisuals; i++) {
+-	    if (depth == pScreen->visuals[i].nplanes)
++	    if (config->rgbBits == pScreen->visuals[i].nplanes)
+ 		break;
+ 	}
+ 	if (i == pScreen->numVisuals)
+ 	    continue;
+ 
+ 	/* Create a new X visual for our FBconfig. */
+-	visual = AddScreenVisuals(pScreen, 1, depth);
++	visual = AddScreenVisuals(pScreen, 1, config->rgbBits);
+ 	if (visual == NULL)
+ 	    continue;
+ 
 diff --git a/glx/glxscreens.h b/glx/glxscreens.h
-index bff4363..d52099f 100644
+index bff4363..861e03c 100644
 --- a/glx/glxscreens.h
 +++ b/glx/glxscreens.h
-@@ -173,7 +173,6 @@ struct __GLXscreen {
+@@ -134,10 +134,12 @@ struct __GLXscreen {
+ 				    __GLXconfig *modes,
+ 				    __GLXcontext *shareContext);
+ 
+-    __GLXdrawable *(*createDrawable)(__GLXscreen *context,
++    __GLXdrawable *(*createDrawable)(ClientPtr client,
++				     __GLXscreen *context,
+ 				     DrawablePtr pDraw,
+-				     int type,
+ 				     XID drawId,
++				     int type,
++				     XID glxDrawId,
+ 				     __GLXconfig *modes);
+     int            (*swapInterval)  (__GLXdrawable *drawable,
+ 				     int interval);
+@@ -173,7 +175,6 @@ struct __GLXscreen {
      /*@}*/
  
      Bool (*CloseScreen)(int index, ScreenPtr pScreen);
@@ -225,12 +505,20 @@ index bff4363..d52099f 100644
  
  
 diff --git a/hw/xfree86/dri2/dri2.c b/hw/xfree86/dri2/dri2.c
-index 48618e1..b8cbc52 100644
+index 2bdb733..178116a 100644
 --- a/hw/xfree86/dri2/dri2.c
 +++ b/hw/xfree86/dri2/dri2.c
-@@ -45,15 +45,14 @@
- 
- #include "xf86.h"
+@@ -37,6 +37,7 @@
+ #include <errno.h>
+ #include <xf86drm.h>
+ #include "xf86Module.h"
++#include "list.h"
+ #include "scrnintstr.h"
+ #include "windowstr.h"
+ #include "dixstruct.h"
+@@ -48,15 +49,16 @@
+ CARD8 dri2_major; /* version of DRI2 supported by DDX */
+ CARD8 dri2_minor;
  
 -static int dri2ScreenPrivateKeyIndex;
 +static int           dri2ScreenPrivateKeyIndex;
@@ -246,10 +534,12 @@ index 48618e1..b8cbc52 100644
  typedef struct _DRI2Drawable {
 -    unsigned int	 refCount;
 +    DRI2ScreenPtr        dri2_screen;
++    DrawablePtr		 drawable;
++    struct list		 reference_list;
      int			 width;
      int			 height;
      DRI2BufferPtr	*buffers;
-@@ -67,9 +66,8 @@ typedef struct _DRI2Drawable {
+@@ -73,9 +75,9 @@ typedef struct _DRI2Drawable {
      int			 swap_limit; /* for N-buffering */
  } DRI2DrawableRec, *DRI2DrawablePtr;
  
@@ -257,10 +547,11 @@ index 48618e1..b8cbc52 100644
 -
  typedef struct _DRI2Screen {
 +    ScreenPtr			 screen;
++    int				 refcnt;
      unsigned int		 numDrivers;
      const char			**driverNames;
      const char			*deviceName;
-@@ -95,43 +93,33 @@ DRI2GetScreen(ScreenPtr pScreen)
+@@ -101,45 +103,30 @@ DRI2GetScreen(ScreenPtr pScreen)
  static DRI2DrawablePtr
  DRI2GetDrawable(DrawablePtr pDraw)
  {
@@ -288,13 +579,16 @@ index 48618e1..b8cbc52 100644
 +    return pPriv;
  }
  
- int
- DRI2CreateDrawable(DrawablePtr pDraw)
+-int
+-DRI2CreateDrawable(DrawablePtr pDraw)
++static DRI2DrawablePtr
++DRI2AllocateDrawable(DrawablePtr pDraw)
  {
+     DRI2ScreenPtr   ds = DRI2GetScreen(pDraw->pScreen);
 -    WindowPtr	    pWin;
 -    PixmapPtr	    pPixmap;
      DRI2DrawablePtr pPriv;
-+    int rc;
+     CARD64          ust;
  
 -    pPriv = DRI2GetDrawable(pDraw);
 -    if (pPriv != NULL)
@@ -302,23 +596,23 @@ index 48618e1..b8cbc52 100644
 -	pPriv->refCount++;
 -	return Success;
 -    }
-+    rc = dixLookupResourceByType((pointer *) &pPriv, pDraw->id,
-+				 dri2DrawableRes, NULL, DixReadAccess);
-+    if (rc == Success || rc != BadValue)
-+	return rc;
- 
+-
      pPriv = xalloc(sizeof *pPriv);
      if (pPriv == NULL)
- 	return BadAlloc;
+-	return BadAlloc;
++	return NULL;
  
 -    pPriv->refCount = 1;
-+    pPriv->dri2_screen = DRI2GetScreen(pDraw->pScreen);
++    pPriv->dri2_screen = ds;
++    pPriv->drawable = pDraw;
      pPriv->width = pDraw->width;
      pPriv->height = pDraw->height;
      pPriv->buffers = NULL;
-@@ -144,43 +132,30 @@ DRI2CreateDrawable(DrawablePtr pDraw)
-     pPriv->last_swap_target = -1;
+@@ -157,44 +144,116 @@ DRI2CreateDrawable(DrawablePtr pDraw)
      pPriv->swap_limit = 1; /* default to double buffering */
+     pPriv->last_swap_msc = 0;
+     pPriv->last_swap_ust = 0;
++    list_init(&pPriv->reference_list);
  
 -    if (pDraw->type == DRAWABLE_WINDOW)
 -    {
@@ -329,67 +623,175 @@ index 48618e1..b8cbc52 100644
 -    {
 -	pPixmap = (PixmapPtr) pDraw;
 -	dixSetPrivate(&pPixmap->devPrivates, dri2PixmapPrivateKey, pPriv);
--    }
-+    if (!AddResource(pDraw->id, dri2DrawableRes, pPriv))
++    return pPriv;
++}
++
++typedef struct DRI2DrawableRefRec {
++    XID id;
++    XID dri2_id;
++    struct list link;
++} DRI2DrawableRefRec, *DRI2DrawableRefPtr;
++
++static DRI2DrawableRefPtr
++DRI2LookupDrawableRef(DRI2DrawablePtr pPriv, XID id, XID dri2_id)
++{
++    DRI2DrawableRefPtr ref;
++
++    list_for_each_entry(ref, &pPriv->reference_list, link) {
++	if (id != None && ref->id == id)
++	    return ref;
++	if (dri2_id != None && ref->dri2_id == dri2_id)
++	    return ref;
+     }
++    
++    return NULL;
++}
++
++static int
++DRI2AddDrawableRef(DRI2DrawablePtr pPriv, XID id, XID dri2_id)
++{
++    DRI2DrawableRefPtr ref;
++
++    ref = malloc(sizeof *ref);
++    if (ref == NULL)
 +	return BadAlloc;
++	
++    if (!AddResource(dri2_id, dri2DrawableRes, pPriv))
++	return BadAlloc;
++    if (!DRI2LookupDrawableRef(pPriv, id, None))
++	if (!AddResource(id, dri2DrawableRes, pPriv))
++	    return BadAlloc;
++
++    ref->id = id;
++    ref->dri2_id = dri2_id; 
++    list_add(&ref->link, &pPriv->reference_list);
  
      return Success;
  }
  
 -static void
 -DRI2FreeDrawable(DrawablePtr pDraw)
-+static int DRI2DrawableGone(pointer p, XID id)
++int
++DRI2CreateDrawable(ClientPtr client, DrawablePtr pDraw, XID id)
  {
--    DRI2DrawablePtr pPriv;
+     DRI2DrawablePtr pPriv;
 -    WindowPtr  	    pWin;
 -    PixmapPtr	    pPixmap;
++    XID dri2_id;
++    int rc;
+ 
+     pPriv = DRI2GetDrawable(pDraw);
+     if (pPriv == NULL)
+-	return;
++	pPriv = DRI2AllocateDrawable(pDraw);
++    if (pPriv == NULL)
++	return BadAlloc;
++    
++    dri2_id = FakeClientID(client->index);
++    rc = DRI2AddDrawableRef(pPriv, id, dri2_id);
++    if (rc != Success)
++	return rc;
+ 
+-    xfree(pPriv);
++    return Success;
++}
+ 
+-    if (pDraw->type == DRAWABLE_WINDOW)
+-    {
+-	pWin = (WindowPtr) pDraw;
+-	dixSetPrivate(&pWin->devPrivates, dri2WindowPrivateKey, NULL);
++static int DRI2DrawableGone(pointer p, XID id)
++{
 +    DRI2DrawablePtr pPriv = p;
 +    DRI2ScreenPtr   ds = pPriv->dri2_screen;
++    DRI2DrawableRefPtr ref, next;
 +    DrawablePtr     root;
 +    int i;
- 
--    pPriv = DRI2GetDrawable(pDraw);
--    if (pPriv == NULL)
--	return;
++
++    list_for_each_entry_safe(ref, next, &pPriv->reference_list, link) {
++	if (ref->dri2_id == id) {
++	    list_del(&ref->link);
++	    /* If this was the last ref under this X drawable XID,
++	     * unregister the X drawable resource. */
++	    if (!DRI2LookupDrawableRef(pPriv, ref->id, None))
++		FreeResourceByType(ref->id, dri2DrawableRes, TRUE);
++	    break;
++	}
++
++	if (ref->id == id) {
++	    list_del(&ref->link);
++	    FreeResourceByType(ref->dri2_id, dri2DrawableRes, TRUE);
++	    free(ref);
++	}
+     }
+-    else
+-    {
+-	pPixmap = (PixmapPtr) pDraw;
+-	dixSetPrivate(&pPixmap->devPrivates, dri2PixmapPrivateKey, NULL);
++
++    if (!list_is_empty(&pPriv->reference_list))
++	return Success;
++
++    ErrorF("freeing dri2 drawable\n");
++
 +    root = &WindowTable[ds->screen->myNum]->drawable;
 +    if (pPriv->buffers != NULL) {
 +	for (i = 0; i < pPriv->bufferCount; i++)
 +	    (*ds->DestroyBuffer)(root, pPriv->buffers[i]);
 +
 +	xfree(pPriv->buffers);
-+    }
- 
-     xfree(pPriv);
- 
--    if (pDraw->type == DRAWABLE_WINDOW)
--    {
--	pWin = (WindowPtr) pDraw;
--	dixSetPrivate(&pWin->devPrivates, dri2WindowPrivateKey, NULL);
--    }
--    else
--    {
--	pPixmap = (PixmapPtr) pDraw;
--	dixSetPrivate(&pPixmap->devPrivates, dri2PixmapPrivateKey, NULL);
--    }
+     }
++
++    xfree(pPriv);
++
 +    return Success;
  }
  
  static int
-@@ -534,13 +509,6 @@ DRI2SwapComplete(ClientPtr client, DrawablePtr pDraw, int frame,
- 	return;
-     }
+@@ -505,10 +564,6 @@ DRI2WaitMSCComplete(ClientPtr client, DrawablePtr pDraw, int frame,
  
--    if (pPriv->refCount == 0) {
--        xf86DrvMsg(pScreen->myNum, X_ERROR,
--		   "[DRI2] %s: bad drawable refcount\n", __func__);
--	DRI2FreeDrawable(pDraw);
--	return;
--    }
+     pPriv->blockedClient = NULL;
+     pPriv->blockedOnMsc = FALSE;
 -
-     ust = ((CARD64)tv_sec * 1000000) + tv_usec;
-     if (swap_complete)
- 	swap_complete(client, swap_data, type, ust, frame, pPriv->swap_count);
-@@ -753,36 +721,6 @@ DRI2WaitSBC(ClientPtr client, DrawablePtr pDraw, CARD64 target_sbc,
+-    /* If there's still a swap pending, let DRI2SwapComplete free it */
+-    if (pPriv->refCount == 0 && pPriv->swapsPending == 0)
+-	DRI2FreeDrawable(pDraw);
+ }
+ 
+ static void
+@@ -576,13 +631,6 @@ DRI2SwapComplete(ClientPtr client, DrawablePtr pDraw, int frame,
+     pPriv->last_swap_ust = ust;
+ 
+     DRI2WakeClient(client, pDraw, frame, tv_sec, tv_usec);
+-
+-    /*
+-     * It's normal for the app to have exited with a swap outstanding, but
+-     * don't free the drawable until they're all complete.
+-     */
+-    if (pPriv->swapsPending == 0 && pPriv->refCount == 0)
+-	DRI2FreeDrawable(pDraw);
+ }
+ 
+ Bool
+@@ -750,7 +798,7 @@ DRI2WaitMSC(ClientPtr client, DrawablePtr pDraw, CARD64 target_msc,
+     Bool ret;
+ 
+     pPriv = DRI2GetDrawable(pDraw);
+-    if (pPriv == NULL || pPriv->refCount == 0)
++    if (pPriv == NULL)
+ 	return BadDrawable;
+ 
+     /* Old DDX just completes immediately */
+@@ -774,7 +822,7 @@ DRI2WaitSBC(ClientPtr client, DrawablePtr pDraw, CARD64 target_sbc,
+     DRI2DrawablePtr pPriv;
+ 
+     pPriv = DRI2GetDrawable(pDraw);
+-    if (pPriv == NULL || pPriv->refCount == 0)
++    if (pPriv == NULL)
+ 	return BadDrawable;
+ 
+     /* target_sbc == 0 means to block until all pending swaps are
+@@ -800,36 +848,6 @@ DRI2WaitSBC(ClientPtr client, DrawablePtr pDraw, CARD64 target_sbc,
      return Success;
  }
  
@@ -416,25 +818,25 @@ index 48618e1..b8cbc52 100644
 -	xfree(pPriv->buffers);
 -    }
 -
--    /* If the window is destroyed while we have a swap pending, don't
+-    /* If the window is destroyed while we have a swap or wait pending, don't
 -     * actually free the priv yet.  We'll need it in the DRI2SwapComplete()
 -     * callback and we'll free it there once we're done. */
--    if (!pPriv->swapsPending)
+-    if (!pPriv->swapsPending && !pPriv->blockedClient)
 -	DRI2FreeDrawable(pDraw);
 -}
 -
  Bool
- DRI2Connect(ScreenPtr pScreen, unsigned int driverType, int *fd,
- 	    const char **driverName, const char **deviceName)
-@@ -834,6 +772,7 @@ DRI2ScreenInit(ScreenPtr pScreen, DRI2InfoPtr info)
+ DRI2HasSwapControl(ScreenPtr pScreen)
+ {
+@@ -890,6 +908,7 @@ DRI2ScreenInit(ScreenPtr pScreen, DRI2InfoPtr info)
      if (!ds)
  	return FALSE;
  
 +    ds->screen         = pScreen;
      ds->fd	       = info->fd;
      ds->deviceName     = info->deviceName;
- 
-@@ -897,6 +836,8 @@ DRI2Setup(pointer module, pointer opts, int *errmaj, int *errmin)
+     dri2_major         = 1;
+@@ -961,6 +980,8 @@ DRI2Setup(pointer module, pointer opts, int *errmaj, int *errmin)
  {
      static Bool setupDone = FALSE;
  
@@ -443,8 +845,22 @@ index 48618e1..b8cbc52 100644
      if (!setupDone)
      {
  	setupDone = TRUE;
+diff --git a/hw/xfree86/dri2/dri2.h b/hw/xfree86/dri2/dri2.h
+index ce8a5df..5415a0b 100644
+--- a/hw/xfree86/dri2/dri2.h
++++ b/hw/xfree86/dri2/dri2.h
+@@ -198,7 +198,8 @@ extern _X_EXPORT Bool DRI2Connect(ScreenPtr pScreen,
+ 
+ extern _X_EXPORT Bool DRI2Authenticate(ScreenPtr pScreen, drm_magic_t magic);
+ 
+-extern _X_EXPORT int DRI2CreateDrawable(DrawablePtr pDraw);
++extern _X_EXPORT int DRI2CreateDrawable(ClientPtr client,
++					DrawablePtr pDraw, XID id);
+ 
+ extern _X_EXPORT void DRI2DestroyDrawable(DrawablePtr pDraw);
+ 
 diff --git a/hw/xfree86/dri2/dri2ext.c b/hw/xfree86/dri2/dri2ext.c
-index bd92fd3..1ac4a5f 100644
+index 094d54d..58eaa10 100644
 --- a/hw/xfree86/dri2/dri2ext.c
 +++ b/hw/xfree86/dri2/dri2ext.c
 @@ -51,7 +51,6 @@
@@ -455,7 +871,12 @@ index bd92fd3..1ac4a5f 100644
  
  static Bool
  validDrawable(ClientPtr client, XID drawable, Mask access_mode,
-@@ -172,11 +171,6 @@ ProcDRI2CreateDrawable(ClientPtr client)
+@@ -168,15 +167,10 @@ ProcDRI2CreateDrawable(ClientPtr client)
+ 		       &pDrawable, &status))
+ 	return status;
+ 
+-    status = DRI2CreateDrawable(pDrawable);
++    status = DRI2CreateDrawable(client, pDrawable, stuff->drawable);
      if (status != Success)
  	return status;
  
@@ -476,7 +897,7 @@ index bd92fd3..1ac4a5f 100644
      return client->noClientException;
  }
  
-@@ -620,25 +612,11 @@ SProcDRI2Dispatch (ClientPtr client)
+@@ -627,25 +619,11 @@ SProcDRI2Dispatch (ClientPtr client)
      }
  }
  
@@ -502,6 +923,21 @@ index bd92fd3..1ac4a5f 100644
      dri2Extension = AddExtension(DRI2_NAME,
  				 DRI2NumberEvents,
  				 DRI2NumberErrors,
+diff --git a/include/list.h b/include/list.h
+index a126a65..89dc29d 100644
+--- a/include/list.h
++++ b/include/list.h
+@@ -94,4 +94,10 @@ list_is_empty(struct list *head)
+ 	 &pos->member != (head);					\
+ 	 pos = __container_of(pos->member.next, pos, member))
+ 
++#define list_for_each_entry_safe(pos, next, head, member)		\
++    for (pos = __container_of((head)->next, pos, member),		\
++	 next = __container_of(pos->member.next, pos, member);		\
++	 &pos->member != (head);					\
++	 pos = next, next = __container_of(next->member.next, next, member))
++
+ #endif
 -- 
-1.6.5.2
+1.7.0.1
 

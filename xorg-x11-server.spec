@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   8%{?gitdate:.%{gitdate}}%{dist}
+Release:   9%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,8 +89,8 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 Patch6055: xserver-1.7.6-export-dix-functions.patch
 Patch6056: xserver-1.7.6-export-more-dix-functions.patch
 Patch6057: xserver-1.8.0-xorg.conf.d-changes.patch
-Patch6058: xserver-1.8.0-glxdri2-resource-conversion.patch
-Patch6059: xserver-1.8.0-dri2-fix-handling-of-redirected-pixmaps.patch
+Patch6058: xserver-1.8.0-swap-fixes.patch
+Patch6059: xserver-1.8.0-glxdri2-resource-conversion.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -532,6 +532,13 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-9
+- Add patches cherry-picked from master for DRI2 VBlank synchronization
+  (related to RH #577512, though not a complete fix without changes
+  in other packages)
+- Add a new patch for RH #577142 that does a better job of fixing
+  the handling of redirected pixmaps.
+
 * Fri Apr 23 2010 Adel Gadllah <adel.gadllah@gmail.com>  1.8.0-8
 - xserver-1.8.0-dri2-fix-handling-of-redirected-pixmaps.patch:
   Fix handling of redirected pixmaps. (RH #577142)
