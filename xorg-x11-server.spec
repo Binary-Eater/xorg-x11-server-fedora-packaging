@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   9%{?gitdate:.%{gitdate}}%{dist}
+Release:   10%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -532,6 +532,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-10
+- Updated version of redirected pixmaps patch
+  (Again from https://bugs.freedesktop.org/show_bug.cgi?id=27767)
+
 * Fri Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-9
 - Add patches cherry-picked from master for DRI2 VBlank synchronization
   (related to RH #577512, though not a complete fix without changes
