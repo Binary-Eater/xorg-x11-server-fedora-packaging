@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   10%{?gitdate:.%{gitdate}}%{dist}
+Release:   11%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,8 +89,12 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 Patch6055: xserver-1.7.6-export-dix-functions.patch
 Patch6056: xserver-1.7.6-export-more-dix-functions.patch
 Patch6057: xserver-1.8.0-xorg.conf.d-changes.patch
+# Backports from master
 Patch6058: xserver-1.8.0-swap-fixes.patch
-Patch6059: xserver-1.8.0-glxdri2-resource-conversion.patch
+# https://bugs.freedesktop.org/show_bug.cgi?id=27767 (plus related
+# pieces needed backported from master)
+Patch6059: xserver-1.8.0-resource-accounting.patch
+Patch6060: xserver-1.8.0-glxdri2-resource-conversion.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -532,6 +536,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sat May  1 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-11
+- Update redirected pixmaps patch fixing several memory leaks
+- Add a fix for client resource table corruption
+  (More updates from https://bugs.freedesktop.org/show_bug.cgi?id=27767)
+
 * Fri Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-10
 - Updated version of redirected pixmaps patch
   (Again from https://bugs.freedesktop.org/show_bug.cgi?id=27767)
