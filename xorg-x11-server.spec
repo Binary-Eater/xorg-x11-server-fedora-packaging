@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   11%{?gitdate:.%{gitdate}}%{dist}
+Release:   12%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -536,7 +536,7 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
-* Sat May  1 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-11
+* Sat May  1 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-12
 - Update redirected pixmaps patch fixing several memory leaks
 - Add a fix for client resource table corruption
   (More updates from https://bugs.freedesktop.org/show_bug.cgi?id=27767)
