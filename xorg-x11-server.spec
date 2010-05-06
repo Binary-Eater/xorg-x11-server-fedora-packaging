@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   12%{?gitdate:.%{gitdate}}%{dist}
+Release:   13%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,6 +95,8 @@ Patch6058: xserver-1.8.0-swap-fixes.patch
 # pieces needed backported from master)
 Patch6059: xserver-1.8.0-resource-accounting.patch
 Patch6060: xserver-1.8.0-glxdri2-resource-conversion.patch
+
+Patch6061: xserver-1.8-no-connected-outputs.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -536,6 +538,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu May 06 2010 Dave Airlie <airlied@redhat.com> 1.8.0-13
+- add no connected outputs at startup patch
+
 * Sat May  1 2010 Owen Taylor <otaylor@redhat.com> - 1.8.0-12
 - Update redirected pixmaps patch fixing several memory leaks
 - Add a fix for client resource table corruption
