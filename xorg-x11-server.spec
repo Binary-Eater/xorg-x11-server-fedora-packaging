@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   13%{?gitdate:.%{gitdate}}%{dist}
+Release:   14%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -538,6 +538,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri May 07 2010 Dave Airlie <airlied@redhat.com> 1.8.0-14
+- xserver-1.6.99-right-of.patch: don't try spanning on single crtc cards.
+
 * Thu May 06 2010 Dave Airlie <airlied@redhat.com> 1.8.0-13
 - add no connected outputs at startup patch
 
