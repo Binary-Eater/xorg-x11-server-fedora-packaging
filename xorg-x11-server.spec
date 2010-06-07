@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.0
-Release:   15%{?gitdate:.%{gitdate}}%{dist}
+Release:   16%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -97,6 +97,7 @@ Patch6059: xserver-1.8.0-resource-accounting.patch
 Patch6060: xserver-1.8.0-glxdri2-resource-conversion.patch
 
 Patch6061: xserver-1.8-no-connected-outputs.patch
+Patch6062: xserver-1.8-randr-initial.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -538,6 +539,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Jul 7 2010 Ben Skeggs <bskeggs@redhat.com> 1.8.0-16
+- fix bug that caused unnecessary fb resize in multi-head configurations
+
 * Mon May 31 2010 Dave Airlie <airlied@redhat.com> 1.8.0-15
 - update xvfb-run.sh (CVE-2009-1573) (#544036)
 
