@@ -18,8 +18,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.8.0
-Release:   17%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.8.2
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -86,20 +86,8 @@ Patch6052: xserver-1.8-udev-warning.patch
 # fallback to vesa when module is missing seems broken
 Patch6053: xserver-1.8-disable-vboxvideo.patch
 
-Patch6055: xserver-1.7.6-export-dix-functions.patch
-Patch6056: xserver-1.7.6-export-more-dix-functions.patch
-Patch6057: xserver-1.8.0-xorg.conf.d-changes.patch
-# Backports from master
-Patch6058: xserver-1.8.0-swap-fixes.patch
-# https://bugs.freedesktop.org/show_bug.cgi?id=27767 (plus related
-# pieces needed backported from master)
-Patch6059: xserver-1.8.0-resource-accounting.patch
-Patch6060: xserver-1.8.0-glxdri2-resource-conversion.patch
-
 Patch6061: xserver-1.8-no-connected-outputs.patch
 Patch6062: xserver-1.8-randr-initial.patch
-# Bug 567835  - mouse input under xinerama fails for out of order screen
-Patch6063: xserver-1.8.0-signed-deviceevents.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -541,6 +529,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Jul 01 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.2-1
+- xserver 1.8.2
+- drop upstreamed patches
+
 * Fri Jun 18 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.0-17
 - xserver-1.8.0-signed-deviceevents.patch: make device events signed
   (#567835)
