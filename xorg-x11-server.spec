@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.2
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -88,6 +88,10 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 
 Patch6061: xserver-1.8-no-connected-outputs.patch
 Patch6062: xserver-1.8-randr-initial.patch
+
+# 5 patches, backports of the issues between XTEST devices and PointerKeys
+# button events.
+Patch6063: xserver-1.8.2-XTEST-PointerKeys-fixes.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -529,6 +533,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Jul 20 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.2-2
+- xserver-1.8.2-XTEST-PointerKeys-fixes.patch: backport fixes for XTEST and
+  PointerKeys issues. (#603953)
+
 * Thu Jul 01 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.2-1
 - xserver 1.8.2
 - drop upstreamed patches
