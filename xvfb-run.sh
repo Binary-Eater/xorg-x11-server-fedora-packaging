@@ -147,34 +147,20 @@ trap clean_up EXIT
 # If the user did not specify an X authorization file to use, set up a temporary
 # directory to house one.
 if [ -z "$AUTHFILE" ]; then
-    XVFB_RUN_TMPDIR="$(mktemp -d -t $PROGNAME.XXXXXX)"
-    # Create empty file to avoid xauth warning
-    AUTHFILE=$(tempfile -n "$XVFB_RUN_TMPDIR/Xauthority")
+    XVFB_RUN_TMPDIR="$(mktemp --directory --tmpdir $PROGNAME.XXXXXX)"
+    AUTHFILE=$(mktemp -p "$XVFB_RUN_TMPDIR" Xauthority.XXXXXX)
 fi
 
 # Start Xvfb.
 MCOOKIE=$(mcookie)
-tries=10
-while [ $tries -gt 0 ]; do
-    tries=$(( $tries - 1 ))
-    XAUTHORITY=$AUTHFILE xauth source - << EOF >>"$ERRORFILE" 2>&1
+
+XAUTHORITY=$AUTHFILE xauth source - << EOF >>"$ERRORFILE" 2>&1
 add :$SERVERNUM $XAUTHPROTO $MCOOKIE
 EOF
-    XAUTHORITY=$AUTHFILE Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" 2>&1 &
-    XVFBPID=$!
-
-    sleep "$STARTWAIT"
-    if kill -0 $XVFBPID 2>/dev/null; then
-        break
-    elif [ -n "$AUTONUM" ]; then
-        # The display is in use so try another one (if '-a' was specified).
-        SERVERNUM=$((SERVERNUM + 1))
-        SERVERNUM=$(find_free_servernum)
-        continue
-    fi
-    error "Xvfb failed to start" >&2
-    exit 1
-done
+XAUTHORITY=$AUTHFILE Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" \
+  2>&1 &
+XVFBPID=$!
+sleep "$STARTWAIT"
 
 # Start the command and save its exit status.
 set +e
