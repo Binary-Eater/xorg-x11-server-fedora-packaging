@@ -19,7 +19,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.8.2
-Release:   3%{?gitdate:.%{gitdate}}%{dist}
+Release:   4%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -533,6 +533,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Sep 13 2010 Matěj Cepl <mcepl@redhat.com> - 1.8.2-4
+- Call mktemp correctly (fixes RHBZ bug 632879
+
 * Tue Aug 03 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.8.2-3
 - Add two more patches to xserver-1.8.2-XTEST-PointerKeys-fixes.patch.
   fixes "Too many valuators" error message.
