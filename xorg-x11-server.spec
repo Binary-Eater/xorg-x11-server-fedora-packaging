@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.9.3
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -102,7 +102,6 @@ Patch7002: xserver-1.9.0-vbe-panelid-sanity.patch
 # misc
 Patch7004: xserver-1.9.0-classic-default-mode.patch
 Patch7005: xserver-1.9.0-qxl-fallback.patch
-Patch7006: xserver-1.9.1-pxtc-crash.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -561,6 +560,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Dec 14 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.9.3-2
+- xserver-1.9.1-pxtc-crash.patch: drop, upstream
+
 * Tue Dec 14 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.9.3-1
 - xserver 1.9.3
 - xserver-1.7.0-randr-gamma-restore.patch: drop, upstream
