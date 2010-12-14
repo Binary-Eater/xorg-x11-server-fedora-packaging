@@ -29,8 +29,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.9.1
-Release:   5%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.9.3
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -83,10 +83,8 @@ Patch6027: xserver-1.6.0-displayfd.patch
 Patch6030: xserver-1.6.99-right-of.patch
 Patch6033: xserver-1.6.99-default-modes.patch
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
-Patch6045: xserver-1.7.0-randr-gamma-restore.patch
 
 Patch6049: xserver-1.7.1-multilib.patch
-Patch6051: xserver-1.7.1-gamma-kdm-fix.patch
 
 # Remove this some day. Not today though.
 Patch6052: xserver-1.8-udev-warning.patch
@@ -563,6 +561,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Dec 14 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.9.3-1
+- xserver 1.9.3
+- xserver-1.7.0-randr-gamma-restore.patch: drop, upstream
+- xserver-1.7.1-gamma-kdm-fix.patch: drop, upstream
+
 * Tue Nov 09 2010 Adam Jackson <ajax@redhat.com> 1.9.1-3
 - xserver-1.9.1-pxtc-crash.patch: Fix crash with Xinerama enabled
 
