@@ -1,14 +1,8 @@
-From dc7122b26736ce1cabfd24342a82b99b8c8e8282 Mon Sep 17 00:00:00 2001
+From 6576ada0f4aae8433dbda69b84dec886b13a6aef Mon Sep 17 00:00:00 2001
 From: Adam Jackson <ajax@redhat.com>
-Date: Mon, 20 Dec 2010 09:38:23 -0500
-Subject: [PATCH] Fix sync edge cases
+Date: Mon, 20 Dec 2010 10:30:23 -0500
+Subject: [PATCH] sync fixes
 
-Upstream commits:
-
-b55bf248581dc66321b24b29f199f6dc8d02db1b
-a2e67a6412386782cb8b644b86a5744591397d45
-
-Signed-off-by: Adam Jackson <ajax@redhat.com>
 ---
  Xext/sync.c |   30 ++++++++++++++++++++++++++++++
  1 files changed, 30 insertions(+), 0 deletions(-)
@@ -18,9 +12,9 @@ index a51262a..314b63e 100644
 --- a/Xext/sync.c
 +++ b/Xext/sync.c
 @@ -959,6 +959,17 @@ SyncComputeBracketValues(SyncCounter *pCounter)
-	    {
-		psci->bracket_less = pTrigger->test_value;
-		pnewltval = &psci->bracket_less;
+ 	    {
+ 		psci->bracket_less = pTrigger->test_value;
+ 		pnewltval = &psci->bracket_less;
 +	    } else if (XSyncValueEqual(pCounter->value, pTrigger->test_value) &&
 +		       XSyncValueLessThan(pTrigger->test_value,
 +					  psci->bracket_greater))
@@ -32,13 +26,13 @@ index a51262a..314b63e 100644
 +		 */
 +	        psci->bracket_greater = pTrigger->test_value;
 +		pnewgtval = &psci->bracket_greater;
-	    }
-	}
+ 	    }
+ 	}
          else if (pTrigger->test_type == XSyncPositiveTransition &&
 @@ -969,6 +980,17 @@ SyncComputeBracketValues(SyncCounter *pCounter)
-	    {
-		psci->bracket_greater = pTrigger->test_value;
-		pnewgtval = &psci->bracket_greater;
+ 	    {
+ 		psci->bracket_greater = pTrigger->test_value;
+ 		pnewgtval = &psci->bracket_greater;
 +	    } else if (XSyncValueEqual(pCounter->value, pTrigger->test_value) &&
 +		       XSyncValueGreaterThan(pTrigger->test_value,
 +					     psci->bracket_less))
@@ -50,14 +44,14 @@ index a51262a..314b63e 100644
 +		 */
 +	        psci->bracket_less = pTrigger->test_value;
 +		pnewltval = &psci->bracket_less;
-	    }
-	}
+ 	    }
+ 	}
      } /* end for each trigger */
 @@ -2300,6 +2322,14 @@ IdleTimeBlockHandler(pointer env, struct timeval **wt, pointer LastSelectMask)
-		break;
-	    }
-	}
-+	/*
+ 		break;
+ 	    }
+ 	}
++	/* 
 +	 * We've been called exactly on the idle time, but we have a
 +	 * NegativeTransition trigger which requires a transition from an
 +	 * idle time greater than this.  Schedule a wakeup for the next
@@ -68,5 +62,6 @@ index a51262a..314b63e 100644
      }
      else if (pIdleTimeValueGreater)
      {
---
+-- 
 1.7.3.2
+
