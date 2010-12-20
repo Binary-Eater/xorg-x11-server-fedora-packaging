@@ -30,11 +30,10 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.9.3
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   3%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 #VCS:      git:git://git.freedesktop.org/git/xorg/xserver
 %if 0%{?gitdate}
@@ -52,8 +51,10 @@ Source4:   10-quirks.conf
 
 Source10:   xserver.pamd
 
-# "useful" xvfb-run script
-Source20:  http://svn.exactcode.de/t2/trunk/package/xorg/xorg-server/xvfb-run.sh
+# "useful" xvfb-run script.  not using the real URL here, ours has been
+# patched since and spectool -g will grab the old broken version.
+#Source20:  http://svn.exactcode.de/t2/trunk/package/xorg/xorg-server/xvfb-run.sh
+Source20: xvfb-run.sh
 
 # for requires generation in drivers
 Source30:  xserver-sdk-abi-requires
@@ -102,6 +103,7 @@ Patch7002: xserver-1.9.0-vbe-panelid-sanity.patch
 # misc
 Patch7004: xserver-1.9.0-classic-default-mode.patch
 Patch7005: xserver-1.9.0-qxl-fallback.patch
+Patch7006: xserver-1.9.3-sync-fixes.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -351,9 +353,16 @@ test `getminor extension` == %{extension_minor}
 %define bodhi_flags --with-vendor-name="Fedora Project"
 %endif
 
-# --with-pie ?
+# upstream was released with libtool 2.4.  F14 has libtool 2.2.10.
+# autoreconf won't update these because they look newer, but then later
+# libtool will whine about version mismatch.
+#
+# tl;dr: autotools suck.
+rm -f aclocal.m4 ltmain.sh
+
 autoreconf -v --install || exit 1
 # export CFLAGS="${RPM_OPT_FLAGS}"
+# --with-pie ?
 %configure --enable-maintainer-mode %{xservers} \
 	--disable-static \
 	--with-pic \
@@ -560,6 +569,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Dec 20 2010 Adam Jackson <ajax@redhat.com> 1.9.3-3
+- xserver-1.9.3-sync-fixes.patch: Backport SYNC extension fixes from master
+  (#612620)
+
 * Tue Dec 14 2010 Peter Hutterer <peter.hutterer@redhat.com> 1.9.3-2
 - xserver-1.9.1-pxtc-crash.patch: drop, upstream
 
