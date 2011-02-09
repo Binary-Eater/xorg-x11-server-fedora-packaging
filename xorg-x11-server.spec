@@ -29,8 +29,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.9.3
-Release:   4%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.9.4
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -103,7 +103,6 @@ Patch7002: xserver-1.9.0-vbe-panelid-sanity.patch
 # misc
 Patch7004: xserver-1.9.0-classic-default-mode.patch
 Patch7005: xserver-1.9.0-qxl-fallback.patch
-Patch7006: xserver-1.9.3-sync-fixes.patch
 
 # 537708 xmodmap Mode_switch gets stuck on
 # http://patchwork.freedesktop.org/patch/3653/
@@ -573,6 +572,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Feb 09 2011 Adam Jackson <ajax@redhat.com> 1.9.4-1
+- xserver 1.9.4
+
 * Thu Jan 13 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.9.3-3
 - server-1.9-99.901-xkb-repeat-issues.patch: update xkb repeat flags when
   the compat map updates (#537708)
