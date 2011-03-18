@@ -29,8 +29,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.9.4
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.9.5
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -82,7 +82,6 @@ Patch6016: xserver-1.6.1-nouveau.patch
 # ajax needs to upstream this
 Patch6027: xserver-1.6.0-displayfd.patch
 Patch6030: xserver-1.6.99-right-of.patch
-Patch6033: xserver-1.6.99-default-modes.patch
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 
 Patch6049: xserver-1.7.1-multilib.patch
@@ -572,6 +571,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Mar 18 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.9.5-1
+- xserver 1.9.5
+- xserver-1.6.99-default-modes.patch: drop, 11bf10e22cefe
+
 * Fri Mar 11 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.9.4-2
 - Add Xen virtual pointer quirk to 10-quirks.conf (#523914, #679699)
 
