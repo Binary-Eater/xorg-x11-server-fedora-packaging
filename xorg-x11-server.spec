@@ -29,7 +29,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.10.0
+Version:   1.10.1
 Release:   7%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -85,7 +85,6 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 Patch7005: xserver-1.9.0-qxl-fallback.patch
 
 Patch7006: xserver-1.10-pointer-barriers.patch
-Patch7007: xserver-1.10-vbe-malloc.patch
 # from ajax/xserver-next
 Patch7008: xserver-1.10-glx-pixmap-crash.patch
 Patch7009: xserver-1.10-bg-none-revert.patch
@@ -554,6 +553,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Apr 18 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-7
+- xserver 1.10.1
+- xserver-1.10-vbe-malloc.patch: drop, 0ab680f08208afe51ad6ddc1
+
 * Wed Mar 30 2011 Adam Jackson <ajax@redhat.com> 1.10.0-7
 - xserver-1.10-glx-pixmap-crash.patch, xserver-1.10-bg-none-revert.patch:
   bugfixes from xserver-next
