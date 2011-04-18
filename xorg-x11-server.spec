@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   7%{?gitdate:.%{gitdate}}%{dist}
+Release:   8%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -88,6 +88,10 @@ Patch7006: xserver-1.10-pointer-barriers.patch
 # from ajax/xserver-next
 Patch7008: xserver-1.10-glx-pixmap-crash.patch
 Patch7009: xserver-1.10-bg-none-revert.patch
+
+# 697450 - valuator axis values unaligned
+# Will be in 1.10.2
+Patch7010: xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -553,6 +557,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Apr 19 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-7
+- xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.patch
+  (#697450)
+
 * Mon Apr 18 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-7
 - xserver 1.10.1
 - xserver-1.10-vbe-malloc.patch: drop, 0ab680f08208afe51ad6ddc1

@@ -1,0 +1,215 @@
+From 419a27b5219a739f2fbd50cc96a1b54c469e4a88 Mon Sep 17 00:00:00 2001
+From: Peter Hutterer <peter.hutterer@who-t.net>
+Date: Tue, 12 Apr 2011 10:17:07 +1000
+Subject: [PATCH] Xi: fix valuator alignment in DeepCopyDeviceClasses (#36119)
+
+commit 678f5396c91b3d0c7572ed579b0a4fb62b2b4655 only fixed the
+initialization, not the copy. After a slave device change, the valuator
+were out of alignment again.
+
+X.Org Bug 36119 <http://bugs.freedesktop.org/show_bug.cgi?id=36119>
+
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+---
+ Xi/exevents.c      |   11 ++++-------
+ dix/devices.c      |   47 +++++++++++++++++++++++++++++++++++++----------
+ include/input.h    |    5 +++++
+ include/inputstr.h |    2 +-
+ test/input.c       |   24 +++++++++++++++++++++++-
+ 5 files changed, 70 insertions(+), 19 deletions(-)
+
+diff --git a/Xi/exevents.c b/Xi/exevents.c
+index 18803c9..76d5c37 100644
+--- a/Xi/exevents.c
++++ b/Xi/exevents.c
+@@ -535,6 +535,7 @@ DeepCopyPointerClasses(DeviceIntPtr from, DeviceIntPtr to)
+     if (from->valuator)
+     {
+         ValuatorClassPtr v;
++
+         if (!to->valuator)
+         {
+             classes = to->unused_classes;
+@@ -543,18 +544,14 @@ DeepCopyPointerClasses(DeviceIntPtr from, DeviceIntPtr to)
+                 classes->valuator = NULL;
+         }
+ 
+-        to->valuator = realloc(to->valuator, sizeof(ValuatorClassRec) +
+-                from->valuator->numAxes * sizeof(AxisInfo) +
+-                from->valuator->numAxes * sizeof(double));
+-        v = to->valuator;
++        v = AllocValuatorClass(to->valuator, from->valuator->numAxes);
++
+         if (!v)
+             FatalError("[Xi] no memory for class shift.\n");
+ 
+-        v->numAxes = from->valuator->numAxes;
+-        v->axes = (AxisInfoPtr)&v[1];
++        to->valuator = v;
+         memcpy(v->axes, from->valuator->axes, v->numAxes * sizeof(AxisInfo));
+ 
+-        v->axisVal = (double*)(v->axes + from->valuator->numAxes);
+         v->sourceid = from->id;
+     } else if (to->valuator && !from->valuator)
+     {
+diff --git a/dix/devices.c b/dix/devices.c
+index 534931c..58bda0d 100644
+--- a/dix/devices.c
++++ b/dix/devices.c
+@@ -1221,13 +1221,46 @@ InitButtonClassDeviceStruct(DeviceIntPtr dev, int numButtons, Atom* labels,
+     return TRUE;
+ }
+ 
++/**
++ * Allocate a valuator class and set up the pointers for the axis values
++ * appropriately.
++ *
++ * @param src If non-NULL, the memory is reallocated from src. If NULL, the
++ * memory is calloc'd.
++ * @parma numAxes Number of axes to allocate.
++ * @return The allocated valuator struct.
++ */
++ValuatorClassPtr
++AllocValuatorClass(ValuatorClassPtr src, int numAxes)
++{
++    ValuatorClassPtr v;
++    /* force alignment with double */
++    union align_u { ValuatorClassRec valc; double d; } *align;
++    int size;
++
++    size = sizeof(union align_u) + numAxes * (sizeof(double) + sizeof(AxisInfo));
++    align = (union align_u *) realloc(src, size);
++
++    if (!align)
++        return NULL;
++
++    if (!src)
++        memset(align, 0, size);
++
++    v = &align->valc;
++    v->numAxes = numAxes;
++    v->axisVal = (double*)(align + 1);
++    v->axes = (AxisInfoPtr)(v->axisVal + numAxes);
++
++    return v;
++}
++
+ Bool
+ InitValuatorClassDeviceStruct(DeviceIntPtr dev, int numAxes, Atom *labels,
+                               int numMotionEvents, int mode)
+ {
+     int i;
+     ValuatorClassPtr valc;
+-    union align_u { ValuatorClassRec valc; double d; } *align;
+ 
+     if (!dev)
+         return FALSE;
+@@ -1240,13 +1273,10 @@ InitValuatorClassDeviceStruct(DeviceIntPtr dev, int numAxes, Atom *labels,
+         numAxes = MAX_VALUATORS;
+     }
+ 
+-    align = (union align_u *) calloc(1, sizeof(union align_u) +
+-				     numAxes * sizeof(double) +
+-				     numAxes * sizeof(AxisInfo));
+-    if (!align)
+-	return FALSE;
++    valc = AllocValuatorClass(NULL, numAxes);
++    if (!valc)
++        return FALSE;
+ 
+-    valc = &align->valc;
+     valc->sourceid = dev->id;
+     valc->motion = NULL;
+     valc->first_motion = 0;
+@@ -1254,9 +1284,6 @@ InitValuatorClassDeviceStruct(DeviceIntPtr dev, int numAxes, Atom *labels,
+ 
+     valc->numMotionEvents = numMotionEvents;
+     valc->motionHintWindow = NullWindow;
+-    valc->numAxes = numAxes;
+-    valc->axisVal = (double *)(align + 1);
+-    valc->axes = (AxisInfoPtr)(valc->axisVal + numAxes);
+ 
+     if (mode & OutOfProximity)
+         InitProximityClassDeviceStruct(dev);
+diff --git a/include/input.h b/include/input.h
+index 2bb85ff..4aad304 100644
+--- a/include/input.h
++++ b/include/input.h
+@@ -102,6 +102,7 @@ typedef unsigned long Leds;
+ typedef struct _OtherClients *OtherClientsPtr;
+ typedef struct _InputClients *InputClientsPtr;
+ typedef struct _DeviceIntRec *DeviceIntPtr;
++typedef struct _ValuatorClassRec *ValuatorClassPtr;
+ typedef struct _ClassesRec *ClassesPtr;
+ typedef struct _SpriteRec *SpritePtr;
+ typedef union _GrabMask GrabMask;
+@@ -300,6 +301,10 @@ extern _X_EXPORT Bool InitButtonClassDeviceStruct(
+     Atom* /* labels */,
+     CARD8* /*map*/);
+ 
++extern _X_INTERNAL ValuatorClassPtr AllocValuatorClass(
++    ValuatorClassPtr src,
++    int numAxes);
++
+ extern _X_EXPORT Bool InitValuatorClassDeviceStruct(
+     DeviceIntPtr /*device*/,
+     int /*numAxes*/,
+diff --git a/include/inputstr.h b/include/inputstr.h
+index f63df80..bd7c78d 100644
+--- a/include/inputstr.h
++++ b/include/inputstr.h
+@@ -283,7 +283,7 @@ typedef struct _ValuatorClassRec {
+     unsigned short	  numAxes;
+     double		  *axisVal; /* always absolute, but device-coord system */
+     ValuatorAccelerationRec	accelScheme;
+-} ValuatorClassRec, *ValuatorClassPtr;
++} ValuatorClassRec;
+ 
+ typedef struct _ButtonClassRec {
+     int			sourceid;
+diff --git a/test/input.c b/test/input.c
+index c13b4f2..89cce3f 100644
+--- a/test/input.c
++++ b/test/input.c
+@@ -1209,6 +1209,28 @@ static void include_bit_test_macros(void)
+     }
+ }
+ 
++/**
++ * Ensure that val->axisVal and val->axes are aligned on doubles.
++ */
++static void dix_valuator_alloc(void)
++{
++    ValuatorClassPtr v = NULL;
++    int num_axes = 0;
++
++    while (num_axes < 5)
++    {
++        v = AllocValuatorClass(v, num_axes);
++
++        g_assert(v);
++        g_assert(v->numAxes == num_axes);
++        g_assert(((void*)v->axisVal - (void*)v) % sizeof(double) == 0);
++        g_assert(((void*)v->axes - (void*)v) % sizeof(double) == 0);
++        num_axes ++;
++    }
++
++    free(v);
++}
++
+ int main(int argc, char** argv)
+ {
+     g_test_init(&argc, &argv,NULL);
+@@ -1226,7 +1248,7 @@ int main(int argc, char** argv)
+     g_test_add_func("/include/byte_padding_macros", include_byte_padding_macros);
+     g_test_add_func("/include/bit_test_macros", include_bit_test_macros);
+     g_test_add_func("/Xi/xiproperty/register-unregister", xi_unregister_handlers);
+-
++    g_test_add_func("/dix/input/valuator-alloc", dix_valuator_alloc);
+ 
+     return g_test_run();
+ }
+-- 
+1.7.4.4
+
