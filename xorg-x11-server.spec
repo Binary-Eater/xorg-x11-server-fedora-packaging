@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   8%{?gitdate:.%{gitdate}}%{dist}
+Release:   9%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -92,6 +92,9 @@ Patch7009: xserver-1.10-bg-none-revert.patch
 # 697450 - valuator axis values unaligned
 # Will be in 1.10.2
 Patch7010: xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.patch
+
+# not like the upstream patch due to refactoring
+Patch7011: xserver-1.10-swrastg.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -557,7 +560,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
-* Tue Apr 19 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-7
+* Tue Apr 19 2011 Adam Jackson <ajax@redhat.com> 1.10.1-9
+- xserver-1.10-swrastg.patch: Also look for swrastg
+
+* Tue Apr 19 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-8
 - xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.patch
   (#697450)
 
