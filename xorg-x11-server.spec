@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   10%{?gitdate:.%{gitdate}}%{dist}
+Release:   11%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -82,8 +82,6 @@ Patch6030: xserver-1.6.99-right-of.patch
 Patch6053: xserver-1.8-disable-vboxvideo.patch
 
 # misc
-Patch7005: xserver-1.9.0-qxl-fallback.patch
-
 Patch7006: xserver-1.10-pointer-barriers.patch
 # from ajax/xserver-next
 Patch7008: xserver-1.10-glx-pixmap-crash.patch
@@ -563,6 +561,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Apr 21 2011 Hans de Goede <hdegoede@redhat.com> 1.10.1-11
+- Drop xserver-1.9.0-qxl-fallback.patch, since the latest qxl driver
+  supports both revision 1 and 2 qxl devices (#642153)
+
 * Thu Apr 21 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-10
 - xserver-1.10-dix-only-transform-valuators-when-we-need-them.patch: fix
   jumping when a transformation matrix is active
