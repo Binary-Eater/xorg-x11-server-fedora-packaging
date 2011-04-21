@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   11%{?gitdate:.%{gitdate}}%{dist}
+Release:   12%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -96,6 +96,8 @@ Patch7011: xserver-1.10-swrastg.patch
 
 # sent upstream, should be in soon
 Patch7012: xserver-1.10-dix-only-transform-valuators-when-we-need-them.patch
+# ditto
+#Patch7013: xserver-1.10.1-memcpy-abuse.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -561,6 +563,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Apr 21 2011 Adam Jackson <ajax@redhat.com> 1.10.1-12
+- xserver-1.10.1-memcpy-abuse.patch: Fix memcpy abuse
+
 * Thu Apr 21 2011 Hans de Goede <hdegoede@redhat.com> 1.10.1-11
 - Drop xserver-1.9.0-qxl-fallback.patch, since the latest qxl driver
   supports both revision 1 and 2 qxl devices (#642153)
