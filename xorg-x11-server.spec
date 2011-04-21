@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   9%{?gitdate:.%{gitdate}}%{dist}
+Release:   10%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,6 +95,9 @@ Patch7010: xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.p
 
 # not like the upstream patch due to refactoring
 Patch7011: xserver-1.10-swrastg.patch
+
+# sent upstream, should be in soon
+Patch7012: xserver-1.10-dix-only-transform-valuators-when-we-need-them.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -560,6 +563,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Apr 21 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.1-10
+- xserver-1.10-dix-only-transform-valuators-when-we-need-them.patch: fix
+  jumping when a transformation matrix is active
+
 * Tue Apr 19 2011 Adam Jackson <ajax@redhat.com> 1.10.1-9
 - xserver-1.10-swrastg.patch: Also look for swrastg
 
