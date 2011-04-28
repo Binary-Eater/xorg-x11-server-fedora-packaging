@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   13%{?gitdate:.%{gitdate}}%{dist}
+Release:   14%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -98,6 +98,9 @@ Patch7011: xserver-1.10-swrastg.patch
 Patch7012: xserver-1.10-dix-only-transform-valuators-when-we-need-them.patch
 # ditto
 Patch7013: xserver-1.10.1-memcpy-abuse.patch
+
+# upstream backports
+Patch7015: xserver-1.10.1-dri2-fixes.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -563,6 +566,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Apr 28 2011 Dave Airlie <airlied@redhat.com> 1.10.1-14
+- backport upstream DRI2 fixes that are being screwed around with upstream
+
 * Thu Apr 21 2011 Adam Jackson <ajax@redhat.com> 1.10.1-13
 - xserver-1.10.1-memcpy-abuse.patch: Fix memcpy abuse
 
