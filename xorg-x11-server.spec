@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.1
-Release:   14%{?gitdate:.%{gitdate}}%{dist}
+Release:   15%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -101,6 +101,8 @@ Patch7013: xserver-1.10.1-memcpy-abuse.patch
 
 # upstream backports
 Patch7015: xserver-1.10.1-dri2-fixes.patch
+
+Patch7020: xserver-1.10.1-fix-bg-set-crash.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -566,6 +568,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sun May 29 2011 Dave Airlie <airlied@redhat.com> 1.10.1-15
+- fix xsetroot -bg crash, from xorg-devel (#705631)
+
 * Thu Apr 28 2011 Dave Airlie <airlied@redhat.com> 1.10.1-14
 - backport upstream DRI2 fixes that are being screwed around with upstream
 

@@ -1,0 +1,38 @@
+From 559cef751743a2292d7be984db85da0e65bcbd94 Mon Sep 17 00:00:00 2001
+From: Marko Macek <Marko.Macek@gmx.net>
+Date: Sat, 21 May 2011 19:13:04 +0200
+Subject: [PATCH] crash after setting root background pixmap to None, then
+ setting color
+
+Please apply this patch:
+
+Fix crash after resetting root window background pixmap to None, then setting background color.
+
+Signed-off-by: Marko Macek <marko.macek@gmx.net>
+---
+ dix/window.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+diff --git a/dix/window.c b/dix/window.c
+index 9be7064..89d9511 100644
+--- a/dix/window.c
++++ b/dix/window.c
+@@ -474,6 +474,7 @@ InitRootWindow(WindowPtr pWin)
+         pWin->background.pixel = pScreen->whitePixel;
+         backFlag |= CWBackPixmap;
+     } else {
++	pWin->backgroundState = BackgroundPixel;
+ 	if (whiteRoot)
+             pWin->background.pixel = pScreen->whitePixel;
+         else
+@@ -972,6 +973,7 @@ SetRootWindowBackground(WindowPtr pWin, ScreenPtr pScreen, Mask *index2)
+     else if (party_like_its_1989)
+ 	MakeRootTile(pWin);
+     else {
++	pWin->backgroundState = BackgroundPixel;
+ 	if (whiteRoot)
+ 	    pWin->background.pixel = pScreen->whitePixel;
+ 	else
+-- 
+1.7.4.4
+
