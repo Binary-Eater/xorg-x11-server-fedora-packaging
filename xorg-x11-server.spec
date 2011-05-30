@@ -29,8 +29,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.10.1
-Release:   15%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.10.2
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -84,12 +84,7 @@ Patch6053: xserver-1.8-disable-vboxvideo.patch
 # misc
 Patch7006: xserver-1.10-pointer-barriers.patch
 # from ajax/xserver-next
-Patch7008: xserver-1.10-glx-pixmap-crash.patch
 Patch7009: xserver-1.10-bg-none-revert.patch
-
-# 697450 - valuator axis values unaligned
-# Will be in 1.10.2
-Patch7010: xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.patch
 
 # not like the upstream patch due to refactoring
 Patch7011: xserver-1.10-swrastg.patch
@@ -568,6 +563,12 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon May 30 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.2-1
+- xserver 1.10.2
+- xserver-1.10-glx-pixmap-crash.patch: drop, b5093063b
+- xserver-1.10.1-Xi-fix-valuator-alignment-in-DeepCopyDeviceClasses-3.patch:
+  drop, d6328c6bfe4
+
 * Sun May 29 2011 Dave Airlie <airlied@redhat.com> 1.10.1-15
 - fix xsetroot -bg crash, from xorg-devel (#705631)
 
