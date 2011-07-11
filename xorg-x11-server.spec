@@ -29,7 +29,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.10.2
+Version:   1.10.3
 Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -96,8 +96,6 @@ Patch7013: xserver-1.10.1-memcpy-abuse.patch
 
 # upstream backports
 Patch7015: xserver-1.10.1-dri2-fixes.patch
-
-Patch7020: xserver-1.10.1-fix-bg-set-crash.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -563,6 +561,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Jul 11 2011 Adam Jackson <ajax@redhat.com> 1.10.3-1
+- xserver 1.10.3
+- xserver-1.10.1-fix-bg-set-crash.patch: drop, c5b72fd3
+
 * Mon May 30 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.2-1
 - xserver 1.10.2
 - xserver-1.10-glx-pixmap-crash.patch: drop, b5093063b
