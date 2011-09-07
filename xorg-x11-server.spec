@@ -29,7 +29,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.10.3
+Version:   1.10.4
 Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -89,8 +89,6 @@ Patch7009: xserver-1.10-bg-none-revert.patch
 # not like the upstream patch due to refactoring
 Patch7011: xserver-1.10-swrastg.patch
 
-# sent upstream, should be in soon
-Patch7012: xserver-1.10-dix-only-transform-valuators-when-we-need-them.patch
 # ditto
 Patch7013: xserver-1.10.1-memcpy-abuse.patch
 
@@ -561,6 +559,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Sep 07 2011 Adam Jackson <ajax@redhat.com> 1.10.4-1
+- xserver 1.10.4
+
 * Mon Jul 11 2011 Adam Jackson <ajax@redhat.com> 1.10.3-1
 - xserver 1.10.3
 - xserver-1.10.1-fix-bg-set-crash.patch: drop, c5b72fd3
