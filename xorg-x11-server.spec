@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.9.5
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -106,6 +106,8 @@ Patch7005: xserver-1.9.0-qxl-fallback.patch
 # 537708 xmodmap Mode_switch gets stuck on
 # http://patchwork.freedesktop.org/patch/3653/
 Patch7007: xserver-1.9.99.901-xkb-repeat-issues.patch
+
+Patch7008: xserver-1.10.1-memcpy-abuse.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -571,6 +573,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Oct 13 2011 Adam Jackson <ajax@redhat.com> 1.9.5-2
+- xserver-1.10.1-memcpy-abuse.patch: Fix memcpy abuse. (#730797)
+
 * Fri Mar 18 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.9.5-1
 - xserver 1.9.5
 - xserver-1.6.99-default-modes.patch: drop, 11bf10e22cefe
