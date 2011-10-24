@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.11.2
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -89,6 +89,9 @@ Patch7009: xserver-1.10.99-config-add-udev-systemd-multi-seat-support.patch
 
 # Bug 751491: passive keygrabs on XIAllMasterDevices fails
 Patch7010: 0001-Xi-allow-passive-keygrabs-on-the-XIAll-Master-Device.patch
+
+# Bug 737031 - [Crestline] Coredump when doing exit
+Patch7011: 0001-dix-block-signals-when-closing-all-devices.patch
 
 
 %define moduledir	%{_libdir}/xorg/modules
@@ -555,6 +558,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Nov 09 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.11.2-2
+- Block signals when removing all input devices #737031
+
 * Sat Nov 05 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.11.2-1
 - xserver-1.11.2
 - Fix for #751491, enabling passive key grabs on XIAllMasterDevices
