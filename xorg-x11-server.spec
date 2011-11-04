@@ -29,7 +29,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.11.1
+Version:   1.11.2
 Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -86,6 +86,9 @@ Patch7007: xserver-1.10.99.1-test.patch
 # Multi-seat support through config/udev backend.
 # Submitted to upstream but not merged for 1.11
 Patch7009: xserver-1.10.99-config-add-udev-systemd-multi-seat-support.patch
+
+# Bug 751491: passive keygrabs on XIAllMasterDevices fails
+Patch7010: 0001-Xi-allow-passive-keygrabs-on-the-XIAll-Master-Device.patch
 
 
 %define moduledir	%{_libdir}/xorg/modules
@@ -340,7 +343,7 @@ test `getminor extension` == %{extension_minor}
 %endif
 
 # --with-pie ?
-autoreconf -v --install || exit 1
+autoreconf --force -v --install || exit 1
 export CFLAGS="${RPM_OPT_FLAGS} -fno-omit-frame-pointer"
 %configure --enable-maintainer-mode %{xservers} \
 	--disable-static \
@@ -552,6 +555,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sat Nov 05 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.11.2-1
+- xserver-1.11.2
+- Fix for #751491, enabling passive key grabs on XIAllMasterDevices
+
 * Mon Sep 26 2011 Adam Jackson <ajax@redhat.com> 1.11.1-1
 - xserver 1.11.1
 
