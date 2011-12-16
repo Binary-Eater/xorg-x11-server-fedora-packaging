@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.10.4
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -94,6 +94,11 @@ Patch7013: xserver-1.10.1-memcpy-abuse.patch
 
 # upstream backports
 Patch7015: xserver-1.10.1-dri2-fixes.patch
+
+# https://bugzilla.gnome.org/show_bug.cgi?id=655928, XI2 button state is
+# incorrect if the pointer is mapped
+Patch7016: xserver-1.11.2-dix-button-state-must-show-the-logical-buttons-not-p.patch
+
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -559,6 +564,11 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+*Fri Dec 16 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.4-2
+- xserver-1.11.2-dix-button-state-must-show-the-logical-buttons-not-p.patch:
+  XI2 button state was wrong
+
+
 * Wed Sep 07 2011 Adam Jackson <ajax@redhat.com> 1.10.4-1
 - xserver 1.10.4
 
