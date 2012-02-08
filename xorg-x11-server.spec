@@ -29,7 +29,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.11.3
+Version:   1.11.4
 Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -86,13 +86,6 @@ Patch7007: xserver-1.10.99.1-test.patch
 # Multi-seat support through config/udev backend.
 # Submitted to upstream but not merged for 1.11
 Patch7009: xserver-1.10.99-config-add-udev-systemd-multi-seat-support.patch
-
-# BUg #714746: Xorg crash in record when ProcDRI2WaitMSCReply called
-Patch7012: xserver-1.11.2-record-crasher.patch
-
-# https://bugzilla.gnome.org/show_bug.cgi?id=655928, XI2 button state is
-# incorrect if the pointer is mapped
-Patch7013: xserver-1.11.2-dix-button-state-must-show-the-logical-buttons-not-p.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -558,6 +551,12 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Feb 09 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.11.4-1
+- xserver 1.11.4
+- xserver-1.11.2-record-crasher.patch: drop, 53e347b22bb7
+- xserver-1.11.2-dix-button-state-must-show-the-logical-buttons-not-p.patch:
+  drop, 4b3866102
+
 * Mon Dec 19 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.11.3-1
 - xserver 1.11.3
 - xserver-1.11.2-dix-button-state-must-show-the-logical-buttons-not-p.patch:
