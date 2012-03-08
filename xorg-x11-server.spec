@@ -30,7 +30,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.11.4
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -86,6 +86,10 @@ Patch7007: xserver-1.10.99.1-test.patch
 # Multi-seat support through config/udev backend.
 # Submitted to upstream but not merged for 1.11
 Patch7009: xserver-1.10.99-config-add-udev-systemd-multi-seat-support.patch
+
+# fdo Bug 44079 - XI2 FocusOut events missing parent of focus'd window
+Patch7010: 0001-dix-send-focus-events-to-the-immediate-parent-44079.patch
+Patch7011: 0001-dix-on-PointerRootWin-send-a-FocusIn-to-the-sprite-w.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -551,6 +555,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Mar 09 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.11.4-2
+- Fix fdo bug 44079, XI2 focus events missing on immediate parent of the
+  focus window
+
 * Thu Feb 09 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.11.4-1
 - xserver 1.11.4
 - xserver-1.11.2-record-crasher.patch: drop, 53e347b22bb7
