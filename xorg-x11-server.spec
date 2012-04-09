@@ -29,12 +29,11 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.10.4
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.10.6
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 #VCS:      git:git://git.freedesktop.org/git/xorg/xserver
 %if 0%{?gitdate}
@@ -88,9 +87,6 @@ Patch7009: xserver-1.10-bg-none-revert.patch
 
 # not like the upstream patch due to refactoring
 Patch7011: xserver-1.10-swrastg.patch
-
-# ditto
-Patch7013: xserver-1.10.1-memcpy-abuse.patch
 
 # upstream backports
 Patch7015: xserver-1.10.1-dri2-fixes.patch
@@ -564,10 +560,13 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
-*Fri Dec 16 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.4-2
+* Mon Apr 09 2012 Adam Jackson <ajax@redhat.com> 1.10.6-1
+- xserver-1.10.6
+- xserver-1.10.1-memcpy-abuse.patch: Drop, upstream
+
+* Fri Dec 16 2011 Peter Hutterer <peter.hutterer@redhat.com> 1.10.4-2
 - xserver-1.11.2-dix-button-state-must-show-the-logical-buttons-not-p.patch:
   XI2 button state was wrong
-
 
 * Wed Sep 07 2011 Adam Jackson <ajax@redhat.com> 1.10.4-1
 - xserver 1.10.4
