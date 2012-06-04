@@ -47,8 +47,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.12.0
-Release:   5%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.12.2
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,15 +95,14 @@ Patch6027: xserver-1.6.0-displayfd.patch
 Patch6030: xserver-1.6.99-right-of.patch
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 
-# tests require Xorg
-Patch7007: xserver-1.10.99.1-test.patch
-
 # Fix libselinux-triggered build error
 # RedHat/Fedora-specific patch
 Patch7013: xserver-1.12-Xext-fix-selinux-build-failure.patch
 
-# 814869, fix from upstream 1.12 branch
-Patch7014: xserver-1.12-os-make-timers-signal-safe.patch
+# backport pci slot claiming fix for kms drivers
+Patch7015: xserver-fix-pci-slot-claims.patch
+# backport modesetting fallback driver
+Patch7016: xserver-1.12-modesetting-fallback.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -192,6 +191,14 @@ Obsoletes: xorg-x11-drv-fpit <= 1.4.0-2.fc16
 Obsoletes: xorg-x11-drv-hyperpen <= 1.4.1-2.fc16
 Obsoletes: xorg-x11-drv-mutouch <= 1.3.0-2.fc16
 Obsoletes: xorg-x11-drv-penmount <= 1.5.0-3.fc16
+%if 0%{?fedora} > 17
+# Dropped from F18, use a video card instead
+Obsoletes: xorg-x11-drv-ark <= 0.7.3-15.fc17
+Obsoletes: xorg-x11-drv-chips <= 1.2.4-8.fc18
+Obsoletes: xorg-x11-drv-s3 <= 0.6.3-14.fc17
+Obsoletes: xorg-x11-drv-tseng <= 1.2.4-12.fc17
+%endif
+
 
 Requires: xorg-x11-server-common >= %{version}-%{release}
 Requires: system-setup-keyboard
@@ -361,7 +368,7 @@ test `getminor extension` == %{extension_minor}
 %endif
 
 # --with-pie ?
-autoreconf -v --install || exit 1
+autoreconf -f -v --install || exit 1
 # export CFLAGS="${RPM_OPT_FLAGS}"
 %configure --enable-maintainer-mode %{xservers} \
 	--disable-static \
@@ -566,11 +573,30 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
-* Mon May 14 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.0-5
+* Wed May 30 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.2-1
+- xserver 1.12.2
+
+* Fri May 25 2012 Dave Airlie <airlied@redhat.com> 1.12.1-2
+- xserver-fix-pci-slot-claims.patch: backport slot claiming fix from master
+- xserver-1.12-modesetting-fallback.patch: add modesetting to fallback list
+
+* Mon May 14 2012 Peter Hutterer <peter.hutterer@redhat.com>
+- Drop xserver-1.10.99.1-test.patch:
+  cd89482088f71ed517c2e88ed437e4752070c3f4 fixed it
+
+* Mon May 14 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.1-1
+- server 1.12.1
+- force autoreconf to avoid libtool errors
+- update patches for new indentation style.
+
+* Mon May 14 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.0-6
 - Make timers signal-safe (#814869)
 
-* Sun May 13 2012 Dennis Gilmore <dennis@ausil.us> 1.12.0-4
+* Sun May 13 2012 Dennis Gilmore <dennis@ausil.us> 1.12.0-5
 - enable vbe on arm arches
+
+* Thu Apr 26 2012 Adam Jackson <ajax@redhat.com> 1.12.0-4
+- Obsolete some old video drivers in F18+
 
 * Wed Mar 21 2012 Adam Jackson <ajax@redhat.com> 1.12.0-3
 - Tweak arches for RHEL
