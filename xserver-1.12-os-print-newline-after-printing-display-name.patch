@@ -1,4 +1,4 @@
-From 9d1c39b2115d3e7a403715083a584818f10feba2 Mon Sep 17 00:00:00 2001
+From 014ad46f1b353a95e2c4289443ee857cfbabb3ae Mon Sep 17 00:00:00 2001
 From: Peter Hutterer <peter.hutterer@who-t.net>
 Date: Thu, 21 Jun 2012 14:26:15 +1000
 Subject: [PATCH] os: print newline after printing display name
@@ -8,23 +8,24 @@ descriptor. Plus, this restores the behaviour we had for this patch in
 Fedora since server 1.6 (April 2009).
 
 Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
 ---
- os/connection.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ os/connection.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/os/connection.c b/os/connection.c
-index 039942f..5144d16 100644
+index 039942f..3441472 100644
 --- a/os/connection.c
 +++ b/os/connection.c
-@@ -423,7 +423,7 @@ CreateWellKnownSockets(void)
-         }
-         if (!found)
-             FatalError("Failed to find a socket to listen on");
--        snprintf(dynamic_display, sizeof(dynamic_display), "%d", i);
-+        snprintf(dynamic_display, sizeof(dynamic_display), "%d\n", i);
-         display = dynamic_display;
+@@ -353,6 +353,7 @@ NotifyParentProcess(void)
+ #if !defined(WIN32)
+     if (dynamic_display[0]) {
+         write(displayfd, dynamic_display, strlen(dynamic_display));
++        write(displayfd, "\n", 1);
+         close(displayfd);
      }
- 
+     if (RunFromSmartParent) {
 -- 
-1.7.10.2
+1.7.11.2
 
