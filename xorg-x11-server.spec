@@ -48,7 +48,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.12.3
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -112,10 +112,13 @@ Patch7018: xserver-1.12-os-print-newline-after-printing-display-name.patch
 # send keycode/event type for slow keys enable (#816764)
 Patch7020: xserver-1.12-xkb-fill-in-keycode-and-event-type-for-slow-keys-ena.patch
 
+# Bug 852841 - Mouse jumps to edges / corners when using an absolute input
+# device (ie virtual machine usb tablet)
+Patch7021: 0001-dix-set-the-device-transformation-matrix.patch
+
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
 %define sdkdir		%{_includedir}/xorg
-
 %ifarch s390 s390x %{?rhel:ppc ppc64}
 %define with_hw_servers 0
 %else
@@ -581,6 +584,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Sep 20 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.3-2
+- Set the transformation matrix to the unity matrix to avoid spurious cursor
+  jumps (#852841)
+
 * Mon Aug 20 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.3-1
 - xserver 1.12.3
 - Update displayfd newline patch to upstream's version
