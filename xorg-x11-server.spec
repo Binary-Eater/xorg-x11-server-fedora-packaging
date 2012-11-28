@@ -20,7 +20,7 @@
 %define ansic_major 0
 %define ansic_minor 4
 %define videodrv_major 12
-%define videodrv_minor 0
+%define videodrv_minor 1
 %define xinput_major 16
 %define xinput_minor 0
 %define extension_major 6
@@ -47,8 +47,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.12.3
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.12.4
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -584,6 +584,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Nov 28 2012 Adam Jackson <ajax@redhat.com> 1.12.4-1
+- xserver 1.12.4
+
 * Thu Sep 20 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.12.3-2
 - Set the transformation matrix to the unity matrix to avoid spurious cursor
   jumps (#852841)
