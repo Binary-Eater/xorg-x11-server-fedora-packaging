@@ -48,7 +48,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.12.4
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -115,6 +115,8 @@ Patch7020: xserver-1.12-xkb-fill-in-keycode-and-event-type-for-slow-keys-ena.pat
 # Bug 852841 - Mouse jumps to edges / corners when using an absolute input
 # device (ie virtual machine usb tablet)
 Patch7021: 0001-dix-set-the-device-transformation-matrix.patch
+
+Patch7022: 0001-Touch-Fix-duplicate-TouchBegin-selection-with-virtua.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -584,6 +586,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Dec 14 2012 Adam Jackson <ajax@redhat.com> 1.12.4-2
+- Cherry-pick a fix for selection for TouchBegin from multiple clients
+
 * Wed Nov 28 2012 Adam Jackson <ajax@redhat.com> 1.12.4-1
 - xserver 1.12.4
 

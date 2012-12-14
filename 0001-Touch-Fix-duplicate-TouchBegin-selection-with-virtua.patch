@@ -1,0 +1,51 @@
+From 08abcc1ee0861e6845b92de3c7ee87a507007afb Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Fri, 14 Dec 2012 14:59:42 -0500
+Subject: [PATCH] Touch: Fix duplicate TouchBegin selection with virtual
+ devices
+
+Given the following scenario:
+  1) client A selects for TouchBegin on window W for device D
+  2) client B selects for TouchBegin on window W for XIAllDevices
+  3) client C selects for TouchBegin on window W with device E
+
+Step 3 will fail with BadImplementation, because attempting to look up
+XIAllDevices or XIAllMasterDevices with dixLookupDevices doesn't work.
+This should succeed (or, if it was selecting for device D, fail with
+BadAccess as it would be a duplicate selection).
+
+Fix this by performing the appropriate lookup for virtual devices.
+
+[ ajax: fix up variable names for xserver 1.12 ]
+
+Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+Cc: Peter Hutterer <peter.hutterer@who-t.net>
+Cc: Chase Douglas <chase.douglas@ubuntu.com>
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+ Xi/xiselectev.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/Xi/xiselectev.c b/Xi/xiselectev.c
+index 43a67c8..07d3218 100644
+--- a/Xi/xiselectev.c
++++ b/Xi/xiselectev.c
+@@ -180,8 +180,13 @@ ProcXISelectEvents(ClientPtr client)
+                     if (CLIENT_ID(iclient->resource) == client->index)
+                         continue;
+ 
+-                    dixLookupDevice(&dummy, evmask->deviceid, serverClient,
+-                                    DixReadAccess);
++                    if (evmask->deviceid == XIAllDevices)
++                        dummy = inputInfo.all_devices;
++                    else if (evmask->deviceid == XIAllMasterDevices)
++                        dummy = inputInfo.all_master_devices;
++                    else
++                        dixLookupDevice(&dummy, evmask->deviceid, serverClient,
++                                        DixReadAccess);
+                     if (!dummy)
+                         return BadImplementation;       /* this shouldn't happen */
+ 
+-- 
+1.8.0.1
+
