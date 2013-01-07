@@ -1,4 +1,4 @@
-From fc08ad50a2ad81f8741939f8e9eacf86b5af6676 Mon Sep 17 00:00:00 2001
+From 6070acd223363941114168968657bcfe71aacd54 Mon Sep 17 00:00:00 2001
 From: Fedora X Ninjas <x@fedoraproject.org>
 Date: Wed, 12 Dec 2012 15:15:38 +1000
 Subject: [PATCH] autoconfig: fixup tell changed so randr clients can tell
@@ -16,7 +16,7 @@ This lets the gnome applet update if a usb device appears/disappears
  8 files changed, 39 insertions(+), 7 deletions(-)
 
 diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
-index 0b735d1..891142d 100644
+index 2b02e79..67d03eb 100644
 --- a/hw/xfree86/common/xf86platformBus.c
 +++ b/hw/xfree86/common/xf86platformBus.c
 @@ -47,6 +47,7 @@
@@ -47,10 +47,10 @@ index 0b735d1..891142d 100644
      return;
  }
 diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index 61119b3..a4fdec9 100644
+index 4ad4152..3b22058 100644
 --- a/hw/xfree86/modes/xf86Crtc.c
 +++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -743,10 +743,12 @@ xf86CrtcCloseScreen(ScreenPtr screen)
+@@ -744,10 +744,12 @@ xf86CrtcCloseScreen(ScreenPtr screen)
      /* detach any providers */
      if (config->randr_provider) {
          if (config->randr_provider->offload_sink) {
@@ -63,25 +63,26 @@ index 61119b3..a4fdec9 100644
              DetachOutputGPU(screen);
              config->randr_provider->output_source = NULL;
          }
-@@ -3341,11 +3343,13 @@ void xf86AutoConfigOutputDevice(ScrnInfoPtr pScrn, ScrnInfoPtr master)
-         DetachUnboundGPU(pScrn->pScreen);
+@@ -3348,6 +3350,7 @@ void xf86AutoConfigOutputDevice(ScrnInfoPtr pScrn, ScrnInfoPtr master)
+         unbound = TRUE;
          AttachOffloadGPU(master->pScreen, pScrn->pScreen);
          slave_config->randr_provider->offload_sink = master_provider;
 +        RRSetChanged(master->pScreen);
-     } else if ((master->capabilities & RR_Capability_SourceOutput) &&
+     }
+     if ((master->capabilities & RR_Capability_SourceOutput) &&
                 pScrn->capabilities & RR_Capability_SinkOutput) {
-         /* sink offload */
-         DetachUnboundGPU(pScrn->pScreen);
+@@ -3356,5 +3359,6 @@ void xf86AutoConfigOutputDevice(ScrnInfoPtr pScrn, ScrnInfoPtr master)
+             DetachUnboundGPU(pScrn->pScreen);
          AttachOutputGPU(master->pScreen, pScrn->pScreen);
          slave_config->randr_provider->output_source = master_provider;
 +        RRSetChanged(master->pScreen);
      }
  }
 diff --git a/randr/randr.c b/randr/randr.c
-index da48c3f..5b1957b 100644
+index f0decfc..cb6fce7 100644
 --- a/randr/randr.c
 +++ b/randr/randr.c
-@@ -462,6 +462,28 @@ TellChanged(WindowPtr pWin, pointer value)
+@@ -464,6 +464,28 @@ TellChanged(WindowPtr pWin, pointer value)
      return WT_WALKCHILDREN;
  }
  
@@ -110,7 +111,7 @@ index da48c3f..5b1957b 100644
  /*
   * Something changed; send events and adjust pointer position
   */
-@@ -482,7 +504,7 @@ RRTellChanged(ScreenPtr pScreen)
+@@ -484,7 +506,7 @@ RRTellChanged(ScreenPtr pScreen)
          mastersp = pScrPriv;
      }
  
@@ -187,5 +188,5 @@ index 39340cc..36179ae 100644
  
      RRTellChanged(pScreen);
 -- 
-1.8.0.1
+1.8.1
 

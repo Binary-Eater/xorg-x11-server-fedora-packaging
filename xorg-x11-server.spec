@@ -43,7 +43,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.13.1
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -592,6 +592,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Jan 07 2013 Dave Airlie <airlied@redhat.com> 1.13.1-2
+- fix bugs with autobinding output/offload slave from same driver
+
 * Tue Dec 18 2012 Peter Hutterer <peter.hutterer@redhat.com> 1.13.1-1
 - server 1.13.1
 
