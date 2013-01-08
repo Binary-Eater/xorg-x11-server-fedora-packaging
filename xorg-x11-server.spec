@@ -43,7 +43,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.13.1
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   3%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -119,6 +119,10 @@ Patch7065: 0001-xfree86-hotplug-cleanup-properly-if-the-screen-fails.patch
 Patch7066: 0001-xf86crtc-don-t-use-display-for-vx-vy-for-gpu-screens.patch
 # autoconfig: send events
 Patch7067: 0001-autoconfig-fixup-tell-changed-so-randr-clients-can-t.patch
+
+# on way upstream: fixes for reverse optimus
+Patch8000: 0001-dix-allow-pixmap-dirty-helper-to-be-used-for-non-sha.patch
+Patch8001: 0001-xserver-call-CSR-for-gpus.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -592,6 +596,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Jan 08 2013 Dave Airlie <airlied@redhat.com> 1.13.1-3
+- fixes for reverse optimus support
+
 * Mon Jan 07 2013 Dave Airlie <airlied@redhat.com> 1.13.1-2
 - fix bugs with autobinding output/offload slave from same driver
 

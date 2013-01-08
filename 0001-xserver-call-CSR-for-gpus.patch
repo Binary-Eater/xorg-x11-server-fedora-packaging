@@ -1,0 +1,26 @@
+From de313f7537071d72626ffbf64ab0cb5fff5dd5a0 Mon Sep 17 00:00:00 2001
+From: Fedora X Ninjas <x@fedoraproject.org>
+Date: Tue, 8 Jan 2013 09:42:44 +1000
+Subject: [PATCH] xserver: call CSR for gpus
+
+---
+ dix/main.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/dix/main.c b/dix/main.c
+index fb935c9..e558d70 100644
+--- a/dix/main.c
++++ b/dix/main.c
+@@ -211,6 +211,9 @@ main(int argc, char *argv[], char *envp[])
+             ScreenPtr pScreen = screenInfo.gpuscreens[i];
+             if (!CreateScratchPixmapsForScreen(pScreen))
+                 FatalError("failed to create scratch pixmaps");
++            if (pScreen->CreateScreenResources &&
++                !(*pScreen->CreateScreenResources) (pScreen))
++                FatalError("failed to create screen resources");
+         }
+ 
+         for (i = 0; i < screenInfo.numScreens; i++) {
+-- 
+1.8.1
+
