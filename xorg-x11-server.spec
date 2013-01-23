@@ -48,7 +48,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.12.4
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   3%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -117,6 +117,8 @@ Patch7020: xserver-1.12-xkb-fill-in-keycode-and-event-type-for-slow-keys-ena.pat
 Patch7021: 0001-dix-set-the-device-transformation-matrix.patch
 
 Patch7022: 0001-Touch-Fix-duplicate-TouchBegin-selection-with-virtua.patch
+
+Patch7023: 0001-mieq-Bump-default-queue-size-to-512.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -586,6 +588,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Jan 23 2013 Adam Jackson <ajax@redhat.com> 1.12.4-3
+- Bump default EQ size to avoid spurious abrt reports
+
 * Fri Dec 14 2012 Adam Jackson <ajax@redhat.com> 1.12.4-2
 - Cherry-pick a fix for selection for TouchBegin from multiple clients
 
