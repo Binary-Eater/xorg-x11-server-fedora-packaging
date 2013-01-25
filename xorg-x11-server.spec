@@ -42,8 +42,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.13.1
-Release:   5%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.13.2
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -600,6 +600,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sat Jan 26 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2-1
+- server 1.13.2
+
 * Fri Jan 25 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.1-5
 - Add quirk for Evoluent Vertical Mouse 3, button mapping is quirky
   (#612140)
