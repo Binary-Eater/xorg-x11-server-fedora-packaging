@@ -43,7 +43,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.13.2
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -127,6 +127,9 @@ Patch8002: 0001-xf86-actually-set-the-compat-output-in-the-failure-c.patch
 Patch8003: 0001-randr-cleanup-provider-properly.patch
 
 Patch8010: 0001-autoconfig-fixup-tell-changed-so-randr-clients-can-t.patch
+
+# Bug 903986 - xdmxconfig will not run
+Patch8011: 0001-dmx-don-t-include-dmx-config.h-from-xdmxconfig-37502.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -600,6 +603,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sat Jan 26 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2-2
+- Fix differing sizeof XGCValues in xdmxconfig (#903986)
+
 * Sat Jan 26 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2-1
 - server 1.13.2
 
