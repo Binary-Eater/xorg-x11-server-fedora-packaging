@@ -48,7 +48,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.12.4
-Release:   3%{?gitdate:.%{gitdate}}%{dist}
+Release:   4%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -119,6 +119,9 @@ Patch7021: 0001-dix-set-the-device-transformation-matrix.patch
 Patch7022: 0001-Touch-Fix-duplicate-TouchBegin-selection-with-virtua.patch
 
 Patch7023: 0001-mieq-Bump-default-queue-size-to-512.patch
+
+# Possibly Bug 862829 - [abrt] xorg-x11-server-Xorg-1.12.3-2.fc17: Xorg server
+Patch7024: 0001-Sync-TouchListener-memory-allocation-with-population.patch
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -588,6 +591,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Jan 29 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.12.4-4
+- Avoid memory corruption on too many touch listeners (#862829)
+
 * Wed Jan 23 2013 Adam Jackson <ajax@redhat.com> 1.12.4-3
 - Bump default EQ size to avoid spurious abrt reports
 
