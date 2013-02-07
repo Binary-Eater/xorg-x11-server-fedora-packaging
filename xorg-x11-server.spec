@@ -43,7 +43,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.13.2
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   3%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -603,6 +603,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Feb 07 2013 Dave Airlie <airlied@redhat.com> 1.13.2-3
+- fix crash from event send patch with vesa + usb
+
 * Sat Jan 26 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2-2
 - Fix differing sizeof XGCValues in xdmxconfig (#903986)
 

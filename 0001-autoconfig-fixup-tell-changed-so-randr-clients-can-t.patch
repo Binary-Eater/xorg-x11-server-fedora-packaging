@@ -1,4 +1,4 @@
-From 4ff93e2e2d5253ac8aa773861e15dd41c0b5d4fd Mon Sep 17 00:00:00 2001
+From bf760f3eeaf4552ee60c1ab3027cbb2198c1d203 Mon Sep 17 00:00:00 2001
 From: Fedora X Ninjas <x@fedoraproject.org>
 Date: Wed, 12 Dec 2012 15:15:38 +1000
 Subject: [PATCH] autoconfig: fixup tell changed so randr clients can tell
@@ -8,13 +8,13 @@ This lets the gnome applet update if a usb device appears/disappears
  hw/xfree86/common/xf86platformBus.c |  7 +++++--
  hw/xfree86/modes/xf86Crtc.c         |  2 ++
  hw/xfree86/modes/xf86RandR12.c      |  2 ++
- randr/randr.c                       | 24 +++++++++++++++++++++++-
+ randr/randr.c                       | 26 +++++++++++++++++++++++++-
  randr/randrstr.h                    |  4 ++++
  randr/rrcrtc.c                      |  2 +-
  randr/rrinfo.c                      |  2 +-
  randr/rroutput.c                    |  2 +-
  randr/rrscreen.c                    |  2 +-
- 9 files changed, 40 insertions(+), 7 deletions(-)
+ 9 files changed, 42 insertions(+), 7 deletions(-)
 
 diff --git a/hw/xfree86/common/xf86platformBus.c b/hw/xfree86/common/xf86platformBus.c
 index 057b5b6..197bde8 100644
@@ -90,10 +90,10 @@ index 01fc9c5..9d96c4f 100644
          else if (screen->current_master)
              DetachUnboundGPU(screen);
 diff --git a/randr/randr.c b/randr/randr.c
-index f0decfc..2aebe29 100644
+index f0decfc..0528bfd 100644
 --- a/randr/randr.c
 +++ b/randr/randr.c
-@@ -464,6 +464,28 @@ TellChanged(WindowPtr pWin, pointer value)
+@@ -464,6 +464,30 @@ TellChanged(WindowPtr pWin, pointer value)
      return WT_WALKCHILDREN;
  }
  
@@ -110,6 +110,8 @@ index f0decfc..2aebe29 100644
 +	if (!master)
 +	  return;
 +        mastersp = rrGetScrPriv(master);
++        if (!mastersp)
++            return;
 +    }
 +    else {
 +        master = pScreen;
@@ -122,7 +124,7 @@ index f0decfc..2aebe29 100644
  /*
   * Something changed; send events and adjust pointer position
   */
-@@ -484,7 +506,7 @@ RRTellChanged(ScreenPtr pScreen)
+@@ -484,7 +508,7 @@ RRTellChanged(ScreenPtr pScreen)
          mastersp = pScrPriv;
      }
  
