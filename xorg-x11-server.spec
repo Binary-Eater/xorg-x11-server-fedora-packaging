@@ -43,7 +43,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.13.2.902
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -128,6 +128,9 @@ Patch8003: 0001-randr-cleanup-provider-properly.patch
 
 Patch8010: 0001-autoconfig-fixup-tell-changed-so-randr-clients-can-t.patch
 
+# upstream in -next for 1.15, e21e183059df5975e7086850d1931edb2c1bbd06
+Patch8011: 0001-os-use-libunwind-to-generate-backtraces.patch
+
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
 %global sdkdir		%{_includedir}/xorg
@@ -180,6 +183,8 @@ BuildRequires: libdrm-devel >= 2.4.0 kernel-headers
 
 BuildRequires: audit-libs-devel libselinux-devel >= 2.0.86-1
 BuildRequires: libudev-devel
+# pre-1.0.1-5 is missing pkg-config
+BuildRequires: libunwind-devel >= 1.0.1-5
 
 # All server subpackages have a virtual provide for the name of the server
 # they deliver.  The Xorg one is versioned, the others are intentionally
@@ -600,6 +605,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Mar 05 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2.902-2
+- use libunwind for backtraces
+
 * Mon Mar 04 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2.902-1
 - server 1.13.3RC2
 
