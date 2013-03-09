@@ -42,8 +42,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.13.2.902
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.13.3
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -124,7 +124,6 @@ Patch7066: 0001-xf86crtc-don-t-use-display-for-vx-vy-for-gpu-screens.patch
 Patch8000: 0001-dix-allow-pixmap-dirty-helper-to-be-used-for-non-sha.patch
 Patch8001: 0001-xserver-call-CSR-for-gpus.patch
 Patch8002: 0001-xf86-actually-set-the-compat-output-in-the-failure-c.patch
-Patch8003: 0001-randr-cleanup-provider-properly.patch
 
 Patch8010: 0001-autoconfig-fixup-tell-changed-so-randr-clients-can-t.patch
 
@@ -605,6 +604,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Sat Mar 09 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.3-1
+- server 1.13.3
+
 * Tue Mar 05 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.2.902-2
 - use libunwind for backtraces
 
