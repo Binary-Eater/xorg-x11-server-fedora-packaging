@@ -43,7 +43,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.13.3
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -182,8 +182,11 @@ BuildRequires: libdrm-devel >= 2.4.0 kernel-headers
 
 BuildRequires: audit-libs-devel libselinux-devel >= 2.0.86-1
 BuildRequires: libudev-devel
+# libunwind is Exclusive for the following arches
+%ifarch %{arm} hppa ia64 mips ppc ppc64 %{ix86} x86_64
 # pre-1.0.1-5 is missing pkg-config
 BuildRequires: libunwind-devel >= 1.0.1-5
+%endif
 
 # All server subpackages have a virtual provide for the name of the server
 # they deliver.  The Xorg one is versioned, the others are intentionally
@@ -604,6 +607,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Mar 22 2013 Dan Horák <dan@danny.cz> 1.13.3-2
+- libunwind is exists only on selected arches
+
 * Sat Mar 09 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.13.3-1
 - server 1.13.3
 
