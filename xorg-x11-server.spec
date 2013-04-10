@@ -48,7 +48,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.12.4
-Release:   6%{?gitdate:.%{gitdate}}%{dist}
+Release:   7%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -122,6 +122,12 @@ Patch7023: 0001-mieq-Bump-default-queue-size-to-512.patch
 
 # Possibly Bug 862829 - [abrt] xorg-x11-server-Xorg-1.12.3-2.fc17: Xorg server
 Patch7024: 0001-Sync-TouchListener-memory-allocation-with-population.patch
+
+# Bug 950438 - CVE-2013-1940 xorg-x11-server:
+# Information disclosure due enabling events from hot-plug devices despite
+# input from the device being momentarily disabled
+Patch7025: 0001-xf86-fix-flush-input-to-work-with-Linux-evdev-device.patch
+
 
 %define moduledir	%{_libdir}/xorg/modules
 %define drimoduledir	%{_libdir}/dri
@@ -591,6 +597,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Apr 11 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.12.4-7
+- CVE-2013-1940: Fix xf86FlushInput() to drain evdev events
+  (#950438, #952949)
+
 * Thu Feb 14 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.12.4-6
 - Fix scrolling for Evoluent Vertical Mouse 3 (#612140#c20)
 
