@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   3%{?gitdate:.%{gitdate}}%{dist}
+Release:   4%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -165,6 +165,8 @@ Patch9040: 0001-dmx-queue-button-events-with-valid-valuators.patch
 
 # Bug 1016152: tigervnc module 1.3.0-7.fc19 doesn't load: undefined symbol key_is_down
 Patch9041: 0001-include-export-key_is_down-and-friends.patch
+
+Patch9050: 0001-xfree86-Prefer-fbdev-to-vesa.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -644,6 +646,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Mon Nov 18 2013 Adam Jackson <ajax@redhat.com> 1.14.4-4
+- Prefer fbdev to vesa, fixes fallback on UEFI
+
 * Wed Nov 13 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-3
 - export key_is_down for tigervnc (#1016152)
 
