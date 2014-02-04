@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   5%{?gitdate:.%{gitdate}}%{dist}
+Release:   6%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -169,6 +169,9 @@ Patch9041: 0001-include-export-key_is_down-and-friends.patch
 Patch9042: 0001-sync-fix-corner-case-in-triggering-idle-alarms.patch
 
 Patch9050: 0001-xfree86-Prefer-fbdev-to-vesa.patch
+
+# in pull request http://patchwork.freedesktop.org/patch/19468/
+Patch9051: 0001-dix-fix-button-state-check-before-changing-a-button-.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -648,6 +651,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Feb 05 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-6
+- Prevent out-of-bounds access in check_butmap_change (#1061466)
+
 * Thu Nov 21 2013 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-5
 - Fix a corner-case that may cause idle alarms to be missed (#1008965)
 
