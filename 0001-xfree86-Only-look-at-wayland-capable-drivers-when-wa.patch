@@ -52,7 +52,7 @@ index a5a7daf..a40ed64 100644
          for (i = 0; i < xf86NumDrivers; i++) {
 -                if (xf86DriverList[i] == NULL) {
 +                while (xf86DriverList[i] == NULL) {
-                         for (j = i; j < xf86NumDrivers; j++) {
+                         for (j = i; j < xf86NumDrivers - 1; j++) {
                              xf86DriverList[j] = xf86DriverList[j + 1];
                          }
 -- 

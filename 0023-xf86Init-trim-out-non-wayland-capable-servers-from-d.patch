@@ -1,4 +1,4 @@
-From 1173a0b6937bda0e684d75111242c2f513b3d072 Mon Sep 17 00:00:00 2001
+From d40219f38a33845d8a9850de47ff5d458a3d8209 Mon Sep 17 00:00:00 2001
 From: Ray Strode <rstrode@redhat.com>
 Date: Fri, 13 Sep 2013 17:17:16 -0400
 Subject: [PATCH 23/30] xf86Init: trim out non-wayland capable servers from
@@ -10,25 +10,30 @@ Otherwise they'll cause the server to crash when run in wayland mode.
  1 file changed, 9 insertions(+)
 
 diff --git a/hw/xfree86/common/xf86Init.c b/hw/xfree86/common/xf86Init.c
-index 5ac97cc..a5a7daf 100644
+index 2d3bb01..6282252 100644
 --- a/hw/xfree86/common/xf86Init.c
 +++ b/hw/xfree86/common/xf86Init.c
-@@ -568,6 +568,15 @@ InitOutput(ScreenInfo * pScreenInfo, int argc, char **argv)
+@@ -558,6 +558,20 @@ InitOutput(ScreenInfo * pScreenInfo, int argc, char **argv)
  	    }
          }
  
 +        for (i = 0; i < xf86NumDrivers; i++) {
 +                if (xf86DriverList[i] == NULL) {
-+                        for (j = i; j < xf86NumDrivers; j++) {
++                        for (j = i; j < xf86NumDrivers - 1; j++) {
 +                            xf86DriverList[j] = xf86DriverList[j + 1];
 +                        }
 +                        xf86NumDrivers--;
 +                }
 +        }
 +
++        if (xf86NumDrivers == 0) {
++            xf86Msg(X_ERROR, "All drivers eliminated by constraints.\n");
++            return;
++        }
++
          if (xorgHWOpenConsole)
              xf86OpenConsole();
          else
 -- 
-1.8.3.1
+1.8.4.2
 

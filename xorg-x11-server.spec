@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   7%{?gitdate:.%{gitdate}}%{dist}
+Release:   8%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -653,6 +653,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Tue Apr 08 2014 Ray Strode <rstrode@redhat.com> 1.14.4-8
+- Apply Daniel Stone's off-by-one fix to one of the wayland patches
+
 * Fri Feb 28 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-7
 - Search all parent devices for a PnPID.
 
