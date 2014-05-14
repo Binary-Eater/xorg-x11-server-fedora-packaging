@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   8%{?gitdate:.%{gitdate}}%{dist}
+Release:   9%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -653,6 +653,10 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed May 14 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-9
+- Revert button mapping for Evoluent Vertical mouse, the default mapping
+  matches the manufacturer's documentation (#612140)
+
 * Tue Apr 08 2014 Ray Strode <rstrode@redhat.com> 1.14.4-8
 - Apply Daniel Stone's off-by-one fix to one of the wayland patches
 
