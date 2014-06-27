@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   10%{?gitdate:.%{gitdate}}%{dist}
+Release:   11%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -109,6 +109,10 @@ Patch7052: 0001-xf86-return-NULL-for-compat-output-if-no-outputs.patch
 # mustard: make the default queue length bigger to calm abrt down
 Patch7064: 0001-mieq-Bump-default-queue-size-to-512.patch
 
+# scale events from abs devices in relative mode to something useful
+Patch8003: 0004-dix-pre-scale-x-by-the-screen-device-resolution-rati.patch
+Patch8004: 0005-dix-scale-y-back-instead-of-x-up-when-pre-scaling-co.patch
+
 # Bug 962572 - X-sandboxes are not resizeable
 Patch8038: 0001-ephyr-Add-resizeable-option.patch
 
@@ -170,8 +174,6 @@ Patch9050: 0001-xfree86-Prefer-fbdev-to-vesa.patch
 Patch9051: 0001-dix-fix-button-state-check-before-changing-a-button-.patch
 
 Patch9052: 0001-config-search-for-PnPID-on-all-parents-75513.patch
-# Bug 1104789 - Touchpad sensitivity changes dramatically when I plug in an external monitor
-Patch9053: 0001-dix-fix-up-coordinate-scaling-when-external-monitors.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -651,6 +653,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Fri Jun 27 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-11
+- Revert the previous fix, it breaks a couple of touchpads (#1104789)
+
 * Mon Jun 23 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-10
 - Fix coordinate scaling so we're independent of the screen res (#1104789)
 
