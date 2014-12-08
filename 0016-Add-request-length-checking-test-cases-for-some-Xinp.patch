@@ -1,0 +1,90 @@
+From 6aec61444897d54260df597785c9b215ac70a734 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sun, 9 Feb 2014 21:28:05 -0800
+Subject: [PATCH 16/31] Add request length checking test cases for some Xinput
+ 2.x requests
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ test/xi2/protocol-xigetclientpointer.c  | 5 +++++
+ test/xi2/protocol-xipassivegrabdevice.c | 8 ++++++++
+ test/xi2/protocol-xiquerypointer.c      | 4 ++++
+ test/xi2/protocol-xiwarppointer.c       | 3 +++
+ 4 files changed, 20 insertions(+)
+
+diff --git a/test/xi2/protocol-xigetclientpointer.c b/test/xi2/protocol-xigetclientpointer.c
+index 28eb8d3..570c53e 100644
+--- a/test/xi2/protocol-xigetclientpointer.c
++++ b/test/xi2/protocol-xigetclientpointer.c
+@@ -124,6 +124,11 @@ test_XIGetClientPointer(void)
+     request.win = INVALID_WINDOW_ID;
+     request_XIGetClientPointer(&client_request, &request, BadWindow);
+ 
++    printf("Testing invalid length\n");
++    client_request.req_len -= 4;
++    request_XIGetClientPointer(&client_request, &request, BadLength);
++    client_request.req_len += 4;
++
+     test_data.cp_is_set = FALSE;
+ 
+     printf("Testing window None, unset ClientPointer.\n");
+diff --git a/test/xi2/protocol-xipassivegrabdevice.c b/test/xi2/protocol-xipassivegrabdevice.c
+index 84b386b..d0b9004 100644
+--- a/test/xi2/protocol-xipassivegrabdevice.c
++++ b/test/xi2/protocol-xipassivegrabdevice.c
+@@ -138,6 +138,7 @@ request_XIPassiveGrabDevice(ClientPtr client, xXIPassiveGrabDeviceReq * req,
+     int rc;
+     int modifiers;
+ 
++    client_request.req_len = req->length;
+     rc = ProcXIPassiveGrabDevice(&client_request);
+     assert(rc == error);
+ 
+@@ -188,6 +189,13 @@ test_XIPassiveGrabDevice(void)
+     request_XIPassiveGrabDevice(&client_request, request, BadDevice,
+                                 request->deviceid);
+ 
++    printf("Testing invalid length\n");
++    request->length -= 2;
++    request_XIPassiveGrabDevice(&client_request, request, BadLength,
++                                client_request.errorValue);
++    /* re-init request since swapped length test leaves some values swapped */
++    request_init(request, XIPassiveGrabDevice);
++    request->grab_window = CLIENT_WINDOW_ID;
+     request->deviceid = XIAllMasterDevices;
+ 
+     printf("Testing invalid grab types\n");
+diff --git a/test/xi2/protocol-xiquerypointer.c b/test/xi2/protocol-xiquerypointer.c
+index fc66b64..c0421f6 100644
+--- a/test/xi2/protocol-xiquerypointer.c
++++ b/test/xi2/protocol-xiquerypointer.c
+@@ -201,6 +201,10 @@ test_XIQueryPointer(void)
+     test_data.dev = devices.mouse;
+     request.deviceid = devices.mouse->id;
+     request_XIQueryPointer(&client_request, &request, Success);
++
++    /* test REQUEST_SIZE_MATCH */
++    client_request.req_len -= 4;
++    request_XIQueryPointer(&client_request, &request, BadLength);
+ }
+ 
+ int
+diff --git a/test/xi2/protocol-xiwarppointer.c b/test/xi2/protocol-xiwarppointer.c
+index f7986c1..3aaaae6 100644
+--- a/test/xi2/protocol-xiwarppointer.c
++++ b/test/xi2/protocol-xiwarppointer.c
+@@ -198,6 +198,9 @@ test_XIWarpPointer(void)
+     request_XIWarpPointer(&client_request, &request, Success);
+ 
+     /* FIXME: src_x/y checks */
++
++    client_request.req_len -= 2; /* invalid length */
++    request_XIWarpPointer(&client_request, &request, BadLength);
+ }
+ 
+ int
+-- 
+1.9.3
+

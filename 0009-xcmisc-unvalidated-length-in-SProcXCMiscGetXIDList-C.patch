@@ -1,0 +1,28 @@
+From c097f07147409a4d6e60a7676fbc79c72307fd5f Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sun, 26 Jan 2014 17:18:54 -0800
+Subject: [PATCH 09/31] xcmisc: unvalidated length in SProcXCMiscGetXIDList()
+ [CVE-2014-8096]
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ Xext/xcmisc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Xext/xcmisc.c b/Xext/xcmisc.c
+index 034bfb6..1e91010 100644
+--- a/Xext/xcmisc.c
++++ b/Xext/xcmisc.c
+@@ -167,6 +167,7 @@ static int
+ SProcXCMiscGetXIDList(ClientPtr client)
+ {
+     REQUEST(xXCMiscGetXIDListReq);
++    REQUEST_SIZE_MATCH(xXCMiscGetXIDListReq);
+ 
+     swaps(&stuff->length);
+     swapl(&stuff->count);
+-- 
+1.9.3
+

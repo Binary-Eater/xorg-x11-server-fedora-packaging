@@ -1,0 +1,166 @@
+From 8580856661e09a5bdc9b9b44dd5304656d95666c Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Mon, 10 Nov 2014 12:13:37 -0500
+Subject: [PATCH 19/31] glx: Be more strict about rejecting invalid image sizes
+ [CVE-2014-8093 2/6]
+
+Before this we'd just clamp the image size to 0, which was just
+hideously stupid; if the parameters were such that they'd overflow an
+integer, you'd allocate a small buffer, then pass huge values into (say)
+ReadPixels, and now you're scribbling over arbitrary server memory.
+
+Reviewed-by: Keith Packard <keithp@keithp.com>
+Reviewed-by: Julien Cristau <jcristau@debian.org>
+Reviewed-by: Michal Srb <msrb@suse.com>
+Reviewed-by: Andy Ritger <aritger@nvidia.com>
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ glx/singlepix.c     | 16 ++++++++--------
+ glx/singlepixswap.c | 16 ++++++++--------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/glx/singlepix.c b/glx/singlepix.c
+index fb6868d..4137798 100644
+--- a/glx/singlepix.c
++++ b/glx/singlepix.c
+@@ -69,7 +69,7 @@ __glXDisp_ReadPixels(__GLXclientState * cl, GLbyte * pc)
+     lsbFirst = *(GLboolean *) (pc + 25);
+     compsize = __glReadPixels_size(format, type, width, height);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, swapBytes));
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_LSB_FIRST, lsbFirst));
+@@ -134,7 +134,7 @@ __glXDisp_GetTexImage(__GLXclientState * cl, GLbyte * pc)
+     compsize =
+         __glGetTexImage_size(target, level, format, type, width, height, depth);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -232,9 +232,9 @@ GetSeparableFilter(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+     compsize2 = __glGetTexImage_size(target, 1, format, type, height, 1, 1);
+ 
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+     if (compsize2 < 0)
+-        compsize2 = 0;
++        return BadLength;
+     compsize = __GLX_PAD(compsize);
+     compsize2 = __GLX_PAD(compsize2);
+ 
+@@ -315,7 +315,7 @@ GetConvolutionFilter(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+      */
+     compsize = __glGetTexImage_size(target, 1, format, type, width, height, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -386,7 +386,7 @@ GetHistogram(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+      */
+     compsize = __glGetTexImage_size(target, 1, format, type, width, 1, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -447,7 +447,7 @@ GetMinmax(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+ 
+     compsize = __glGetTexImage_size(target, 1, format, type, 2, 1, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -513,7 +513,7 @@ GetColorTable(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+      */
+     compsize = __glGetTexImage_size(target, 1, format, type, width, 1, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+diff --git a/glx/singlepixswap.c b/glx/singlepixswap.c
+index c777cea..16ea408 100644
+--- a/glx/singlepixswap.c
++++ b/glx/singlepixswap.c
+@@ -79,7 +79,7 @@ __glXDispSwap_ReadPixels(__GLXclientState * cl, GLbyte * pc)
+     lsbFirst = *(GLboolean *) (pc + 25);
+     compsize = __glReadPixels_size(format, type, width, height);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, !swapBytes));
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_LSB_FIRST, lsbFirst));
+@@ -155,7 +155,7 @@ __glXDispSwap_GetTexImage(__GLXclientState * cl, GLbyte * pc)
+     compsize =
+         __glGetTexImage_size(target, level, format, type, width, height, depth);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, !swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -267,9 +267,9 @@ GetSeparableFilter(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+     compsize2 = __glGetTexImage_size(target, 1, format, type, height, 1, 1);
+ 
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+     if (compsize2 < 0)
+-        compsize2 = 0;
++        return BadLength;
+     compsize = __GLX_PAD(compsize);
+     compsize2 = __GLX_PAD(compsize2);
+ 
+@@ -358,7 +358,7 @@ GetConvolutionFilter(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+      */
+     compsize = __glGetTexImage_size(target, 1, format, type, width, height, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, !swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -437,7 +437,7 @@ GetHistogram(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+      */
+     compsize = __glGetTexImage_size(target, 1, format, type, width, 1, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, !swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -505,7 +505,7 @@ GetMinmax(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+ 
+     compsize = __glGetTexImage_size(target, 1, format, type, 2, 1, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, !swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+@@ -577,7 +577,7 @@ GetColorTable(__GLXclientState * cl, GLbyte * pc, GLXContextTag tag)
+      */
+     compsize = __glGetTexImage_size(target, 1, format, type, width, 1, 1);
+     if (compsize < 0)
+-        compsize = 0;
++        return BadLength;
+ 
+     CALL_PixelStorei(GET_DISPATCH(), (GL_PACK_SWAP_BYTES, !swapBytes));
+     __GLX_GET_ANSWER_BUFFER(answer, cl, compsize, 1);
+-- 
+1.9.3
+
