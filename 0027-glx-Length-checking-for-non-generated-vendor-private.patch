@@ -1,0 +1,46 @@
+From dd7ac54c7ed15cdc63626abb534c0e1434f37dec Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Mon, 10 Nov 2014 12:13:46 -0500
+Subject: [PATCH 27/31] glx: Length-checking for non-generated vendor private
+ requests [CVE-2014-8098 6/8]
+
+Reviewed-by: Keith Packard <keithp@keithp.com>
+Reviewed-by: Michal Srb <msrb@suse.com>
+Reviewed-by: Andy Ritger <aritger@nvidia.com>
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ glx/indirect_program.c | 2 ++
+ glx/swap_interval.c    | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/glx/indirect_program.c b/glx/indirect_program.c
+index 0114d73..efd0027 100644
+--- a/glx/indirect_program.c
++++ b/glx/indirect_program.c
+@@ -69,6 +69,8 @@ DoGetProgramString(struct __GLXclientStateRec *cl, GLbyte * pc,
+     __GLXcontext *const cx = __glXForceCurrent(cl, req->contextTag, &error);
+     ClientPtr client = cl->client;
+ 
++    REQUEST_FIXED_SIZE(xGLXVendorPrivateWithReplyReq, 8);
++
+     pc += __GLX_VENDPRIV_HDR_SIZE;
+     if (cx != NULL) {
+         GLenum target;
+diff --git a/glx/swap_interval.c b/glx/swap_interval.c
+index 7533d26..90636f1 100644
+--- a/glx/swap_interval.c
++++ b/glx/swap_interval.c
+@@ -50,6 +50,8 @@ DoSwapInterval(__GLXclientState * cl, GLbyte * pc, int do_swap)
+     __GLXcontext *cx;
+     GLint interval;
+ 
++    REQUEST_FIXED_SIZE(xGLXVendorPrivateReq, 4);
++
+     cx = __glXLookupContextByTag(cl, tag);
+ 
+     if ((cx == NULL) || (cx->pGlxScreen == NULL)) {
+-- 
+1.9.3
+

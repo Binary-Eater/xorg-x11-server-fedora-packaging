@@ -1,0 +1,52 @@
+From 1e8e04d843fd97cfdbb3b83bd44de7493a3f7d83 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sun, 26 Jan 2014 19:38:09 -0800
+Subject: [PATCH 11/31] randr: unvalidated lengths in RandR extension swapped
+ procs [CVE-2014-8101]
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ randr/rrsdispatch.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/randr/rrsdispatch.c b/randr/rrsdispatch.c
+index 9968c7f..5af8fec 100644
+--- a/randr/rrsdispatch.c
++++ b/randr/rrsdispatch.c
+@@ -27,6 +27,7 @@ SProcRRQueryVersion(ClientPtr client)
+ {
+     REQUEST(xRRQueryVersionReq);
+ 
++    REQUEST_SIZE_MATCH(xRRQueryVersionReq);
+     swaps(&stuff->length);
+     swapl(&stuff->majorVersion);
+     swapl(&stuff->minorVersion);
+@@ -38,6 +39,7 @@ SProcRRGetScreenInfo(ClientPtr client)
+ {
+     REQUEST(xRRGetScreenInfoReq);
+ 
++    REQUEST_SIZE_MATCH(xRRGetScreenInfoReq);
+     swaps(&stuff->length);
+     swapl(&stuff->window);
+     return (*ProcRandrVector[stuff->randrReqType]) (client);
+@@ -69,6 +71,7 @@ SProcRRSelectInput(ClientPtr client)
+ {
+     REQUEST(xRRSelectInputReq);
+ 
++    REQUEST_SIZE_MATCH(xRRSelectInputReq);
+     swaps(&stuff->length);
+     swapl(&stuff->window);
+     swaps(&stuff->enable);
+@@ -152,6 +155,7 @@ SProcRRConfigureOutputProperty(ClientPtr client)
+ {
+     REQUEST(xRRConfigureOutputPropertyReq);
+ 
++    REQUEST_AT_LEAST_SIZE(xRRConfigureOutputPropertyReq);
+     swaps(&stuff->length);
+     swapl(&stuff->output);
+     swapl(&stuff->property);
+-- 
+1.9.3
+

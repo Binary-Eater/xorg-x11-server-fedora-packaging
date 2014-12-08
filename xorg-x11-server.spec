@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   11%{?gitdate:.%{gitdate}}%{dist}
+Release:   12%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -174,6 +174,40 @@ Patch9050: 0001-xfree86-Prefer-fbdev-to-vesa.patch
 Patch9051: 0001-dix-fix-button-state-check-before-changing-a-button-.patch
 
 Patch9052: 0001-config-search-for-PnPID-on-all-parents-75513.patch
+
+# CVEs all over.
+Patch9999: 0001-glx-check-return-from-__glXGetAnswerBuffer.patch
+Patch10000: 0001-unchecked-malloc-may-allow-unauthed-client-to-crash-.patch
+Patch10001: 0002-dix-integer-overflow-in-ProcPutImage-CVE-2014-8092-1.patch
+Patch10002: 0003-dix-integer-overflow-in-GetHosts-CVE-2014-8092-2-4.patch
+Patch10003: 0004-dix-integer-overflow-in-RegionSizeof-CVE-2014-8092-3.patch
+Patch10004: 0005-dix-integer-overflow-in-REQUEST_FIXED_SIZE-CVE-2014-.patch
+Patch10005: 0006-dri2-integer-overflow-in-ProcDRI2GetBuffers-CVE-2014.patch
+Patch10006: 0007-dbe-unvalidated-lengths-in-DbeSwapBuffers-calls-CVE-.patch
+Patch10007: 0008-Xi-unvalidated-lengths-in-Xinput-extension-CVE-2014-.patch
+Patch10008: 0009-xcmisc-unvalidated-length-in-SProcXCMiscGetXIDList-C.patch
+Patch10009: 0010-Xv-unvalidated-lengths-in-XVideo-extension-swapped-p.patch
+Patch10012: 0011-randr-unvalidated-lengths-in-RandR-extension-swapped.patch
+Patch10013: 0012-render-check-request-size-before-reading-it-CVE-2014.patch
+Patch10014: 0013-render-unvalidated-lengths-in-Render-extn.-swapped-p.patch
+Patch10015: 0014-xfixes-unvalidated-length-in-SProcXFixesSelectSelect.patch
+Patch10016: 0015-Add-request-length-checking-test-cases-for-some-Xinp.patch
+Patch10017: 0016-Add-request-length-checking-test-cases-for-some-Xinp.patch
+Patch10018: 0017-Add-REQUEST_FIXED_SIZE-testcases-to-test-misc.c.patch
+Patch10019: 0018-glx-Be-more-paranoid-about-variable-length-requests-.patch
+Patch10020: 0019-glx-Be-more-strict-about-rejecting-invalid-image-siz.patch
+Patch10021: 0020-glx-Additional-paranoia-in-__glXGetAnswerBuffer-__GL.patch
+Patch10022: 0021-glx-Fix-image-size-computation-for-EXT_texture_integ.patch
+Patch10023: 0022-glx-Add-safe_-add-mul-pad-v3-CVE-2014-8093-4-6.patch
+Patch10024: 0023-glx-Length-checking-for-GLXRender-requests-v2-CVE-20.patch
+Patch10025: 0024-glx-Integer-overflow-protection-for-non-generated-re.patch
+Patch10026: 0025-glx-Top-level-length-checking-for-swapped-VendorPriv.patch
+Patch10027: 0026-glx-Request-length-checks-for-SetClientInfoARB-CVE-2.patch
+Patch10028: 0027-glx-Length-checking-for-non-generated-vendor-private.patch
+Patch10029: 0028-glx-Length-checking-for-non-generated-single-request.patch
+Patch10030: 0029-glx-Fix-mask-truncation-in-__glXGetAnswerBuffer-CVE-.patch
+Patch10031: 0030-glx-Length-checking-for-RenderLarge-requests-v2-CVE-.patch
+Patch10032: 0031-glx-Pass-remaining-request-length-into-varsize-v2-CV.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -653,6 +687,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Wed Dec 10 2014 Dave Airlie <airlied@redhat.com> 1.14.4-12
+- CVE fixes for everyone
+
 * Fri Jun 27 2014 Peter Hutterer <peter.hutterer@redhat.com> 1.14.4-11
 - Revert the previous fix, it breaks a couple of touchpads (#1104789)
 

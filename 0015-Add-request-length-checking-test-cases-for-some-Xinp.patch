@@ -1,0 +1,214 @@
+From cf226ef53fb26adf4860b52a713d47fd72ec8b26 Mon Sep 17 00:00:00 2001
+From: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date: Sun, 9 Feb 2014 21:27:27 -0800
+Subject: [PATCH 15/31] Add request length checking test cases for some Xinput
+ 1.x requests
+
+Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ configure.ac                             |   1 +
+ test/Makefile.am                         |   2 +-
+ test/xi1/Makefile.am                     |  34 +++++++++
+ test/xi1/protocol-xchangedevicecontrol.c | 122 +++++++++++++++++++++++++++++++
+ 4 files changed, 158 insertions(+), 1 deletion(-)
+ create mode 100644 test/xi1/Makefile.am
+ create mode 100644 test/xi1/protocol-xchangedevicecontrol.c
+
+diff --git a/configure.ac b/configure.ac
+index 6d92bca..02830dd 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2341,6 +2341,7 @@ hw/kdrive/fbdev/Makefile
+ hw/kdrive/linux/Makefile
+ hw/kdrive/src/Makefile
+ test/Makefile
++test/xi1/Makefile
+ test/xi2/Makefile
+ xserver.ent
+ xorg-server.pc
+diff --git a/test/Makefile.am b/test/Makefile.am
+index 6b96789..8cbcd9f 100644
+--- a/test/Makefile.am
++++ b/test/Makefile.am
+@@ -4,7 +4,7 @@ noinst_PROGRAMS = list string
+ if XORG
+ # Tests that require at least some DDX functions in order to fully link
+ # For now, requires xf86 ddx, could be adjusted to use another
+-SUBDIRS += xi2
++SUBDIRS += xi1 xi2
+ noinst_PROGRAMS += xkb input xtest misc fixes xfree86 hashtabletest os signal-logging touch
+ endif
+ check_LTLIBRARIES = libxservertest.la
+diff --git a/test/xi1/Makefile.am b/test/xi1/Makefile.am
+new file mode 100644
+index 0000000..907fa7a
+--- /dev/null
++++ b/test/xi1/Makefile.am
+@@ -0,0 +1,34 @@
++if ENABLE_UNIT_TESTS
++if HAVE_LD_WRAP
++noinst_PROGRAMS =  \
++	protocol-xchangedevicecontrol
++
++TESTS=$(noinst_PROGRAMS)
++TESTS_ENVIRONMENT = $(XORG_MALLOC_DEBUG_ENV)
++
++AM_CFLAGS = $(DIX_CFLAGS) @XORG_CFLAGS@
++AM_CPPFLAGS = @XORG_INCS@ -I$(srcdir)/../xi2
++TEST_LDADD=../libxservertest.la $(XORG_SYS_LIBS) $(XSERVER_SYS_LIBS) $(GLX_SYS_LIBS)
++COMMON_SOURCES=$(srcdir)/../xi2/protocol-common.c
++
++if SPECIAL_DTRACE_OBJECTS
++TEST_LDADD += $(OS_LIB) $(DIX_LIB)
++endif
++
++protocol_xchangedevicecontrol_LDADD=$(TEST_LDADD)
++
++protocol_xchangedevicecontrol_LDFLAGS=$(AM_LDFLAGS) -Wl,-wrap,WriteToClient
++
++protocol_xchangedevicecontrol_SOURCES=$(COMMON_SOURCES) protocol-xchangedevicecontrol.c
++
++else
++# Print that xi1-tests were skipped (exit code 77 for automake test harness)
++TESTS = xi1-tests
++CLEANFILES = $(TESTS)
++
++xi1-tests:
++	@echo 'echo "ld -wrap support required for xi1 unit tests, skipping"' > $@
++	@echo 'exit 77' >> $@
++	$(AM_V_GEN)chmod +x $@
++endif
++endif
+diff --git a/test/xi1/protocol-xchangedevicecontrol.c b/test/xi1/protocol-xchangedevicecontrol.c
+new file mode 100644
+index 0000000..8e638b2
+--- /dev/null
++++ b/test/xi1/protocol-xchangedevicecontrol.c
+@@ -0,0 +1,122 @@
++/**
++ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a
++ * copy of this software and associated documentation files (the "Software"),
++ * to deal in the Software without restriction, including without limitation
++ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
++ * and/or sell copies of the Software, and to permit persons to whom the
++ * Software is furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice (including the next
++ * paragraph) shall be included in all copies or substantial portions of the
++ * Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
++ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ */
++
++#ifdef HAVE_DIX_CONFIG_H
++#include <dix-config.h>
++#endif
++
++/*
++ * Protocol testing for ChangeDeviceControl request.
++ */
++#include <stdint.h>
++#include <X11/X.h>
++#include <X11/Xproto.h>
++#include <X11/extensions/XIproto.h>
++#include "inputstr.h"
++#include "chgdctl.h"
++
++#include "protocol-common.h"
++
++static ClientRec client_request;
++
++static void
++reply_ChangeDeviceControl(ClientPtr client, int len, char *data, void *userdata)
++{
++    xChangeDeviceControlReply *rep = (xChangeDeviceControlReply *) data;
++
++    if (client->swapped) {
++        swapl(&rep->length);
++        swaps(&rep->sequenceNumber);
++    }
++
++    reply_check_defaults(rep, len, ChangeDeviceControl);
++
++    /* XXX: check status code in reply */
++}
++
++static void
++request_ChangeDeviceControl(ClientPtr client, xChangeDeviceControlReq * req,
++                            xDeviceCtl *ctl, int error)
++{
++    int rc;
++
++    client_request.req_len = req->length;
++    rc = ProcXChangeDeviceControl(&client_request);
++    assert(rc == error);
++
++    /* XXX: ChangeDeviceControl doesn't seem to fill in errorValue to check */
++
++    client_request.swapped = TRUE;
++    swaps(&req->length);
++    swaps(&req->control);
++    swaps(&ctl->length);
++    swaps(&ctl->control);
++    /* XXX: swap other contents of ctl, depending on type */
++    rc = SProcXChangeDeviceControl(&client_request);
++    assert(rc == error);
++}
++
++static unsigned char *data[4096];       /* the request buffer */
++
++static void
++test_ChangeDeviceControl(void)
++{
++    xChangeDeviceControlReq *request = (xChangeDeviceControlReq *) data;
++    xDeviceCtl *control = (xDeviceCtl *) (&request[1]);
++
++    request_init(request, ChangeDeviceControl);
++
++    reply_handler = reply_ChangeDeviceControl;
++
++    client_request = init_client(request->length, request);
++
++    printf("Testing invalid lengths:\n");
++    printf(" -- no control struct\n");
++    request_ChangeDeviceControl(&client_request, request, control, BadLength);
++
++    printf(" -- xDeviceResolutionCtl\n");
++    request_init(request, ChangeDeviceControl);
++    request->control = DEVICE_RESOLUTION;
++    control->length = (sizeof(xDeviceResolutionCtl) >> 2);
++    request->length += control->length - 2;
++    request_ChangeDeviceControl(&client_request, request, control, BadLength);
++
++    printf(" -- xDeviceEnableCtl\n");
++    request_init(request, ChangeDeviceControl);
++    request->control = DEVICE_ENABLE;
++    control->length = (sizeof(xDeviceEnableCtl) >> 2);
++    request->length += control->length - 2;
++    request_ChangeDeviceControl(&client_request, request, control, BadLength);
++
++    /* XXX: Test functionality! */
++}
++
++int
++main(int argc, char **argv)
++{
++    init_simple();
++
++    test_ChangeDeviceControl();
++
++    return 0;
++}
+-- 
+1.9.3
+
