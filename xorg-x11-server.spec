@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.14.4
-Release:   4%{?gitdate:.%{gitdate}}%{dist}
+Release:   5%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -164,6 +164,9 @@ Patch10029: 0028-glx-Length-checking-for-non-generated-single-request.patch
 Patch10030: 0029-glx-Fix-mask-truncation-in-__glXGetAnswerBuffer-CVE-.patch
 Patch10031: 0030-glx-Length-checking-for-RenderLarge-requests-v2-CVE-.patch
 Patch10032: 0031-glx-Pass-remaining-request-length-into-varsize-v2-CV.patch
+
+Patch10033: 0001-Missing-parens-in-REQUEST_FIXED_SIZE-macro-CVE-2014-.patch
+Patch10034: 0002-dix-GetHosts-bounds-check-using-wrong-pointer-value-.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -637,6 +640,9 @@ rm -rf $RPM_BUILD_ROOT
 %{xserver_source_dir}
 
 %changelog
+* Thu Dec 11 2014 Dave Airlie <airlied@redhat.com> 1.14.4-5
+- Fixes for the CVE fixes
+
 * Wed Dec 10 2014 Dave Airlie <airlied@redhat.com> 1.14.4-4
 - CVE fixes for everyone
 
