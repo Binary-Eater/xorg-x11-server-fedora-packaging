@@ -41,7 +41,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.16.2.901
+Version:   1.16.3
 Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
@@ -99,8 +99,13 @@ Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 # submitted http://lists.x.org/archives/xorg-devel/2014-July/042936.html
 Patch10200: 0001-xwayland-Snap-damage-reports-to-the-bounding-box.patch
 
+# alread in stable
+Patch10250: 0001-dix-Allow-zero-height-PutImage-requests.patch
 # already in master:
 Patch10300: glamor-add-shm-sync-fence-support.patch
+Patch10301: 0001-randr-attempt-to-fix-primary-on-slave-output-v2.patch
+Patch10302: 0002-config-udev-Respect-seat-assignments-when-assigned-d.patch
+
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
 %global sdkdir		%{_includedir}/xorg
@@ -639,6 +644,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Sun Feb 01 2015 Dave Airlie <airlied@redhat.com 1.16.3-1
+- upstream release 1.16.3 + two backport fixes
+
 * Wed Dec 10 2014 Dave Airlie <airlied@redhat.com> 1.16.2.901-1
 - upstream security release. 1.16.2.901
 
