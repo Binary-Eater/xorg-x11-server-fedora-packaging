@@ -42,7 +42,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.16.3
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -105,6 +105,7 @@ Patch10250: 0001-dix-Allow-zero-height-PutImage-requests.patch
 Patch10300: glamor-add-shm-sync-fence-support.patch
 Patch10301: 0001-randr-attempt-to-fix-primary-on-slave-output-v2.patch
 Patch10302: 0002-config-udev-Respect-seat-assignments-when-assigned-d.patch
+Patch10303: 0001-dix-make-RegionInit-legal-C.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -644,6 +645,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Sun Feb 01 2015 Dave Airlie <airlied@redhat.com> 1.16.3-2
+- fix C++ region init for vnc building
+
 * Sun Feb 01 2015 Dave Airlie <airlied@redhat.com 1.16.3-1
 - upstream release 1.16.3 + two backport fixes
 
