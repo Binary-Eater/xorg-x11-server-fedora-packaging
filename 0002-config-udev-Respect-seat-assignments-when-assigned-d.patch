@@ -1,0 +1,87 @@
+From 5ce39bbb9a59c9476537d00fad1fe251c2f40f48 Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Fri, 30 Jan 2015 09:59:49 +1000
+Subject: [PATCH 2/2] config/udev: Respect seat assignments when assigned
+ devices
+
+Jonathan Dieter posted a few patches to do this inside the Xorg
+server but it makes no sense to do it there, just have the code
+we use to probe the device list at startup check seat assignments
+using the same code we check at hotplug time.
+
+Bugilla: https://bugzilla.redhat.com/show_bug.cgi?id=1183654
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Acked-by: Hans de Goede <hdegoede@redhat.com>
+Tested-by: Jonathan Dieter <jdieter@lesbg.com>
+Signed-off-by: Dave Airlie <airlied@redhat.com>
+Signed-off-by: Keith Packard <keithp@keithp.com>
+Signed-off-by: Fedora X Ninjas <x@fedoraproject.org>
+---
+ config/udev.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/config/udev.c b/config/udev.c
+index 2ae944d..236386b 100644
+--- a/config/udev.c
++++ b/config/udev.c
+@@ -58,6 +58,24 @@ config_udev_odev_setup_attribs(const char *path, const char *syspath,
+                                config_odev_probe_proc_ptr probe_callback);
+ #endif
+ 
++static Bool
++check_seat(struct udev_device *udev_device)
++{
++    const char *dev_seat;
++
++    dev_seat = udev_device_get_property_value(udev_device, "ID_SEAT");
++    if (!dev_seat)
++        dev_seat = "seat0";
++
++    if (SeatId && strcmp(dev_seat, SeatId))
++        return FALSE;
++
++    if (!SeatId && strcmp(dev_seat, "seat0"))
++        return FALSE;
++
++    return TRUE;
++}
++
+ static void
+ device_added(struct udev_device *udev_device)
+ {
+@@ -72,7 +90,6 @@ device_added(struct udev_device *udev_device)
+     struct udev_list_entry *set, *entry;
+     struct udev_device *parent;
+     int rc;
+-    const char *dev_seat;
+ 
+     path = udev_device_get_devnode(udev_device);
+ 
+@@ -81,14 +98,7 @@ device_added(struct udev_device *udev_device)
+     if (!path || !syspath)
+         return;
+ 
+-    dev_seat = udev_device_get_property_value(udev_device, "ID_SEAT");
+-    if (!dev_seat)
+-        dev_seat = "seat0";
+-
+-    if (SeatId && strcmp(dev_seat, SeatId))
+-        return;
+-
+-    if (!SeatId && strcmp(dev_seat, "seat0"))
++    if (!check_seat(udev_device))
+         return;
+ 
+ #ifdef CONFIG_UDEV_KMS
+@@ -485,6 +495,8 @@ config_udev_odev_probe(config_odev_probe_proc_ptr probe_callback)
+             goto no_probe;
+         else if (strncmp(sysname, "card", 4) != 0)
+             goto no_probe;
++        else if (!check_seat(udev_device))
++            goto no_probe;
+ 
+         config_udev_odev_setup_attribs(path, syspath, probe_callback);
+ 
+-- 
+2.1.0
+
