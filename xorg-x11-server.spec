@@ -45,7 +45,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.17.1
-Release:   9%{?gitdate:.%{gitdate}}%{dist}
+Release:   10%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -111,6 +111,9 @@ Patch10001: 0001-sdksyms.sh-Make-sdksyms.sh-work-with-gcc5.patch
 
 Patch10002: 0001-int10-Fix-mapping-the-interrupt-vector.patch
 Patch10003: 0001-include-Fix-endianness-setup.patch
+
+# rhbz1205725, submitted upstream
+Patch10004: 0001-modesetting-Fix-software-cursor-fallback.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -645,6 +648,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Sat May 02 2015 Adel Gadllah <adel.gadllah@gmail.com> - 1.17.1-10
+- modesetting: Fix software cursor fallback (#1205725)
+
 * Sat Apr 11 2015 Ray Strode <rstrode@redhat.com> 1.17.1-9
 - Handle logind timeouts more gracefuly.
 - Bump timeouts so they don't happen in practice
