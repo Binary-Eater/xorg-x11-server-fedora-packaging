@@ -22,7 +22,7 @@
 %global videodrv_major 19
 %global videodrv_minor 0
 %global xinput_major 21
-%global xinput_minor 0
+%global xinput_minor 1
 %global extension_major 9
 %global extension_minor 0
 %endif
@@ -45,7 +45,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.17.1
-Release:   13%{?gitdate:.%{gitdate}}%{dist}
+Release:   14%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -119,6 +119,12 @@ Patch10004: 0001-modesetting-Fix-software-cursor-fallback.patch
 Patch10005: 0001-linux-Add-linux_parse_vt_settings-and-linux_get_keep.patch
 Patch10006: 0002-linux-Add-a-may_fail-paramter-to-linux_parse_vt_sett.patch
 Patch10007: 0003-systemd-logind-Only-use-systemd-logind-integration-t.patch
+
+# rhbz1208992: Mouse cursor doesn't move when moving the physical mouse
+# slowly.
+# already upstream
+Patch10010: 0001-dix-Add-unaccelerated-valuators-to-the-ValuatorMask.patch
+Patch10011: 0002-dix-hook-up-the-unaccelerated-valuator-masks.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -657,6 +663,10 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue May 26 2015 Peter Hutterer <peter.hutterer@redhat.com> 1.17.1-14
+- Add the unaccelerated valuator masks, fixes nonmoving mouse in SDL
+  (#1208992)
+
 * Wed May 20 2015 Kalev Lember <kalevlember@gmail.com> - 1.17.1-13
 - Obsolete xorg-x11-drv-void
 
