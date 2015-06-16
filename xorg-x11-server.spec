@@ -44,8 +44,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.17.1
-Release:   16%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.17.2
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -85,13 +85,6 @@ Patch5002: xserver-1.4.99-ssh-isnt-local.patch
 Patch6030: xserver-1.6.99-right-of.patch
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 
-# https://bugzilla.gnome.org/show_bug.cgi?id=737226
-Patch6045: 0001-present-make-unflip-work-when-the-flip-window-is-des.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1209347
-Patch6055: systemd-logind-filter-out-non-signal-messages-from.patch
-Patch6056: systemd-logind-dont-second-guess-D-Bus-default-tim.patch
-
 Patch7025: 0001-Always-install-vbe-and-int10-sdk-headers.patch
 
 # do not upstream - do not even use here yet
@@ -100,17 +93,19 @@ Patch7027: xserver-autobind-hotplug.patch
 # submitted: http://lists.x.org/archives/xorg-devel/2013-October/037996.html
 Patch9100: exa-only-draw-valid-trapezoids.patch
 
-# submitted upstream: regression in 1.17.0
-Patch9200: 0001-os-access-fix-regression-in-server-interpreted-auth.patch
-
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 
-# Fix build with gcc5, submitted upstream, likely needs a better fix
-Patch10001: 0001-sdksyms.sh-Make-sdksyms.sh-work-with-gcc5.patch
+# rhbz1203780, submitted upstream
+Patch10004: 0001-linux-Add-linux_parse_vt_settings-and-linux_get_keep.patch
+Patch10005: 0002-linux-Add-a-may_fail-paramter-to-linux_parse_vt_sett.patch
+Patch10006: 0003-systemd-logind-Only-use-systemd-logind-integration-t.patch
 
-Patch10002: 0001-int10-Fix-mapping-the-interrupt-vector.patch
-Patch10003: 0001-include-Fix-endianness-setup.patch
+# rhbz1208992: Mouse cursor doesn't move when moving the physical mouse
+# slowly.
+# already upstream
+Patch10010: 0001-dix-Add-unaccelerated-valuators-to-the-ValuatorMask.patch
+Patch10011: 0002-dix-hook-up-the-unaccelerated-valuator-masks.patch
 
 # rhbz1205725, submitted upstream
 Patch10004: 0001-modesetting-Fix-software-cursor-fallback.patch
@@ -671,6 +666,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Jun 16 2015 Adam Jackson <ajax@redhat.com> 1.17.2-1
+- xserver 1.17.2
+
 * Tue Jun 16 2015 Dave Airlie <airlied@redhat.com> 1.17.1-16
 - fix bug with glamor and overlapping copies
 
@@ -687,11 +685,11 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 * Tue May 19 2015 Hans de Goede <hdegoede@redhat.com> - 1.17.1-12
 - Fix "start -- vt7" not working fix breaking headless setups (#1203780)
 
-* Mon May 11 2015 Hans de Goede <hdegoede@redhat.com> - 1.17.1-11
-- Fix "start -- vt7" not working (#1203780)
-
-* Sat May 02 2015 Adel Gadllah <adel.gadllah@gmail.com> - 1.17.1-10
+* Sat May 02 2015 Adel Gadllah <adel.gadllah@gmail.com> - 1.17.1-11
 - modesetting: Fix software cursor fallback (#1205725)
+
+* Thu Apr 30 2015 Hans de Goede <hdegoede@redhat.com> - 1.17.1-10
+- Fix "start -- vt7" not working (#1203780)
 
 * Sat Apr 11 2015 Ray Strode <rstrode@redhat.com> 1.17.1-9
 - Handle logind timeouts more gracefuly.
