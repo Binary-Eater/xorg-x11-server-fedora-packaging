@@ -96,38 +96,11 @@ Patch9100: exa-only-draw-valid-trapezoids.patch
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 
-# rhbz1203780, submitted upstream
-Patch10004: 0001-linux-Add-linux_parse_vt_settings-and-linux_get_keep.patch
-Patch10005: 0002-linux-Add-a-may_fail-paramter-to-linux_parse_vt_sett.patch
-Patch10006: 0003-systemd-logind-Only-use-systemd-logind-integration-t.patch
-
 # rhbz1208992: Mouse cursor doesn't move when moving the physical mouse
 # slowly.
 # already upstream
 Patch10010: 0001-dix-Add-unaccelerated-valuators-to-the-ValuatorMask.patch
 Patch10011: 0002-dix-hook-up-the-unaccelerated-valuator-masks.patch
-
-# rhbz1205725, submitted upstream
-Patch10004: 0001-modesetting-Fix-software-cursor-fallback.patch
-
-# rhbz1203780, submitted upstream
-Patch10005: 0001-linux-Add-linux_parse_vt_settings-and-linux_get_keep.patch
-Patch10006: 0002-linux-Add-a-may_fail-paramter-to-linux_parse_vt_sett.patch
-Patch10007: 0003-systemd-logind-Only-use-systemd-logind-integration-t.patch
-
-# rhbz1208992: Mouse cursor doesn't move when moving the physical mouse
-# slowly.
-# already upstream
-Patch10010: 0001-dix-Add-unaccelerated-valuators-to-the-ValuatorMask.patch
-Patch10011: 0002-dix-hook-up-the-unaccelerated-valuator-masks.patch
-
-# glamor fix from RHEL7 fix sent upstream
-Patch10020: 0001-glamor-don-t-do-render-ops-with-matching-source-dest.patch
-
-# CVE-2015-3164
-Patch201531640: 0001-xwayland-Enable-access-control-on-open-sockets-CVE-2.patch
-Patch201531641: 0002-os-support-new-implicit-local-user-access-mode-CVE-2.patch
-Patch201531642: 0003-xwayland-default-to-local-user-if-no-xauth-file-give.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
