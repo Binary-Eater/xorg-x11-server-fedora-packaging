@@ -45,7 +45,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.17.2
-Release:   2%{?gitdate:.%{gitdate}}%{dist}.1
+Release:   2%{?gitdate:.%{gitdate}}%{dist}.2
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -92,6 +92,9 @@ Patch7027: xserver-autobind-hotplug.patch
 
 # submitted: http://lists.x.org/archives/xorg-devel/2013-October/037996.html
 Patch9100: exa-only-draw-valid-trapezoids.patch
+
+# http://lists.x.org/archives/xorg-devel/2015-September/047304.html
+Patch9200: 0001-present-Don-t-stash-the-MSC-value-when-present_get_u.patch
 
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
@@ -646,6 +649,10 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Sep 16 2015 Rex Dieter <rdieter@fedoraproject.org> 1.17.2-2.2
+- pull in candidate fix for clients getting stuck waiting indefinitely
+  for an idle event when a CRTC is turned off (#1256082,#1258084)
+
 * Wed Sep 16 2015 Rex Dieter <rdieter@fedoraproject.org> 1.17.2-2.1
 - restore some patches lost in commit 380daf9f9c4292860f101c1562bbaad61853a1d4
 
