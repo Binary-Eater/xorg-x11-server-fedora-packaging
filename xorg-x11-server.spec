@@ -45,7 +45,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.17.2
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}.1
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -95,6 +95,11 @@ Patch9100: exa-only-draw-valid-trapezoids.patch
 
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
+
+# rhbz1203780, submitted upstream
+Patch10004: 0001-linux-Add-linux_parse_vt_settings-and-linux_get_keep.patch
+Patch10005: 0002-linux-Add-a-may_fail-paramter-to-linux_parse_vt_sett.patch
+Patch10006: 0003-systemd-logind-Only-use-systemd-logind-integration-t.patch
 
 # rhbz1208992: Mouse cursor doesn't move when moving the physical mouse
 # slowly.
@@ -641,6 +646,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Sep 16 2015 Rex Dieter <rdieter@fedoraproject.org> 1.17.2-2.1
+- restore some patches lost in commit 380daf9f9c4292860f101c1562bbaad61853a1d4
+
 * Wed Jul 15 2015 Dave Airlie <airlied@redhat.com> 1.17.2-2
 - fix bug with glamor and PRIME where server would crash
 
