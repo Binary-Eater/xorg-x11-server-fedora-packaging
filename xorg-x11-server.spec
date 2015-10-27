@@ -44,8 +44,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.17.2
-Release:   2%{?gitdate:.%{gitdate}}%{dist}.2
+Version:   1.17.3
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -93,9 +93,6 @@ Patch7027: xserver-autobind-hotplug.patch
 # submitted: http://lists.x.org/archives/xorg-devel/2013-October/037996.html
 Patch9100: exa-only-draw-valid-trapezoids.patch
 
-# http://lists.x.org/archives/xorg-devel/2015-September/047304.html
-Patch9200: 0001-present-Don-t-stash-the-MSC-value-when-present_get_u.patch
-
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 
@@ -109,8 +106,6 @@ Patch10006: 0003-systemd-logind-Only-use-systemd-logind-integration-t.patch
 # already upstream
 Patch10010: 0001-dix-Add-unaccelerated-valuators-to-the-ValuatorMask.patch
 Patch10011: 0002-dix-hook-up-the-unaccelerated-valuator-masks.patch
-
-Patch10020: 0001-glamor-make-current-in-prepare-paths.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -649,6 +644,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Oct 27 2015 Adam Jackson <ajax@redhat.com> 1.17.3-1
+- xserver 1.17.3
+
 * Wed Sep 16 2015 Rex Dieter <rdieter@fedoraproject.org> 1.17.2-2.2
 - pull in candidate fix for clients getting stuck waiting indefinitely
   for an idle event when a CRTC is turned off (#1256082,#1258084)
