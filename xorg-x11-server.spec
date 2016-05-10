@@ -45,7 +45,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.18.3
-Release:   2%{?gitdate:.%{gitdate}}%{dist}
+Release:   3%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -80,6 +80,12 @@ Source40: driver-abi-rebuild.sh
 # Trivial things to never merge upstream ever:
 # This really could be done prettier.
 Patch5002: xserver-1.4.99-ssh-isnt-local.patch
+
+# patches upstream in master should be in 1.18.4
+Patch6000: 0001-randr-provider-only-allow-slave-gpu-to-be-offload-so.patch
+Patch6001: 0002-modesetting-set-driverPrivate-to-NULL-after-closing-.patch
+Patch6002: 0003-xf86Crtc-don-t-set-the-root-window-property-on-slave.patch
+Patch6004: 0004-modesetting-set-capabilities-up-after-glamor-and-ena.patch
 
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 
@@ -640,6 +646,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue May 10 2016 Dave Airlie <airlied@redhat.com> - 1.18.3-3
+- port some fixes from X server master - fix output plugging
+
 * Thu May 05 2016 Peter Hutterer <peter.hutterer@redhat.com> 1.18.3-2
 - Fix NumLock indicator light turning off after (#1047151)
 
