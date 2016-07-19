@@ -44,8 +44,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.18.3
-Release:   6%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.18.4
+Release:   1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -77,20 +77,6 @@ Source31: xserver-sdk-abi-requires.git
 # maintainer convenience script
 Source40: driver-abi-rebuild.sh
 
-# Trivial things to never merge upstream ever:
-# This really could be done prettier.
-Patch5002: xserver-1.4.99-ssh-isnt-local.patch
-
-# patches upstream in master should be in 1.18.4
-Patch6000: 0001-randr-provider-only-allow-slave-gpu-to-be-offload-so.patch
-Patch6001: 0002-modesetting-set-driverPrivate-to-NULL-after-closing-.patch
-Patch6002: 0003-xf86Crtc-don-t-set-the-root-window-property-on-slave.patch
-Patch6004: 0004-modesetting-set-capabilities-up-after-glamor-and-ena.patch
-Patch6005: 0005-modesetting-Properly-cleanup-fb-for-reverse-prime-of.patch
-Patch6006: 0006-modesetting-Clear-drmmode-fb_id-before-unflipping.patch
-Patch6007: 0007-modesetting-Fix-swapping-of-provider-sink-source-cap.patch
-Patch6008: 0008-modesetting-Load-on-GPU-s-with-0-outputs.patch
-
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 
 Patch7025: 0001-Always-install-vbe-and-int10-sdk-headers.patch
@@ -98,24 +84,8 @@ Patch7025: 0001-Always-install-vbe-and-int10-sdk-headers.patch
 # do not upstream - do not even use here yet
 Patch7027: xserver-autobind-hotplug.patch
 
-# submitted: http://lists.x.org/archives/xorg-devel/2013-October/037996.html
-Patch9100: exa-only-draw-valid-trapezoids.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1282252
-Patch9200: 0001-Xi-don-t-deliver-emulated-motion-events-for-non-emul.patch
-
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
-
-Patch10002: 0001-present-Improve-scaling-of-vblank-handler.patch
-Patch10003: 0002-present-Fix-presentation-of-flips-out-of-order.patch
-
-# Bug 1047151 - Numlock LED incorrect after keyboard map switch
-Patch10004: 0001-xkb-after-changing-the-keymap-force-an-indicator-upd.patch
-Patch10005: 0001-xkb-add-a-cause-to-the-xkb-indicator-update-after-a-.patch
-
-# Bug 1338979 - Xwayland: Segmentation fault in cursor update after unrealize
-Patch10006: 0001-wayland-clear-resource-for-pixmap-on-unrealize.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -426,9 +396,9 @@ test `getminor extension` == %{extension_minor}
 %global default_font_path "catalogue:/etc/X11/fontpath.d,built-ins"
 
 %if %{with_hw_servers}
-%global dri_flags --enable-dri2 %{?!rhel:--enable-dri3} --enable-suid-wrapper --enable-glamor
+%global dri_flags --enable-dri --enable-dri2 %{?!rhel:--enable-dri3} --enable-suid-wrapper --enable-glamor
 %else
-%global dri_flags --disable-dri
+%global dri_flags --disable-dri --disable-dri2
 %endif
 
 %if 0%{?fedora}
@@ -654,20 +624,31 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
-* Mon Jul 04 2016 Olivier Fourdan <ofourdan@redhat.com> 1.18.3-6
+* Tue Jul 19 2016 Adam Jackson <ajax@redhat.com> - 1.18.4-1
+- xserver 1.18.4
+
+* Mon Jul 04 2016 Olivier Fourdan <ofourdan@redhat.com> 1.18.3-8
 - Fix segfault in Xwayland due to cursor update after unrealize (#1338979)
 
-* Tue Jun 28 2016 Peter Hutterer <peter.hutterer@redhat.com> 1.18.3-5
+* Tue Jun 28 2016 Peter Hutterer <peter.hutterer@redhat.com> 1.18.3-7
 - Fix segfault caused by forced indicator update (#1335439)
 
-* Fri Jun 17 2016 Hans de Goede <hdegoede@redhat.com> - 1.18.3-4
+* Fri Jun 17 2016 Hans de Goede <hdegoede@redhat.com> - 1.18.3-6
+- Add switchable-graphics / prime fixes from f24 branch
 - Add some more switchable-graphics / prime fixes from upstream
 
-* Tue May 10 2016 Dave Airlie <airlied@redhat.com> - 1.18.3-3
-- port some fixes from X server master - fix output plugging
+* Mon Jun 13 2016 Adam Jackson <ajax@redhat.com> - 1.18.3-5
+- Restore DRI1 for now
 
-* Thu May 05 2016 Peter Hutterer <peter.hutterer@redhat.com> 1.18.3-2
-- Fix NumLock indicator light turning off after (#1047151)
+* Mon May 09 2016 Adam Jackson <ajax@redhat.com> - 1.18.3-4
+- Move a symbol from DRI1 to DRI2 code to fix ati/openchrome
+
+* Thu May 05 2016 Peter Hutterer <peter.hutterer@redhat.com> 1.18.3-3
+- Fix NumLock indicator light turning off after layout change (#1047151)
+
+* Thu Apr 14 2016 Adam Jackson <ajax@redhat.com> - 1.18.3-2
+- Stop building DRI1 support
+- Don't build DRI2 on s390{,x}
 
 * Mon Apr 04 2016 Adam Jackson <ajax@redhat.com> 1.18.3-1
 - xserver 1.18.3
