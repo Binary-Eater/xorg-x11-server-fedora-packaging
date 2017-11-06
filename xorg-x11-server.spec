@@ -19,7 +19,7 @@
 # source because rpm is a terrible language.
 %global ansic_major 0
 %global ansic_minor 4
-%global videodrv_major 23
+%global videodrv_major 24
 %global videodrv_minor 0
 %global xinput_major 24
 %global xinput_minor 1
@@ -44,8 +44,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.19.5
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Version:   1.19.99.1
+Release:   0.1%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -59,7 +59,7 @@ Source0:   xorg-server-%{gitdate}.tar.xz
 Source1:   make-git-snapshot.sh
 Source2:   commitid
 %else
-Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
+Source0:   https://www.x.org/pub/individual/xserver/xserver-%{version}.tar.xz
 Source1:   gitignore
 %endif
 
@@ -77,47 +77,21 @@ Source31: xserver-sdk-abi-requires.git
 # maintainer convenience script
 Source40: driver-abi-rebuild.sh
 
-# Various fixes pending upstream
-Patch2: 0005-xfree86-Remove-redundant-ServerIsNotSeat0-check-from.patch
-Patch3: 0006-xfree86-Make-adding-unclaimed-devices-as-GPU-devices.patch
-Patch4: 0007-xfree86-Try-harder-to-find-atleast-1-non-GPU-Screen.patch
-
-# Patches for better integration with the nvidia driver, pending upstream
-Patch11: 0001-xfree86-Free-devlist-returned-by-xf86MatchDevice.patch
-Patch12: 0002-xfree86-Make-OutputClassMatches-take-a-xf86_platform.patch
-Patch13: 0003-xfree86-Add-options-support-for-OutputClass-Options.patch
-Patch14: 0004-xfree86-xf86platformProbe-split-finding-pci-info-and.patch
-Patch15: 0005-xfree86-Allow-overriding-primary-GPU-detection-from-.patch
-Patch16: 0006-xfree86-Add-ModulePath-support-for-OutputClass-confi.patch
-
-# Backport tablet support for Xwayland - *NOT* in server-1.19-branch
-Patch9901: 0001-xwayland-Depend-on-wayland-protocols-to-build-tablet.patch
-Patch9902: 0002-xwayland-Bind-to-wp_tablet_manager-if-available-and-.patch
-Patch9903: 0003-xwayland-Listen-for-wp_tablet_seat-events.patch
-Patch9904: 0004-xwayland-Handle-wp_tablet-events.patch
-Patch9905: 0005-xwayland-Handle-tablet_tool-events.patch
-Patch9906: 0006-xwayland-handle-button-events-after-motion-events.patch
-Patch9907: 0007-xwayland-Refactor-cursor-management-into-xwl_cursor.patch
-Patch9908: 0008-xwayland-update-cursor-on-tablet-tools-in-proximity.patch
-Patch9909: 0009-xwayland-add-tablet-pad-support.patch
-Patch9910: 0010-xwayland-Unconditionally-initialize-lists-in-init_ta.patch
-Patch9911: 0011-xwayland-Correct-off-by-one-error-in-tablet-button-n.patch
-Patch9912: 0012-xwayland-Implement-tablet_tool_wheel-for-scrolling.patch
-
 # From Debian use intel ddx driver only for gen4 and older chipsets
 %if 0%{?fedora} > 25 || 0%{?rhel} > 7
 Patch20: 06_use-intel-only-on-pre-gen4.diff
 %endif
 
-# Submitted upstream
-Patch21: 0001-xf86-dri2-Use-va_gl-as-vdpau_driver-for-Intel-i965-G.patch
+# Submitted upstream XXX ajax fix this
+# Patch21: 0001-xf86-dri2-Use-va_gl-as-vdpau_driver-for-Intel-i965-G.patch
 
 #Patch6044: xserver-1.6.99-hush-prerelease-warning.patch
 
-Patch7025: 0001-Always-install-vbe-and-int10-sdk-headers.patch
+# XXX ajax
+# Patch7025: 0001-Always-install-vbe-and-int10-sdk-headers.patch
 
 # Submitted upstream, but not going anywhere
-Patch7027: xserver-autobind-hotplug.patch
+# Patch7027: xserver-autobind-hotplug.patch
 
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
@@ -359,7 +333,7 @@ Xserver source code needed to build VNC server (Xvnc)
 
 
 %prep
-%autosetup -N -n %{pkgname}-%{?gitdate:%{gitdate}}%{!?gitdate:%{version}}
+%autosetup -N -n xserver-%{?gitdate:%{gitdate}}%{!?gitdate:%{version}}
 rm -rf .git
 cp %{SOURCE1} .gitignore
 # ick
@@ -617,6 +591,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Mon Nov 06 2017 Adam Jackson <ajax@redhat.com> - 1.19.99.1-0.1
+- Initial pre-1.20 import
+
 * Thu Oct 12 2017 Adam Jackson <ajax@redhat.com> - 1.19.5-1
 - xserver 1.19.5
 
