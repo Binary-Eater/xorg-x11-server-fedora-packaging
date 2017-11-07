@@ -45,7 +45,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.19.99.1
-Release:   0.1%{?gitdate:.%{gitdate}}%{dist}
+Release:   0.2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -92,6 +92,9 @@ Patch20: 06_use-intel-only-on-pre-gen4.diff
 
 # Submitted upstream, but not going anywhere
 # Patch7027: xserver-autobind-hotplug.patch
+
+Patch100: 0001-glx-Fix-glXQueryContext-for-GLX_FBCONFIG_ID-and-GLX_.patch
+Patch101: 0002-glx-Implement-GLX_EXT_no_config_context-v2.patch
 
 # because the display-managers are not ready yet, do not upstream
 Patch10000: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
@@ -591,6 +594,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Nov 07 2017 Adam Jackson <ajax@redhat.com> - 1.19.99.1-0.2
+- Test of GLX_EXT_no_config_context
+
 * Mon Nov 06 2017 Adam Jackson <ajax@redhat.com> - 1.19.99.1-0.1
 - Initial pre-1.20 import
 

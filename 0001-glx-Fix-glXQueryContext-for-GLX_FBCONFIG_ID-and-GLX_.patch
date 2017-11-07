@@ -1,0 +1,101 @@
+From 13004bed8ce5ab9de6650d371d073daf693bde63 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 21 Sep 2017 12:26:50 -0400
+Subject: [PATCH xserver 1/2] glx: Fix glXQueryContext for GLX_FBCONFIG_ID and
+ GLX_RENDER_TYPE (v2)
+
+Just never filled in, oops. Seems to have gone unnoticed because
+normally glXQueryContext simply returns the values filled in by the
+client library when the context was created. The only path by which you
+normally get to a GLXQueryContext request is glXImportContext, and then
+only if the context is already indirect.
+
+However, that's a statement about Mesa's libGL (and anything else that
+inherited that bit of the SGI SI more or less intact). Nothing prevents
+a mischeivous client from issuing that request of a direct context, and
+if they did we'd be in trouble because we never bothered to preserve the
+associated fbconfig in the context state, so we'd crash looking up
+GLX_VISUAL_ID_EXT. So let's fix that too.
+
+v2: Fixed missing preservation of the config in DRI2 (Eric Anholt)
+
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+---
+ glx/glxcmds.c            | 7 ++++++-
+ glx/glxdri2.c            | 1 +
+ glx/glxdriswrast.c       | 1 +
+ hw/xquartz/GL/indirect.c | 2 +-
+ 4 files changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/glx/glxcmds.c b/glx/glxcmds.c
+index 241abc6a5..8681ef13f 100644
+--- a/glx/glxcmds.c
++++ b/glx/glxcmds.c
+@@ -215,6 +215,7 @@ __glXdirectContextCreate(__GLXscreen * screen,
+     if (context == NULL)
+         return NULL;
+ 
++    context->config = modes;
+     context->destroy = __glXdirectContextDestroy;
+     context->loseCurrent = __glXdirectContextLoseCurrent;
+ 
+@@ -1718,7 +1719,7 @@ DoQueryContext(__GLXclientState * cl, GLXContextID gcId)
+     ClientPtr client = cl->client;
+     __GLXcontext *ctx;
+     xGLXQueryContextInfoEXTReply reply;
+-    int nProps = 3;
++    int nProps = 5;
+     int sendBuf[nProps * 2];
+     int nReplyBytes;
+     int err;
+@@ -1740,6 +1741,10 @@ DoQueryContext(__GLXclientState * cl, GLXContextID gcId)
+     sendBuf[3] = (int) (ctx->config->visualID);
+     sendBuf[4] = GLX_SCREEN_EXT;
+     sendBuf[5] = (int) (ctx->pGlxScreen->pScreen->myNum);
++    sendBuf[6] = GLX_FBCONFIG_ID;
++    sendBuf[7] = (int) (ctx->config->fbconfigID);
++    sendBuf[8] = GLX_RENDER_TYPE;
++    sendBuf[9] = (int) (ctx->config->renderType);
+ 
+     if (client->swapped) {
+         int length = reply.length;
+diff --git a/glx/glxdri2.c b/glx/glxdri2.c
+index 8f5aab0c2..2c542bfdf 100644
+--- a/glx/glxdri2.c
++++ b/glx/glxdri2.c
+@@ -552,6 +552,7 @@ __glXDRIscreenCreateContext(__GLXscreen * baseScreen,
+         return NULL;
+     }
+ 
++    context->base.config = glxConfig;
+     context->base.destroy = __glXDRIcontextDestroy;
+     context->base.makeCurrent = __glXDRIcontextMakeCurrent;
+     context->base.loseCurrent = __glXDRIcontextLoseCurrent;
+diff --git a/glx/glxdriswrast.c b/glx/glxdriswrast.c
+index 5b1f3d1fc..c000d6cfb 100644
+--- a/glx/glxdriswrast.c
++++ b/glx/glxdriswrast.c
+@@ -231,6 +231,7 @@ __glXDRIscreenCreateContext(__GLXscreen * baseScreen,
+     if (context == NULL)
+         return NULL;
+ 
++    context->base.config = glxConfig;
+     context->base.destroy = __glXDRIcontextDestroy;
+     context->base.makeCurrent = __glXDRIcontextMakeCurrent;
+     context->base.loseCurrent = __glXDRIcontextLoseCurrent;
+diff --git a/hw/xquartz/GL/indirect.c b/hw/xquartz/GL/indirect.c
+index 2d88ef284..6738946ff 100644
+--- a/hw/xquartz/GL/indirect.c
++++ b/hw/xquartz/GL/indirect.c
+@@ -156,7 +156,7 @@ __glXAquaScreenCreateContext(__GLXscreen *screen,
+     memset(context, 0, sizeof *context);
+ 
+     context->base.pGlxScreen = screen;
+-
++    context->base.config = conf;
+     context->base.destroy = __glXAquaContextDestroy;
+     context->base.makeCurrent = __glXAquaContextMakeCurrent;
+     context->base.loseCurrent = __glXAquaContextLoseCurrent;
+-- 
+2.14.3
+

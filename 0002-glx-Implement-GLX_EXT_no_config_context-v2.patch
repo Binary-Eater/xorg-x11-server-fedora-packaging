@@ -1,0 +1,203 @@
+From 5c9749499e866b5eb0558b063b817f35bbd92cfa Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 21 Sep 2017 12:45:04 -0400
+Subject: [PATCH xserver 2/2] glx: Implement GLX_EXT_no_config_context (v2)
+
+Only enabled for the DRI backends at the moment. In principle WGL/CGL
+could support this - it's sort of implied by GL 3.0 support - but in
+practice I don't know that it would actually work.
+
+This is currently a draft extension, under review at:
+
+https://github.com/KhronosGroup/OpenGL-Registry/pull/102
+
+v2: Require that the two screen numbers match, per v4 of spec.
+
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+---
+ glx/createcontext.c    | 20 +++++++++++++++++---
+ glx/extension_string.c |  1 +
+ glx/extension_string.h |  1 +
+ glx/glxcmds.c          |  6 +++---
+ glx/glxdri2.c          | 13 +++++++------
+ glx/glxdriswrast.c     |  8 ++++++--
+ 6 files changed, 35 insertions(+), 14 deletions(-)
+
+diff --git a/glx/createcontext.c b/glx/createcontext.c
+index 1216f9412..76316db67 100644
+--- a/glx/createcontext.c
++++ b/glx/createcontext.c
+@@ -93,7 +93,7 @@ __glXDisp_CreateContextAttribsARB(__GLXclientState * cl, GLbyte * pc)
+     __GLXcontext *ctx = NULL;
+     __GLXcontext *shareCtx = NULL;
+     __GLXscreen *glxScreen;
+-    __GLXconfig *config;
++    __GLXconfig *config = NULL;
+     int err;
+ 
+     /* The GLX_ARB_create_context_robustness spec says:
+@@ -136,8 +136,10 @@ __glXDisp_CreateContextAttribsARB(__GLXclientState * cl, GLbyte * pc)
+     if (!validGlxScreen(client, req->screen, &glxScreen, &err))
+         return __glXError(GLXBadFBConfig);
+ 
+-    if (!validGlxFBConfig(client, glxScreen, req->fbconfig, &config, &err))
+-        return __glXError(GLXBadFBConfig);
++    if (req->fbconfig) {
++        if (!validGlxFBConfig(client, glxScreen, req->fbconfig, &config, &err))
++            return __glXError(GLXBadFBConfig);
++    }
+ 
+     /* Validate the context with which the new context should share resources.
+      */
+@@ -182,6 +184,9 @@ __glXDisp_CreateContextAttribsARB(__GLXclientState * cl, GLbyte * pc)
+             break;
+ 
+         case GLX_RENDER_TYPE:
++            /* Not valid for GLX_EXT_no_config_context */
++            if (!req->fbconfig)
++                return BadValue;
+             render_type = attribs[2 * i + 1];
+             break;
+ 
+@@ -206,6 +211,15 @@ __glXDisp_CreateContextAttribsARB(__GLXclientState * cl, GLbyte * pc)
+             break;
+ #endif
+ 
++        case GLX_SCREEN:
++            /* Only valid for GLX_EXT_no_config_context */
++            if (req->fbconfig)
++                return BadValue;
++            /* Must match the value in the request header */
++            if (attribs[2 * i + 1] != req->screen)
++                return BadValue;
++            break;
++
+         default:
+             if (!req->isDirect)
+                 return BadValue;
+diff --git a/glx/extension_string.c b/glx/extension_string.c
+index d1da4815c..102f9dd42 100644
+--- a/glx/extension_string.c
++++ b/glx/extension_string.c
+@@ -86,6 +86,7 @@ static const struct extension_info known_glx_extensions[] = {
+     { GLX(EXT_framebuffer_sRGB),        VER(0,0), N, },
+     { GLX(EXT_import_context),          VER(0,0), Y, },
+     { GLX(EXT_libglvnd),                VER(0,0), N, },
++    { GLX(EXT_no_config_context),       VER(0,0), N, },
+     { GLX(EXT_stereo_tree),             VER(0,0), N, },
+     { GLX(EXT_texture_from_pixmap),     VER(0,0), N, },
+     { GLX(EXT_visual_info),             VER(0,0), Y, },
+diff --git a/glx/extension_string.h b/glx/extension_string.h
+index a10d7108a..f049f5840 100644
+--- a/glx/extension_string.h
++++ b/glx/extension_string.h
+@@ -48,6 +48,7 @@ enum {
+     EXT_fbconfig_packed_float_bit,
+     EXT_import_context_bit,
+     EXT_libglvnd_bit,
++    EXT_no_config_context_bit,
+     EXT_stereo_tree_bit,
+     EXT_texture_from_pixmap_bit,
+     EXT_visual_info_bit,
+diff --git a/glx/glxcmds.c b/glx/glxcmds.c
+index 8681ef13f..324558b6e 100644
+--- a/glx/glxcmds.c
++++ b/glx/glxcmds.c
+@@ -1738,13 +1738,13 @@ DoQueryContext(__GLXclientState * cl, GLXContextID gcId)
+     sendBuf[0] = GLX_SHARE_CONTEXT_EXT;
+     sendBuf[1] = (int) (ctx->share_id);
+     sendBuf[2] = GLX_VISUAL_ID_EXT;
+-    sendBuf[3] = (int) (ctx->config->visualID);
++    sendBuf[3] = (int) (ctx->config ? ctx->config->visualID : 0);
+     sendBuf[4] = GLX_SCREEN_EXT;
+     sendBuf[5] = (int) (ctx->pGlxScreen->pScreen->myNum);
+     sendBuf[6] = GLX_FBCONFIG_ID;
+-    sendBuf[7] = (int) (ctx->config->fbconfigID);
++    sendBuf[7] = (int) (ctx->config ? ctx->config->fbconfigID : 0);
+     sendBuf[8] = GLX_RENDER_TYPE;
+-    sendBuf[9] = (int) (ctx->config->renderType);
++    sendBuf[9] = (int) (ctx->config ? ctx->config->renderType : GLX_DONT_CARE);
+ 
+     if (client->swapped) {
+         int length = reply.length;
+diff --git a/glx/glxdri2.c b/glx/glxdri2.c
+index 2c542bfdf..2e24b56e6 100644
+--- a/glx/glxdri2.c
++++ b/glx/glxdri2.c
+@@ -441,6 +441,7 @@ create_driver_context(__GLXDRIcontext * context,
+                       int *error)
+ {
+     context->driContext = NULL;
++    const __DRIconfig *driConfig = config ? config->driConfig : NULL;
+ 
+     if (screen->dri2->base.version >= 3) {
+         uint32_t ctx_attribs[4 * 2];
+@@ -483,10 +484,8 @@ create_driver_context(__GLXDRIcontext * context,
+         }
+ 
+         context->driContext =
+-            (*screen->dri2->createContextAttribs)(screen->driScreen,
+-                                                  api,
+-                                                  config->driConfig,
+-                                                  driShare,
++            (*screen->dri2->createContextAttribs)(screen->driScreen, api,
++                                                  driConfig, driShare,
+                                                   num_ctx_attribs / 2,
+                                                   ctx_attribs,
+                                                   &dri_err,
+@@ -522,8 +521,7 @@ create_driver_context(__GLXDRIcontext * context,
+     }
+ 
+     context->driContext =
+-        (*screen->dri2->createNewContext) (screen->driScreen,
+-                                           config->driConfig,
++        (*screen->dri2->createNewContext) (screen->driScreen, driConfig,
+                                            driShare, context);
+ }
+ 
+@@ -831,6 +829,9 @@ initializeExtensions(__GLXscreen * screen)
+     __glXEnableExtension(screen->glx_enable_bits, "GLX_MESA_copy_sub_buffer");
+     LogMessage(X_INFO, "AIGLX: enabled GLX_MESA_copy_sub_buffer\n");
+ 
++    __glXEnableExtension(screen->glx_enable_bits, "GLX_EXT_no_config_context");
++    LogMessage(X_INFO, "AIGLX: enabled GLX_EXT_no_config_context\n");
++
+     if (dri->dri2->base.version >= 3) {
+         __glXEnableExtension(screen->glx_enable_bits,
+                              "GLX_ARB_create_context");
+diff --git a/glx/glxdriswrast.c b/glx/glxdriswrast.c
+index c000d6cfb..adc97df93 100644
+--- a/glx/glxdriswrast.c
++++ b/glx/glxdriswrast.c
+@@ -211,6 +211,7 @@ __glXDRIscreenCreateContext(__GLXscreen * baseScreen,
+     __GLXDRIscreen *screen = (__GLXDRIscreen *) baseScreen;
+     __GLXDRIcontext *context, *shareContext;
+     __GLXDRIconfig *config = (__GLXDRIconfig *) glxConfig;
++    const __DRIconfig *driConfig = config ? config->driConfig : NULL;
+     const __DRIcoreExtension *core = screen->core;
+     __DRIcontext *driShare;
+ 
+@@ -240,8 +241,8 @@ __glXDRIscreenCreateContext(__GLXscreen * baseScreen,
+     context->base.releaseTexImage = __glXDRIreleaseTexImage;
+ 
+     context->driContext =
+-        (*core->createNewContext) (screen->driScreen,
+-                                   config->driConfig, driShare, context);
++        (*core->createNewContext) (screen->driScreen, driConfig, driShare,
++                                   context);
+ 
+     return &context->base;
+ }
+@@ -352,6 +353,9 @@ initializeExtensions(__GLXscreen * screen)
+     __glXEnableExtension(screen->glx_enable_bits, "GLX_MESA_copy_sub_buffer");
+     LogMessage(X_INFO, "IGLX: enabled GLX_MESA_copy_sub_buffer\n");
+ 
++    __glXEnableExtension(screen->glx_enable_bits, "GLX_EXT_no_config_context");
++    LogMessage(X_INFO, "IGLX: enabled GLX_EXT_no_config_context\n");
++
+     if (dri->swrast->base.version >= 3) {
+         __glXEnableExtension(screen->glx_enable_bits,
+                              "GLX_ARB_create_context");
+-- 
+2.14.3
+
