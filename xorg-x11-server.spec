@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.19.6
-Release:   5%{?gitdate:.%{gitdate}}%{dist}
+Release:   6%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -135,6 +135,9 @@ Patch10001: 0001-xfree86-use-modesetting-driver-by-default-on-GeForce.patch
 
 # Upstream commit a309323328d9d6e0bf
 Patch10002: 0001-config-fix-NULL-value-detection-for-ID_INPUT-being-u.patch
+
+# Upstream commit 8be1dbe - in 1.19 and master branches
+Patch10010: 0001-xfree86-add-default-modes-for-16-9-and-16-10.patch
 
 %global moduledir	%{_libdir}/xorg/modules
 %global drimoduledir	%{_libdir}/dri
@@ -628,6 +631,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Apr 05 2018 Michael Cronenworth <mike@cchtml.com> - 1.19.6-6
+- Patch for adding default modes for 16:9 and 16:10 resolutions (rhbz#1339930)
+
 * Tue Feb 13 2018 Olivier Fourdan <ofourdan@redhat.com> 1.19.6-5
 - xwayland: avoid race condition on new keymap
 - xwayland: Keep separate variables for pointer and tablet foci (rhbz#1519961)
