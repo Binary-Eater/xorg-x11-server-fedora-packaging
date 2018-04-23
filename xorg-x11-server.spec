@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.19.6
-Release:   7%{?gitdate:.%{gitdate}}%{dist}
+Release:   8%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -111,6 +111,7 @@ Patch9950: 0001-xwayland-Give-up-cleanly-on-Wayland-socket-errors.patch
 Patch9951: 0001-xwayland-Keep-separate-variables-for-pointer-and-tab.patch
 # Upstream commit 16fd1847 for Xwayland - Not in xorg-server-1.19.6
 Patch9952: 0001-xwayland-avoid-race-condition-on-new-keymap.patch
+Patch9953: 0001-vfb-Bump-default-depth-to-24.patch
 
 # From Debian use intel ddx driver only for gen4 and older chipsets
 %if 0%{?fedora} > 25 || 0%{?rhel} > 7
@@ -631,6 +632,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Mon Apr 23 2018 Adam Jackson <ajax@redhat.com> - 1.19.6-8
+- Bump Xvfb default depth to 24 to match 1.20
+
 * Thu Apr 12 2018 Olivier Fourdan <ofourdan@redhat.com> - 1.19.6-7
 - Re-fix "use type instead of which in xvfb-run (rhbz#1443357)" which
   was overridden inadvertently
