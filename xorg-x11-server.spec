@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.19.6
-Release:   8%{?gitdate:.%{gitdate}}%{dist}
+Release:   9%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -260,6 +260,7 @@ Obsoletes: xorg-x11-drv-vmmouse < 13.1.0-4
 
 Requires: xorg-x11-server-common >= %{version}-%{release}
 Requires: system-setup-keyboard
+Requires: mesa-dri-drivers
 
 %description Xorg
 X.org X11 is an open source implementation of the X Window System.  It
@@ -309,6 +310,7 @@ Requires: xorg-x11-server-common >= %{version}-%{release}
 # required for xvfb-run
 Requires: xorg-x11-xauth
 Provides: Xvfb
+Requires: mesa-dri-drivers
 
 %description Xvfb
 Xvfb (X Virtual Frame Buffer) is an X server that is able to run on
@@ -323,6 +325,7 @@ Summary: A nested server
 Group: User Interface/X
 Requires: xorg-x11-server-common >= %{version}-%{release}
 Provides: Xephyr
+Requires: mesa-dri-drivers
 
 %description Xephyr
 Xephyr is an X server which has been implemented as an ordinary
@@ -339,6 +342,7 @@ Render and Composite.
 Summary: Wayland X Server
 Group: User Interface/X
 Requires: xorg-x11-server-common >= %{version}-%{release}
+Requires: mesa-dri-drivers
 
 %description Xwayland
 Xwayland is an X server for running X clients under Wayland.
@@ -632,6 +636,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Apr 24 2018 Adam Jackson <ajax@redhat.com> - 1.19.6-9
+- Require mesa-dri-drivers from the servers with GLX support (#1568644)
+
 * Mon Apr 23 2018 Adam Jackson <ajax@redhat.com> - 1.19.6-8
 - Bump Xvfb default depth to 24 to match 1.20
 
