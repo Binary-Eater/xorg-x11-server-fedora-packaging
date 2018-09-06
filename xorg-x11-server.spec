@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.1
-Release:   1%{?gitdate:.%{gitdate}}%{dist}
+Release:   2%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -93,6 +93,10 @@ Patch5: 0001-autobind-GPUs-to-the-screen.patch
 
 # because the display-managers are not ready yet, do not upstream
 Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
+
+# Fix crash on window-close in XWayland
+# BZ #1616269
+Patch7: bz1616269-xwayland-crash.patch
 
 BuildRequires: systemtap-sdt-devel
 BuildRequires: git
@@ -523,6 +527,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Sep 06 2018 Stephen Gallagher <sgallagh@redhat.com> - 1.20.1-2
+- Fix XWayland crash on window cleanup
+
 * Thu Aug 09 2018 Adam Jackson <ajax@redhat.com> - 1.20.1-1
 - xserver 1.20.1
 
