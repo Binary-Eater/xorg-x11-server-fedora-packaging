@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.19.6
-Release:   9%{?gitdate:.%{gitdate}}%{dist}
+Release:   10%{?gitdate:.%{gitdate}}%{dist}
 URL:       http://www.x.org
 License:   MIT
 Group:     User Interface/X
@@ -77,6 +77,8 @@ Source31: xserver-sdk-abi-requires.git
 
 # maintainer convenience script
 Source40: driver-abi-rebuild.sh
+
+Patch1: 0001-Disable-logfile-and-modulepath-when-running-with-ele.patch
 
 # Various fixes pending upstream
 Patch2: 0005-xfree86-Remove-redundant-ServerIsNotSeat0-check-from.patch
@@ -636,6 +638,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Nov 01 2018 Adam Jackson <ajax@redhat.com> - 1.19.6-10
+- Fix for CVE-2018-14665
+
 * Tue Apr 24 2018 Adam Jackson <ajax@redhat.com> - 1.19.6-9
 - Require mesa-dri-drivers from the servers with GLX support (#1568644)
 
