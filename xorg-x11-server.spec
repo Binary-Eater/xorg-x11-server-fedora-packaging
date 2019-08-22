@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.5
-Release:   6%{?gitdate:.%{gitdate}}%{?dist}
+Release:   7%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -119,6 +119,19 @@ Patch30: 0001-Revert-present-scmd-Check-that-the-flip-and-screen-p.patch
 # Build failure with recent glibc
 # https://gitlab.freedesktop.org/xorg/xserver/issues/840
 Patch31: 0001-compiler.h-Do-not-include-sys-io.h-on-ARM-with-glibc.patch
+
+# NVIDIA PRIME Render Offload
+# https://download.nvidia.com/XFree86/Linux-x86_64/435.17/README/primerenderoffload.html
+# https://gitlab.freedesktop.org/xorg/xserver/commit/7f962c70
+Patch32: xsync_Add_resource_inside_of_SyncCreate_export_SyncCreate.diff
+# https://gitlab.freedesktop.org/xorg/xserver/commit/37a36a6b
+Patch33: GLX_Add_a_per-client_vendor_mapping.diff
+# https://gitlab.freedesktop.org/xorg/xserver/commit/8b67ec7c
+Patch34: GLX_Use_the_sending_client_for_looking_up_XIDs.diff
+# https://gitlab.freedesktop.org/xorg/xserver/commit/56c0a71f
+Patch35: GLX_Add_a_function_to_change_a_clients_vendor_list.diff
+# https://gitlab.freedesktop.org/xorg/xserver/commit/b4231d69
+Patch36: GLX_Set_GlxServerExports_major_minor_Version.diff
 
 BuildRequires: systemtap-sdt-devel
 BuildRequires: git
@@ -544,6 +557,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Aug 22 2019 Elia Devito <eliadevito@gmail.com> - 1.20.5-7
+- Backport patch to support NVIDIA PRIME Render Offload
+
 * Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 1.20.5-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
