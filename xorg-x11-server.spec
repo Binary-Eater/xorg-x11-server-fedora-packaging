@@ -21,7 +21,7 @@
 %global ansic_major 0
 %global ansic_minor 4
 %global videodrv_major 24
-%global videodrv_minor 0
+%global videodrv_minor 1
 %global xinput_major 24
 %global xinput_minor 1
 %global extension_major 10
@@ -45,7 +45,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.20.6
+Version:   1.20.7
 Release:   1%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
@@ -104,9 +104,6 @@ Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 # ...
 
 # Backports from "master" upstream:
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=1697804
-Patch500: 0001-Xi-return-AlreadyGrabbed-for-key-grabs-255.patch
 
 # Backported Xwayland randr resolution change emulation support
 Patch501: 0001-dix-Add-GetCurrentClient-helper.patch
@@ -551,6 +548,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Jan 14 2020 Nicolas Chauvet <kwizart@gmail.com> - 1.20.7-1
+- xserver 1.20.7
+
 * Mon Nov 25 2019 Olivier Fourdan <ofourdan@redhat.com> - 1.20.6-1
 - xserver 1.20.6
 
