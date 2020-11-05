@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.9
-Release:   2%{?gitdate:.%{gitdate}}%{?dist}
+Release:   3%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -138,6 +138,7 @@ Patch522: 0022-xwayland-Call-xwl_window_check_resolution_change_emu.patch
 Patch523: 0023-xwayland-Fix-setting-of-_XWAYLAND_RANDR_EMU_MONITOR_.patch
 Patch524: 0024-xwayland-Remove-unnecessary-xwl_window_is_toplevel-c.patch
 
+BuildRequires: make
 BuildRequires: systemtap-sdt-devel
 BuildRequires: git-core
 BuildRequires: automake autoconf libtool pkgconfig
@@ -563,6 +564,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Nov  5 10:35:09 AEST 2020 Peter Hutterer <peter.hutterer@redhat.com> - 1.20.9-3
+- Add BuildRequires for make
+
 * Wed Nov 04 2020 Peter Hutterer <peter.hutterer@redhat.com> 1.20.9-2
 - Drop BuildRequires to git-core only
 
