@@ -1,7 +1,7 @@
-From fdbc9904d5af48db56877369f8b4671985ffc363 Mon Sep 17 00:00:00 2001
+From 719c1d2ef99784043883787d04afc0437f3a9b8f Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 8 Jul 2019 18:35:27 +0200
-Subject: [PATCH xserver 10/24] xwayland: Add xwlVidModeGetCurrentRRMode helper
+Subject: [PATCH xserver 10/25] xwayland: Add xwlVidModeGetCurrentRRMode helper
  to the vidmode code
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -189,5 +189,5 @@ index 428af716d..7cf982fcc 100644
  
  static void
 -- 
-2.26.2
+2.28.0
 

@@ -1,7 +1,7 @@
-From a090b038c45732676d9b7e367848d5bee7ab0ea5 Mon Sep 17 00:00:00 2001
+From 3d359d03573dee270b72f0cea1ea9061c2c886c3 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 26 Aug 2019 12:26:34 +0200
-Subject: [PATCH xserver 12/24] xwayland: xwl_window_should_enable_viewport:
+Subject: [PATCH xserver 12/25] xwayland: xwl_window_should_enable_viewport:
  Add extra test
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -25,10 +25,10 @@ Signed-off-by: Hans de Goede <hdegoede@redhat.com>
  1 file changed, 17 insertions(+)
 
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index 9c6cf7cf5..2e01822fd 100644
+index 87870a5f1..9175396f7 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
-@@ -651,6 +651,23 @@ xwl_window_should_enable_viewport(struct xwl_window *xwl_window,
+@@ -638,6 +638,23 @@ xwl_window_should_enable_viewport(struct xwl_window *xwl_window,
          }
      }
  
@@ -53,5 +53,5 @@ index 9c6cf7cf5..2e01822fd 100644
  }
  
 -- 
-2.26.2
+2.28.0
 

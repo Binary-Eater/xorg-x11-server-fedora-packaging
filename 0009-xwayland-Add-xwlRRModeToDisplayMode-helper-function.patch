@@ -1,7 +1,7 @@
-From 0efb1df3a2ef4bc2dd329af63e1bd3dbda3445e4 Mon Sep 17 00:00:00 2001
+From aedd71a61ac2d78c347180e7d87e5918b795609e Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 8 Jul 2019 14:00:27 +0200
-Subject: [PATCH xserver 09/24] xwayland: Add xwlRRModeToDisplayMode() helper
+Subject: [PATCH xserver 09/25] xwayland: Add xwlRRModeToDisplayMode() helper
  function
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -97,5 +97,5 @@ index d25d1aca1..428af716d 100644
      return TRUE;
  }
 -- 
-2.26.2
+2.28.0
 
