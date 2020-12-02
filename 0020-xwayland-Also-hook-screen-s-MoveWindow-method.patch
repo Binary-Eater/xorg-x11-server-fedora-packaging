@@ -1,7 +1,7 @@
-From 9f2ebb5f07dc3fff8e061b21fa175d3d958d0ee4 Mon Sep 17 00:00:00 2001
+From 46ccf740dc5e81d84b2e8c19f6211eaf1d8d06de Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Thu, 9 Jan 2020 11:00:36 +0100
-Subject: [PATCH xserver 20/24] xwayland: Also hook screen's MoveWindow method
+Subject: [PATCH xserver 20/25] xwayland: Also hook screen's MoveWindow method
 
 Not only hook the ResizeWindow method of the screen (which really is
 MoveAndResize) but also hook the MoveWindow method for checking if we
@@ -24,10 +24,10 @@ Signed-off-by: Hans de Goede <hdegoede@redhat.com>
  2 files changed, 26 insertions(+)
 
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index b40502dad..7111e20ae 100644
+index e07dabcfa..4f19f3710 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
-@@ -1010,6 +1010,28 @@ xwl_resize_window(WindowPtr window,
+@@ -997,6 +997,28 @@ xwl_resize_window(WindowPtr window,
          xwl_window_check_resolution_change_emulation(xwl_window);
  }
  
@@ -56,7 +56,7 @@ index b40502dad..7111e20ae 100644
  static void
  frame_callback(void *data,
                 struct wl_callback *callback,
-@@ -1588,6 +1610,9 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
+@@ -1580,6 +1602,9 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
      xwl_screen->ResizeWindow = pScreen->ResizeWindow;
      pScreen->ResizeWindow = xwl_resize_window;
  
@@ -79,5 +79,5 @@ index 0d0baac9b..451c08e23 100644
      struct xorg_list output_list;
      struct xorg_list seat_list;
 -- 
-2.26.2
+2.28.0
 

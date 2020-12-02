@@ -1,7 +1,7 @@
-From c0595515c65571d6304530c51331013381eea1dd Mon Sep 17 00:00:00 2001
+From 32987e08e7f1e79ee50ce032cc6c1b6d28e6a50d Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Wed, 26 Jun 2019 16:46:54 +0200
-Subject: [PATCH xserver 04/24] xwayland: Add fake output modes to xrandr
+Subject: [PATCH xserver 04/25] xwayland: Add fake output modes to xrandr
  output mode lists
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -163,7 +163,7 @@ index ae646c663..4036ba681 100644
      xorg_list_for_each_entry(it, &xwl_screen->output_list, link) {
          /* output done event is sent even when some property
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index f7fcd1e32..ffd4809df 100644
+index 811257b00..e84515f94 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
 @@ -154,6 +154,23 @@ xwl_screen_get(ScreenPtr screen)
@@ -203,5 +203,5 @@ index 1244d2e91..200e18a8d 100644
  void xwl_tablet_tool_set_cursor(struct xwl_tablet_tool *tool);
  void xwl_seat_set_cursor(struct xwl_seat *xwl_seat);
 -- 
-2.26.2
+2.28.0
 

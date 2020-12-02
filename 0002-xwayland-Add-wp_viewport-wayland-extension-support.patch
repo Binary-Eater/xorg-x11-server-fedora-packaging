@@ -1,7 +1,7 @@
-From 14e9b030449611a7a80f640129138c49ab46774e Mon Sep 17 00:00:00 2001
+From 0a3046286e69b171c319ff419c94cf62929246bf Mon Sep 17 00:00:00 2001
 From: Robert Mader <robert.mader@posteo.de>
 Date: Mon, 22 Jan 2018 22:02:32 +0100
-Subject: [PATCH xserver 02/24] xwayland: Add wp_viewport wayland extension
+Subject: [PATCH xserver 02/25] xwayland: Add wp_viewport wayland extension
  support
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -81,10 +81,10 @@ index 36bf2133a..4a8d171bb 100644
  xwayland_glamor = []
  eglstream_srcs = []
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index d02934cd5..98592025a 100644
+index b353167c3..a70c1002f 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
-@@ -925,6 +925,9 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
+@@ -912,6 +912,9 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
              wl_registry_bind(registry, id, &zxdg_output_manager_v1_interface, 1);
          xwl_screen_init_xdg_output(xwl_screen);
      }
@@ -115,5 +115,5 @@ index b9495b313..91ae21eeb 100644
  
  #define XWL_FORMAT_ARGB8888 (1 << 0)
 -- 
-2.26.2
+2.28.0
 

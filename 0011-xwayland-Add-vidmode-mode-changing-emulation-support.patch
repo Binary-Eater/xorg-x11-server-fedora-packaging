@@ -1,7 +1,7 @@
-From aa5920519dff3dc3dfb33af342e454627fa5402c Mon Sep 17 00:00:00 2001
+From 98e6cadf2ba8490c303cdc94106baf3f31006299 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Tue, 9 Jul 2019 09:31:13 +0200
-Subject: [PATCH xserver 11/24] xwayland: Add vidmode mode changing emulation
+Subject: [PATCH xserver 11/25] xwayland: Add vidmode mode changing emulation
  support
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -232,5 +232,5 @@ index 7cf982fcc..99a4d2c92 100644
  
  static Bool
 -- 
-2.26.2
+2.28.0
 
