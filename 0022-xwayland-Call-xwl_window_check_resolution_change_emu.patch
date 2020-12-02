@@ -1,7 +1,7 @@
-From 12a9c05a3088480bc7ab80902e384053f10e51a6 Mon Sep 17 00:00:00 2001
+From 677fd1ade4547008b0d67eec460770e002595c3c Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 4 Nov 2019 11:46:49 +0100
-Subject: [PATCH xserver 22/24] xwayland: Call
+Subject: [PATCH xserver 22/25] xwayland: Call
  xwl_window_check_resolution_change_emulation() on newly created O-R windows
 
 Some clients, which use vidmode to change the resolution when going fullscreen,
@@ -28,10 +28,10 @@ Signed-off-by: Hans de Goede <hdegoede@redhat.com>
  1 file changed, 5 insertions(+)
 
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index 7111e20ae..734e76b2e 100644
+index 4f19f3710..5bb7a68e9 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
-@@ -821,6 +821,11 @@ ensure_surface_for_window(WindowPtr window)
+@@ -808,6 +808,11 @@ ensure_surface_for_window(WindowPtr window)
  
      xwl_window_init_allow_commits(xwl_window);
  
@@ -44,5 +44,5 @@ index 7111e20ae..734e76b2e 100644
  
  err_surf:
 -- 
-2.26.2
+2.28.0
 

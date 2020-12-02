@@ -1,7 +1,7 @@
-From e6ba28eb96b227e47c371a7063f778fb2ab82a0b Mon Sep 17 00:00:00 2001
+From ca0616ca4ca1badff2674fa5db8f290935b81e7f Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Thu, 29 Aug 2019 22:45:12 +0200
-Subject: [PATCH xserver 06/24] xwayland: Add per client private data
+Subject: [PATCH xserver 06/25] xwayland: Add per client private data
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -21,7 +21,7 @@ Signed-off-by: Hans de Goede <hdegoede@redhat.com>
  2 files changed, 19 insertions(+)
 
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index ffd4809df..e00dba334 100644
+index e84515f94..f422cfc29 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
 @@ -137,11 +137,18 @@ ddxProcessArgument(int argc, char *argv[], int i)
@@ -43,7 +43,7 @@ index ffd4809df..e00dba334 100644
  static struct xwl_window *
  xwl_window_get(WindowPtr window)
  {
-@@ -1158,6 +1165,13 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
+@@ -1145,6 +1152,13 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
          return FALSE;
      if (!dixRegisterPrivateKey(&xwl_damage_private_key, PRIVATE_WINDOW, 0))
          return FALSE;
@@ -76,5 +76,5 @@ index 200e18a8d..19626d394 100644
  void xwl_surface_damage(struct xwl_screen *xwl_screen,
                          struct wl_surface *surface,
 -- 
-2.26.2
+2.28.0
 

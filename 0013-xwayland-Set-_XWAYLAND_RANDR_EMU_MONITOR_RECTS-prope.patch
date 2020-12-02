@@ -1,7 +1,7 @@
-From e40d94637207543481769fb570515b782225ff09 Mon Sep 17 00:00:00 2001
+From 48bc25613f91b69d9ee68e8211f8bf22317aa40a Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 2 Sep 2019 17:32:45 +0200
-Subject: [PATCH xserver 13/24] xwayland: Set _XWAYLAND_RANDR_EMU_MONITOR_RECTS
+Subject: [PATCH xserver 13/25] xwayland: Set _XWAYLAND_RANDR_EMU_MONITOR_RECTS
  property for resolution emulation
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -139,10 +139,10 @@ index e09d00108..0d6b9ac9f 100644
  
  static void
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index 2e01822fd..ac4d98e6a 100644
+index 9175396f7..32442d88e 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
-@@ -692,6 +692,27 @@ xwl_screen_check_resolution_change_emulation(struct xwl_screen *xwl_screen)
+@@ -679,6 +679,27 @@ xwl_screen_check_resolution_change_emulation(struct xwl_screen *xwl_screen)
          xwl_window_check_resolution_change_emulation(xwl_window);
  }
  
@@ -170,7 +170,7 @@ index 2e01822fd..ac4d98e6a 100644
  static void
  xwl_window_init_allow_commits(struct xwl_window *xwl_window)
  {
-@@ -857,6 +878,8 @@ xwl_realize_window(WindowPtr window)
+@@ -844,6 +865,8 @@ xwl_realize_window(WindowPtr window)
              return FALSE;
      }
  
@@ -201,5 +201,5 @@ index 36c4c4c8b..1317ae5bb 100644
  RRModePtr xwayland_cvt(int HDisplay, int VDisplay,
                         float VRefresh, Bool Reduced, Bool Interlaced);
 -- 
-2.26.2
+2.28.0
 

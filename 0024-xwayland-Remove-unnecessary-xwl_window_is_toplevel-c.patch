@@ -1,7 +1,7 @@
-From 2d078b3372e26278e687399a39699c495bfe16d4 Mon Sep 17 00:00:00 2001
+From f1d77ed7ac9ee9bc2f0cf60b0e4604bae092ebd0 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Mon, 4 Nov 2019 15:01:18 +0100
-Subject: [PATCH xserver 24/24] xwayland: Remove unnecessary
+Subject: [PATCH xserver 24/25] xwayland: Remove unnecessary
  xwl_window_is_toplevel() check from xwl_output_set_window_randr_emu_props()
 
 Since the recent fix to call xwl_output_set_window_randr_emu_props() from
@@ -45,5 +45,5 @@ index 4bc9cd6b8..9d3372c8e 100644
  
  static void
 -- 
-2.26.2
+2.28.0
 

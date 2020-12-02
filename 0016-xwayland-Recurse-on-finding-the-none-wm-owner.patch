@@ -1,7 +1,7 @@
-From 66a026eeaa49e1042d4d2ec655e78771e1acd9df Mon Sep 17 00:00:00 2001
+From 2896f732af4c74f124d767808a24005342d8f125 Mon Sep 17 00:00:00 2001
 From: Roman Gilg <subdiff@gmail.com>
 Date: Fri, 3 Jan 2020 17:27:28 +0100
-Subject: [PATCH xserver 16/24] xwayland: Recurse on finding the none-wm owner
+Subject: [PATCH xserver 16/25] xwayland: Recurse on finding the none-wm owner
 
 An X11 window manager might add a chain of parent windows when reparenting to a
 decoration window.
@@ -28,10 +28,10 @@ Signed-off-by: Hans de Goede <hdegoede@redhat.com>
  1 file changed, 8 insertions(+), 9 deletions(-)
 
 diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
-index ac301ae4a..94e3a18fa 100644
+index 8de3dd36b..c38c4180b 100644
 --- a/hw/xwayland/xwayland.c
 +++ b/hw/xwayland/xwayland.c
-@@ -582,19 +582,18 @@ window_is_wm_window(WindowPtr window)
+@@ -569,19 +569,18 @@ window_is_wm_window(WindowPtr window)
  }
  
  static ClientPtr
@@ -56,7 +56,7 @@ index ac301ae4a..94e3a18fa 100644
          else
              return NULL; /* Should never happen, skip resolution emulation */
      }
-@@ -615,7 +614,7 @@ xwl_window_should_enable_viewport(struct xwl_window *xwl_window,
+@@ -602,7 +601,7 @@ xwl_window_should_enable_viewport(struct xwl_window *xwl_window,
      if (!xwl_screen_has_resolution_change_emulation(xwl_screen))
          return FALSE;
  
@@ -65,7 +65,7 @@ index ac301ae4a..94e3a18fa 100644
      if (!owner)
          return FALSE;
  
-@@ -694,8 +693,8 @@ xwl_window_is_toplevel(WindowPtr window)
+@@ -681,8 +680,8 @@ xwl_window_is_toplevel(WindowPtr window)
      if (window_get_damage(window))
          return TRUE;
  
@@ -77,5 +77,5 @@ index ac301ae4a..94e3a18fa 100644
  
  static void
 -- 
-2.26.2
+2.28.0
 
