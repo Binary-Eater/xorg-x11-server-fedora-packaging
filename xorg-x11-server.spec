@@ -358,7 +358,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1"
 export LDFLAGS="$RPM_LD_FLAGS -specs=/usr/lib/rpm/redhat/redhat-hardened-ld"
 
 %if !0%{?rhel}
-%ifnarch %{ix86} x86_64
+%ifarch %{ix86} x86_64
 %global int10_arch 1
 %endif
 %endif
