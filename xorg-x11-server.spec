@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.10
-Release:   1%{?gitdate:.%{gitdate}}%{?dist}
+Release:   2%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -357,15 +357,20 @@ export CFLAGS="$RPM_OPT_FLAGS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1"
 export CXXFLAGS="$RPM_OPT_FLAGS -specs=/usr/lib/rpm/redhat/redhat-hardened-cc1"
 export LDFLAGS="$RPM_LD_FLAGS -specs=/usr/lib/rpm/redhat/redhat-hardened-ld"
 
+%if !0%{?rhel}
 %ifnarch %{ix86} x86_64
+%global int10_arch 1
+%endif
+%endif
+
+%if %{undefined int10_arch}
 %global no_int10 --disable-vbe --disable-int10-module
 %endif
 
 %global kdrive --enable-kdrive --enable-xephyr --disable-xfake --disable-xfbdev
 %global xservers --enable-xvfb --enable-xnest %{kdrive} --enable-xorg
 %global default_font_path "catalogue:/etc/X11/fontpath.d,built-ins"
-%global dri_flags --enable-dri --enable-dri2 %{?!rhel:--enable-dri3} --enable-suid-wrapper --enable-glamor
-%global bodhi_flags --with-vendor-name="Fedora Project"
+%global dri_flags --disable-dri --enable-dri2 %{?!rhel:--enable-dri3} --enable-suid-wrapper --enable-glamor
 
 autoreconf -f -v --install || exit 1
 
@@ -374,7 +379,7 @@ autoreconf -f -v --install || exit 1
         --enable-xwayland-eglstream \
 	--disable-static \
 	--with-pic \
-	%{?no_int10} --with-int10=x86emu \
+	%{?no_int10} \
 	--with-default-font-path=%{default_font_path} \
 	--with-module-dir=%{_libdir}/xorg/modules \
 	--with-builderstring="Build ID: %{name} %{version}-%{release}" \
@@ -388,7 +393,7 @@ autoreconf -f -v --install || exit 1
 	--disable-unit-tests \
 	--enable-dmx \
 	--enable-xwayland \
-	%{dri_flags} %{?bodhi_flags} \
+	%{dri_flags} \
 	${CONFIGURE}
 
 make V=1 %{?_smp_mflags}
@@ -485,7 +490,7 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 %{_libdir}/xorg/modules/libshadowfb.so
 %{_libdir}/xorg/modules/libvgahw.so
 %{_libdir}/xorg/modules/libwfb.so
-%ifarch %{ix86} x86_64
+%if %{defined int10_arch}
 %{_libdir}/xorg/modules/libint10.so
 %{_libdir}/xorg/modules/libvbe.so
 %endif
@@ -551,6 +556,11 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Jan 19 2021 Adam Jackson <ajax@redhat.com> - 1.20.10-2
+- Disable int10 and vbe on RHEL
+- Disable DRI1
+- Stop overriding the vendor name
+
 * Wed Dec  2 2020 Olivier Fourdan <ofourdan@redhat.com> - 1.20.10-1
 - xserver 1.20.10 (CVE-2020-14360, CVE-2020-25712)
 
