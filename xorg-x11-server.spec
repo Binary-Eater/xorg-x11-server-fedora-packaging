@@ -12,7 +12,9 @@
 %undefine _hardened_build
 %undefine _strict_symbol_defs_build
 
-#global gitdate 20161026
+#global gitdate 20210128
+%global commit0 5429791b1cf7f6cabf6c64aad0a4b1b5418253c9
+%global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
 %global stable_abi 1
 
 %if !0%{?gitdate} || %{stable_abi}
@@ -46,22 +48,16 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.10
-Release:   5%{?gitdate:.%{gitdate}}%{?dist}
+Release:   5%{?gitdate:.%{gitdate}git%{shortcommit0}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
-#VCS:      git:git://git.freedesktop.org/git/xorg/xserver
 %if 0%{?gitdate}
-# git snapshot.  to recreate, run:
-# ./make-git-snapshot.sh `cat commitid`
-Source0:   xorg-server-%{gitdate}.tar.xz
-#Source0:   http://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
-Source1:   make-git-snapshot.sh
-Source2:   commitid
+Source0:   https://gitlab.freedesktop.org/xorg/xserver/-/archive/%{commit0}/xserver-%{shortcommit0}.tar.gz
 %else
 Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
-Source1:   gitignore
 %endif
+Source1:   gitignore
 
 Source4:   10-quirks.conf
 
@@ -280,7 +276,7 @@ Xserver source code needed to build VNC server (Xvnc)
 
 
 %prep
-%autosetup -N -n %{pkgname}-%{?gitdate:%{gitdate}}%{!?gitdate:%{version}}
+%autosetup -N -n %{?gitdate:xserver-%{commit0}}%{!?gitdate:%{pkgname}-%{version}}
 rm -rf .git
 cp %{SOURCE1} .gitignore
 # ick
