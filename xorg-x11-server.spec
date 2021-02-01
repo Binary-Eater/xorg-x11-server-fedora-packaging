@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.10
-Release:   3%{?gitdate:.%{gitdate}}%{?dist}
+Release:   4%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -98,33 +98,6 @@ Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 # Backports from "master" upstream:
 # <empty>
 
-# Backported Xwayland randr resolution change emulation support
-Patch501: 0001-dix-Add-GetCurrentClient-helper.patch
-Patch502: 0002-xwayland-Add-wp_viewport-wayland-extension-support.patch
-Patch503: 0003-xwayland-Use-buffer_damage-instead-of-surface-damage.patch
-Patch504: 0004-xwayland-Add-fake-output-modes-to-xrandr-output-mode.patch
-Patch505: 0005-xwayland-Use-RandR-1.2-interface-rev-2.patch
-Patch506: 0006-xwayland-Add-per-client-private-data.patch
-Patch507: 0007-xwayland-Add-support-for-storing-per-client-per-outp.patch
-Patch508: 0008-xwayland-Add-support-for-randr-resolution-change-emu.patch
-Patch509: 0009-xwayland-Add-xwlRRModeToDisplayMode-helper-function.patch
-Patch510: 0010-xwayland-Add-xwlVidModeGetCurrentRRMode-helper-to-th.patch
-Patch511: 0011-xwayland-Add-vidmode-mode-changing-emulation-support.patch
-Patch512: 0012-xwayland-xwl_window_should_enable_viewport-Add-extra.patch
-Patch513: 0013-xwayland-Set-_XWAYLAND_RANDR_EMU_MONITOR_RECTS-prope.patch
-Patch514: 0014-xwayland-Cache-client-id-for-the-window-manager-clie.patch
-Patch515: 0015-xwayland-Reuse-viewport-instead-of-recreating.patch
-Patch516: 0016-xwayland-Recurse-on-finding-the-none-wm-owner.patch
-Patch517: 0017-xwayland-Make-window_get_none_wm_owner-return-a-Wind.patch
-Patch518: 0018-xwayland-Check-emulation-on-client-toplevel-resize.patch
-Patch519: 0019-xwayland-Also-check-resolution-change-emulation-when.patch
-Patch520: 0020-xwayland-Also-hook-screen-s-MoveWindow-method.patch
-Patch521: 0021-xwayland-Fix-emulated-modes-not-being-removed-when-s.patch
-Patch522: 0022-xwayland-Call-xwl_window_check_resolution_change_emu.patch
-Patch523: 0023-xwayland-Fix-setting-of-_XWAYLAND_RANDR_EMU_MONITOR_.patch
-Patch524: 0024-xwayland-Remove-unnecessary-xwl_window_is_toplevel-c.patch
-Patch525: 0025-xwayland-Make-window_get_client_toplevel-non-recursi.patch
-
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
 BuildRequires: git-core
@@ -145,10 +118,6 @@ BuildRequires: libXinerama-devel libXi-devel
 BuildRequires: libXt-devel libdmx-devel libXmu-devel libXrender-devel
 BuildRequires: libXi-devel libXpm-devel libXaw-devel libXfixes-devel
 
-BuildRequires: wayland-devel
-BuildRequires: wayland-protocols-devel
-BuildRequires: pkgconfig(wayland-eglstream-protocols)
-BuildRequires: pkgconfig(wayland-client) >= 1.3.0
 BuildRequires: pkgconfig(epoxy)
 BuildRequires: pkgconfig(xshmfence) >= 1.1
 BuildRequires: libXv-devel
@@ -285,15 +254,6 @@ X protocol, and therefore supports the newer X extensions like
 Render and Composite.
 
 
-%package Xwayland
-Summary: Wayland X Server
-Requires: xorg-x11-server-common >= %{version}-%{release}
-Requires: libEGL
-
-%description Xwayland
-Xwayland is an X server for running X clients under Wayland.
-
-
 %package devel
 Summary: SDK for X server driver module development
 Requires: xorg-x11-util-macros
@@ -376,7 +336,6 @@ autoreconf -f -v --install || exit 1
 
 %configure %{xservers} \
 	--enable-dependency-tracking \
-        --enable-xwayland-eglstream \
 	--disable-static \
 	--with-pic \
 	%{?no_int10} \
@@ -392,7 +351,7 @@ autoreconf -f -v --install || exit 1
 	--enable-config-udev \
 	--disable-unit-tests \
 	--enable-dmx \
-	--enable-xwayland \
+	--disable-xwayland \
 	%{dri_flags} \
 	${CONFIGURE}
 
@@ -539,9 +498,6 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 %{_bindir}/Xephyr
 %{_mandir}/man1/Xephyr.1*
 
-%files Xwayland
-%{_bindir}/Xwayland
-
 %files devel
 %doc COPYING
 #{_docdir}/xorg-server
@@ -556,6 +512,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Mon Feb  1 2021 Olivier Fourdan <ofourdan@redhat.com> - 1.20.10-4
+- Remove Xwayland from the xserver builds
+
 * Thu Jan 28 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.20.10-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
