@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.10
-Release:   4%{?gitdate:.%{gitdate}}%{?dist}
+Release:   5%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -122,7 +122,7 @@ BuildRequires: pkgconfig(epoxy)
 BuildRequires: pkgconfig(xshmfence) >= 1.1
 BuildRequires: libXv-devel
 BuildRequires: pixman-devel >= 0.30.0
-BuildRequires: libpciaccess-devel >= 0.13.1 openssl-devel bison flex flex-devel
+BuildRequires: libpciaccess-devel >= 0.13.1 openssl-devel bison flex
 BuildRequires: mesa-libGL-devel >= 9.2
 BuildRequires: mesa-libEGL-devel
 BuildRequires: mesa-libgbm-devel
@@ -512,6 +512,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Feb 03 2021 Peter Hutterer <peter.hutterer@redhat.com> 1.20.10-5
+- Drop BuildRequires for flex-devel (#1871101)
+
 * Mon Feb  1 2021 Olivier Fourdan <ofourdan@redhat.com> - 1.20.10-4
 - Remove Xwayland from the xserver builds
 
