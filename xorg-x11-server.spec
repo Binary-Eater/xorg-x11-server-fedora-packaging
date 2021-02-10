@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.10
-Release:   5%{?gitdate:.%{gitdate}}%{?dist}
+Release:   6%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -330,7 +330,7 @@ export LDFLAGS="$RPM_LD_FLAGS -specs=/usr/lib/rpm/redhat/redhat-hardened-ld"
 %global kdrive --enable-kdrive --enable-xephyr --disable-xfake --disable-xfbdev
 %global xservers --enable-xvfb --enable-xnest %{kdrive} --enable-xorg
 %global default_font_path "catalogue:/etc/X11/fontpath.d,built-ins"
-%global dri_flags --disable-dri --enable-dri2 %{?!rhel:--enable-dri3} --enable-suid-wrapper --enable-glamor
+%global dri_flags --enable-dri --enable-dri2 %{?!rhel:--enable-dri3} --enable-suid-wrapper --enable-glamor
 
 autoreconf -f -v --install || exit 1
 
@@ -512,6 +512,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Feb 10 2021 Olivier Fourdan <ofourdan@redhat.com> 1.20.10-6
+- Re-enable DRI1 (#1925423)
+
 * Wed Feb 03 2021 Peter Hutterer <peter.hutterer@redhat.com> 1.20.10-5
 - Drop BuildRequires for flex-devel (#1871101)
 
