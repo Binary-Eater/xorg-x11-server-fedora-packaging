@@ -45,7 +45,7 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.20.10
+Version:   1.20.11
 Release:   1%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
@@ -549,6 +549,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Apr  14 2021 Olivier Fourdan <ofourdan@redhat.com> - 1.20.11-1
+- xserver 1.20.11 (CVE-2021-3472 / ZDI-CAN-1259)
+
 * Wed Dec  2 2020 Olivier Fourdan <ofourdan@redhat.com> - 1.20.10-1
 - xserver 1.20.10 (CVE-2020-14360, CVE-2020-25712)
 
