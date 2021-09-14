@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.11
-Release:   2%{?gitdate:.%{gitdate}}%{?dist}
+Release:   3%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -512,6 +512,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 1.20.11-3
+- Rebuilt with OpenSSL 3.0.0
+
 * Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 1.20.11-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
