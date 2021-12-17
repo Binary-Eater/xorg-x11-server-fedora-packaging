@@ -45,8 +45,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.20.11
-Release:   3%{?gitdate:.%{gitdate}}%{?dist}
+Version:   1.20.14
+Release:   1%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -59,7 +59,7 @@ Source0:   xorg-server-%{gitdate}.tar.xz
 Source1:   make-git-snapshot.sh
 Source2:   commitid
 %else
-Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.bz2
+Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.xz
 Source1:   gitignore
 %endif
 
@@ -512,6 +512,13 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Fri Dec 17 2021 Olivier <ofourdan@redhat.com> - 1.20.14-1
+- xserver 1.20.14
+  CVE-2021-4008/ZDI-CAN-14192 (#2026059, #2032941)
+  CVE-2021-4009/ZDI-CAN-14950 (#2026072, #2032943)
+  CVE-2021-4010/ZDI-CAN-14951 (#2026073, #2032944)
+  CVE-2021-4011/ZDI-CAN-14952 (#2026074, #2032945)
+
 * Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 1.20.11-3
 - Rebuilt with OpenSSL 3.0.0
 
