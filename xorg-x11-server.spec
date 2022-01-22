@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   1%{?gitdate:.%{gitdate}}%{?dist}
+Release:   2%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -512,6 +512,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 1.20.14-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
 * Fri Dec 17 2021 Olivier <ofourdan@redhat.com> - 1.20.14-1
 - xserver 1.20.14
   CVE-2021-4008/ZDI-CAN-14192 (#2026059, #2032941)
