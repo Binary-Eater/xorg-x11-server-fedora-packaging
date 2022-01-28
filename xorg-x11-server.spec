@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   3%{?gitdate:.%{gitdate}}%{?dist}
+Release:   4%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -97,6 +97,7 @@ Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 
 # Backports from "master" upstream:
 Patch100: 0001-present-Check-for-NULL-to-prevent-crash.patch
+Patch101: 0001-render-Fix-build-with-gcc-12.patch
 
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
@@ -512,6 +513,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Fri Jan 28 2022 Olivier Fourdan <ofourdan@redhat.com> - 1.20.14-4
+- Fix build with GCC 12 (#2047134)
+
 * Tue Jan 25 2022 Olivier Fourdan <ofourdan@redhat.com> - 1.20.14-3
 - Fix crash with NVIDIA proprietary driver with Present (#2046147)
 
