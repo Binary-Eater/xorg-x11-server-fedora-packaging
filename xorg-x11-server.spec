@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   4%{?gitdate:.%{gitdate}}%{?dist}
+Release:   5%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -98,6 +98,7 @@ Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 # Backports from "master" upstream:
 Patch100: 0001-present-Check-for-NULL-to-prevent-crash.patch
 Patch101: 0001-render-Fix-build-with-gcc-12.patch
+Patch102: 0001-xf86-Accept-devices-with-the-simpledrm-driver.patch
 
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
@@ -513,6 +514,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Fri Apr 8 2022 Jocelyn Falempe <jfalempe@redhat.com> - 1.20.14-5
+- Fix basic graphic mode not working with simpledrm (#2067151)
+
 * Fri Jan 28 2022 Olivier Fourdan <ofourdan@redhat.com> - 1.20.14-4
 - Fix build with GCC 12 (#2047134)
 
