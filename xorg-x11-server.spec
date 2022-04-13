@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   5%{?gitdate:.%{gitdate}}%{?dist}
+Release:   6%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -99,6 +99,7 @@ Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 Patch100: 0001-present-Check-for-NULL-to-prevent-crash.patch
 Patch101: 0001-render-Fix-build-with-gcc-12.patch
 Patch102: 0001-xf86-Accept-devices-with-the-simpledrm-driver.patch
+Patch103: 0001-Don-t-hardcode-fps-for-fake-screen.patch
 
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
@@ -514,6 +515,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Apr 13 2022 Dominik Mierzejewski <rpm@greysector.net> - 1.20.14-6
+- Don't hardcode fps for fake screen (#2054188)
+
 * Fri Apr 8 2022 Jocelyn Falempe <jfalempe@redhat.com> - 1.20.14-5
 - Fix basic graphic mode not working with simpledrm (#2067151)
 
