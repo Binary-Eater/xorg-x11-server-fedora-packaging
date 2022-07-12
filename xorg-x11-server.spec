@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   6%{?gitdate:.%{gitdate}}%{?dist}
+Release:   7%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -100,6 +100,11 @@ Patch100: 0001-present-Check-for-NULL-to-prevent-crash.patch
 Patch101: 0001-render-Fix-build-with-gcc-12.patch
 Patch102: 0001-xf86-Accept-devices-with-the-simpledrm-driver.patch
 Patch103: 0001-Don-t-hardcode-fps-for-fake-screen.patch
+
+# CVE-2022-2319/ZDI-CAN-16062, CVE-2022-2320/ZDI-CAN-16070
+Patch110: 0001-xkb-switch-to-array-index-loops-to-moving-pointers.patch
+Patch111: 0002-xkb-swap-XkbSetDeviceInfo-and-XkbSetDeviceInfoCheck.patch
+Patch112: 0003-xkb-add-request-length-validation-for-XkbSetGeometry.patch
 
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
@@ -515,6 +520,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Jul 12 2022 Olivier Fourdan <ofourdan@redhat.com> - 1.20.14-7
+- Fix CVE-2022-2319/ZDI-CAN-16062, CVE-2022-2320/ZDI-CAN-16070
+
 * Wed Apr 13 2022 Dominik Mierzejewski <rpm@greysector.net> - 1.20.14-6
 - Don't hardcode fps for fake screen (#2054188)
 
