@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   11%{?gitdate:.%{gitdate}}%{?dist}
+Release:   12%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -545,6 +545,10 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Dec 15 2022 Leif Liddy <leifliddy@fedoraproject.org> 1.20.14-12
+- Xorg server does not correctly select the DCP for the display
+  without a quirk on Apple silicon machines (#2152414)
+
 * Wed Dec 14 2022 Peter Hutterer <peter.hutterer@redhat.com> 1.20.14-11
 - CVE fix for: CVE-2022-4283, CVE-2022-46340, CVE-2022-46341,
   CVE-2022-46342, CVE-2022-46343, CVE-2022-46344
