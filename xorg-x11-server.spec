@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   12%{?gitdate:.%{gitdate}}%{?dist}
+Release:   13%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -62,8 +62,6 @@ Source2:   commitid
 Source0:   https://www.x.org/pub/individual/xserver/%{pkgname}-%{version}.tar.xz
 Source1:   gitignore
 %endif
-
-Source4:   10-quirks.conf
 
 Source10:   xserver.pamd
 
@@ -106,6 +104,7 @@ Patch100: 0001-present-Check-for-NULL-to-prevent-crash.patch
 Patch101: 0001-render-Fix-build-with-gcc-12.patch
 Patch102: 0001-xf86-Accept-devices-with-the-simpledrm-driver.patch
 Patch103: 0001-Don-t-hardcode-fps-for-fake-screen.patch
+Patch104: 0001-add-a-quirk-for-apple-silicon.patch
 
 # CVE-2022-2319/ZDI-CAN-16062, CVE-2022-2320/ZDI-CAN-16070
 Patch110: 0001-xkb-switch-to-array-index-loops-to-moving-pointers.patch
@@ -401,9 +400,6 @@ mkdir -p $RPM_BUILD_ROOT%{_libdir}/xorg/modules/{drivers,input}
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pam.d
 install -m 644 %{SOURCE10} $RPM_BUILD_ROOT%{_sysconfdir}/pam.d/xserver
 
-mkdir -p $RPM_BUILD_ROOT%{_datadir}/X11/xorg.conf.d
-install -m 644 %{SOURCE4} $RPM_BUILD_ROOT%{_datadir}/X11/xorg.conf.d
-
 # make sure the (empty) /etc/X11/xorg.conf.d is there, system-setup-keyboard
 # relies on it more or less.
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/X11/xorg.conf.d
@@ -547,6 +543,10 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Fri Jan 13 2023 Leif Liddy <leifliddy@fedoraproject.org> 1.20.14-13
+- Xorg server does not correctly select the DCP for the display
+  without a quirk on Apple silicon machines (#2152414)
+
 * Mon Dec 19 2022 Peter Hutterer <peter.hutterer@redhat.com> - 1.20.14-12
 - Fix buggy patch to CVE-2022-46340
 
