@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   13%{?gitdate:.%{gitdate}}%{?dist}
+Release:   14%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -134,6 +134,12 @@ Patch120: 0006-Xext-free-the-XvRTVideoNotify-when-turning-off-from-.patch
 Patch121: 0007-xkb-reset-the-radio_groups-pointer-to-NULL-after-fre.patch
 # Fix for buggy patch to CVE-2022-46340
 Patch122: 0008-Xext-fix-invalid-event-type-mask-in-XTestSwapFakeInp.patch
+
+# Only on F38 and later
+%if 0%{fedora} >= 38
+# Upstream commits 73d6e88, f69280dd and 4127776, minus the xwayland.pc.in change
+Patch200: 0001-Disallow-byte-swapped-clients-by-default.patch
+%endif
 
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
@@ -548,6 +554,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Fri Jan 13 2023 Peter Hutterer <peter.hutterer@redhat.com> - 1.20.14-14
+- Disallow byte-swapped clients (#2159489)
+
 * Wed Jan 11 2023 Olivier Fourdan <ofourdan@redhat.com> - 1.20.14-13
 - Rename boolean config value field from bool to boolean to fix drivers
   build failures due to a conflict with C++ and stdbool.h
