@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   18%{?gitdate:.%{gitdate}}%{?dist}
+Release:   19%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 License:   MIT
 
@@ -554,6 +554,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Thu Feb 09 2023 Iker Pedrosa <ipedrosa@redhat.com> - 1.20.14-19
+- Remove pam_console from service file (#1822209)
+
 * Thu Feb 02 2023 Peter Hutterer <peter.hutterer@redhat.com> - 1.20.14-18
 - CVE-2023-0494: potential use-after-free
 
