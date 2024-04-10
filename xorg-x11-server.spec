@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   34%{?gitdate:.%{gitdate}}%{?dist}
+Release:   35%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 # SPDX
 License:   Adobe-Display-PostScript AND BSD-3-Clause AND DEC-3-Clause AND HPND AND HPND-sell-MIT-disclaimer-xserver AND HPND-sell-variant AND ICU AND ISC AND MIT AND MIT-open-group AND NTP AND SGI-B-2.0 AND SMLNJ AND X11 AND X11-distribute-modifications-variant
@@ -180,6 +180,7 @@ Patch1027: 0002-Xi-ProcXIPassiveGrabDevice-needs-to-use-unswapped-le.patch
 Patch1028: 0003-Xquartz-ProcAppleDRICreatePixmap-needs-to-use-unswap.patch
 # CVE-2024-31083
 Patch1029: 0004-render-fix-refcounting-of-glyphs-during-ProcRenderAd.patch
+Patch1030: 0001-render-Avoid-possible-double-free-in-ProcRenderAddGl.patch
 
 ## Add new patches above; Fedora-specific patches below
 
@@ -602,6 +603,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Apr 10 2024 José Expósito <jexposit@redhat.com> - 1.20.14-35
+- Fix regression caused by the fix for CVE-2024-31083
+
 * Wed Apr 03 2024 José Expósito <jexposit@redhat.com> - 1.20.14-34
 - CVE fix for: CVE-2024-31080, CVE-2024-31081, CVE-2024-31082 and
   CVE-2024-31083
