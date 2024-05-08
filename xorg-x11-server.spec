@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   35%{?gitdate:.%{gitdate}}%{?dist}
+Release:   36%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 # SPDX
 License:   Adobe-Display-PostScript AND BSD-3-Clause AND DEC-3-Clause AND HPND AND HPND-sell-MIT-disclaimer-xserver AND HPND-sell-variant AND ICU AND ISC AND MIT AND MIT-open-group AND NTP AND SGI-B-2.0 AND SMLNJ AND X11 AND X11-distribute-modifications-variant
@@ -107,6 +107,7 @@ Patch102: 0001-xf86-Accept-devices-with-the-simpledrm-driver.patch
 Patch103: 0001-Don-t-hardcode-fps-for-fake-screen.patch
 Patch104: 0001-hw-Rename-boolean-config-value-field-from-bool-to-bo.patch
 Patch105: 0001-add-a-quirk-for-apple-silicon.patch
+Patch106: 0001-xquartz-Remove-invalid-Unicode-sequence.patch
 
 # CVE-2022-2319/ZDI-CAN-16062, CVE-2022-2320/ZDI-CAN-16070
 Patch110: 0001-xkb-switch-to-array-index-loops-to-moving-pointers.patch
@@ -603,6 +604,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Wed Apr 10 2024 José Expósito <jexposit@redhat.com> - 1.20.14-35
+- Backport fix for invalid Unicode sequence
+
 * Wed Apr 10 2024 José Expósito <jexposit@redhat.com> - 1.20.14-35
 - Fix regression caused by the fix for CVE-2024-31083
 
