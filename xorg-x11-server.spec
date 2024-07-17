@@ -20,10 +20,10 @@
 # source because rpm is a terrible language.
 %global ansic_major 0
 %global ansic_minor 4
-%global videodrv_major 24
-%global videodrv_minor 1
+%global videodrv_major 25
+%global videodrv_minor 2
 %global xinput_major 24
-%global xinput_minor 1
+%global xinput_minor 4
 %global extension_major 10
 %global extension_minor 0
 %endif
@@ -45,8 +45,8 @@
 
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
-Version:   1.20.14
-Release:   36%{?gitdate:.%{gitdate}}%{?dist}
+Version:   21.1.13
+Release:   1%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 # SPDX
 License:   Adobe-Display-PostScript AND BSD-3-Clause AND DEC-3-Clause AND HPND AND HPND-sell-MIT-disclaimer-xserver AND HPND-sell-variant AND ICU AND ISC AND MIT AND MIT-open-group AND NTP AND SGI-B-2.0 AND SMLNJ AND X11 AND X11-distribute-modifications-variant
@@ -85,9 +85,6 @@ Patch2: 0001-xfree86-use-modesetting-driver-by-default-on-GeForce.patch
 # va_gl should probably just be the default everywhere ?
 Patch3: 0001-xf86-dri2-Use-va_gl-as-vdpau_driver-for-Intel-i965-G.patch
 
-# Submitted upstream, but not going anywhere
-Patch5: 0001-autobind-GPUs-to-the-screen.patch
-
 # because the display-managers are not ready yet, do not upstream
 Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 
@@ -97,129 +94,60 @@ Patch6: 0001-Fedora-hack-Make-the-suid-root-wrapper-always-start-.patch
 # https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/1001`
 Patch7: 0001-configure.ac-search-for-the-fontrootdir-ourselves.patch
 
-# Backports from current stable "server-1.20-branch":
+# Backports from current stable "server-21.1-branch":
 # <empty>
 
-# Backports from "master" upstream:
-Patch100: 0001-present-Check-for-NULL-to-prevent-crash.patch
-Patch101: 0001-render-Fix-build-with-gcc-12.patch
-Patch102: 0001-xf86-Accept-devices-with-the-simpledrm-driver.patch
-Patch103: 0001-Don-t-hardcode-fps-for-fake-screen.patch
-Patch104: 0001-hw-Rename-boolean-config-value-field-from-bool-to-bo.patch
-Patch105: 0001-add-a-quirk-for-apple-silicon.patch
-Patch106: 0001-xquartz-Remove-invalid-Unicode-sequence.patch
-
-# CVE-2022-2319/ZDI-CAN-16062, CVE-2022-2320/ZDI-CAN-16070
-Patch110: 0001-xkb-switch-to-array-index-loops-to-moving-pointers.patch
-Patch111: 0002-xkb-swap-XkbSetDeviceInfo-and-XkbSetDeviceInfoCheck.patch
-Patch112: 0003-xkb-add-request-length-validation-for-XkbSetGeometry.patch
-
-# CVE-2022-3550
-Patch113: 0001-xkb-proof-GetCountedString-against-request-length-at.patch
-# CVE-2022-3551
-Patch114: 0001-xkb-fix-some-possible-memleaks-in-XkbGetKbdByName.patch
-
-# CVE-2022-46340
-Patch115: 0001-Xtest-disallow-GenericEvents-in-XTestSwapFakeInput.patch
-# related to CVE-2022-46344
-Patch116: 0002-Xi-return-an-error-from-XI-property-changes-if-verif.patch
-# CVE-2022-46344
-Patch117: 0003-Xi-avoid-integer-truncation-in-length-check-of-ProcX.patch
-# CVE-2022-46341
-Patch118: 0004-Xi-disallow-passive-grabs-with-a-detail-255.patch
-# CVE-2022-46343
-Patch119: 0005-Xext-free-the-screen-saver-resource-when-replacing-i.patch
-# CVE-2022-46342
-Patch120: 0006-Xext-free-the-XvRTVideoNotify-when-turning-off-from-.patch
-# CVE-2022-46283
-Patch121: 0007-xkb-reset-the-radio_groups-pointer-to-NULL-after-fre.patch
-# Fix for buggy patch to CVE-2022-46340
-Patch122: 0008-Xext-fix-invalid-event-type-mask-in-XTestSwapFakeInp.patch
-# CVE-2023-0494
-Patch123: 0001-Xi-fix-potential-use-after-free-in-DeepCopyPointerCl.patch
-# CVE-2023-1393
-Patch124: 0001-composite-Fix-use-after-free-of-the-COW.patch
-# https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/1114
-Patch125: xorg-x11-server-fb-access-wrapper.patch
-# https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/1057
-Patch126: 0001-present-Send-a-PresentConfigureNotify-event-for-dest.patch
-
-# CVE-2023-5367
-Patch1010: 0001-Xi-randr-fix-handling-of-PropModeAppend-Prepend.patch
-# CVE-2023-5380
-Patch1011: 0002-mi-reset-the-PointerWindows-reference-on-screen-swit.patch
-# CVE-2023-6377
-Patch1012: 0001-Xi-allocate-enough-XkbActions-for-our-buttons.patch
-# CVE-2023-6478
-Patch1013: 0001-randr-avoid-integer-truncation-in-length-check-of-Pr.patch
-# CVE-2023-6816
-Patch1014: 0001-dix-allocate-enough-space-for-logical-button-maps.patch
-# CVE-2024-0229
-Patch1015: 0002-dix-Allocate-sufficient-xEvents-for-our-DeviceStateN.patch
-Patch1016: 0003-dix-fix-DeviceStateNotify-event-calculation.patch
-Patch1017: 0004-Xi-when-creating-a-new-ButtonClass-set-the-number-of.patch
-# CVE-2024-21885
-Patch1018: 0005-Xi-flush-hierarchy-events-after-adding-removing-mast.patch
-# CVE-2024-21886
-Patch1019: 0006-Xi-do-not-keep-linked-list-pointer-during-recursion.patch
-Patch1020: 0007-dix-when-disabling-a-master-float-disabled-slaved-de.patch
-# CVE-2024-0408
-Patch1021: 0008-glx-Call-XACE-hooks-on-the-GLX-buffer.patch
-# CVE-2024-0409
-Patch1022: 0009-ephyr-xwayland-Use-the-proper-private-key-for-cursor.patch
-# Related to CVE-2024-21886
-Patch1023: 0001-dix-Fix-use-after-free-in-input-device-shutdown.patch
 # Fix compilation error on i686
+# https://gitlab.freedesktop.org/xorg/xserver/-/commit/8407181c7dfe14086d99697af0b86120320ab73e
 Patch1024: 0001-ephyr-Fix-incompatible-pointer-type-build-error.patch
-# Fix copy and paste error in CVE-2024-0229
-Patch1025: 0001-dix-fix-valuator-copy-paste-error-in-the-DeviceState.patch
-# CVE-2024-31080
-Patch1026: 0001-Xi-ProcXIGetSelectedEvents-needs-to-use-unswapped-le.patch
-# CVE-2024-31081
-Patch1027: 0002-Xi-ProcXIPassiveGrabDevice-needs-to-use-unswapped-le.patch
-# CVE-2024-31082
-Patch1028: 0003-Xquartz-ProcAppleDRICreatePixmap-needs-to-use-unswap.patch
-# CVE-2024-31083
-Patch1029: 0004-render-fix-refcounting-of-glyphs-during-ProcRenderAd.patch
-Patch1030: 0001-render-Avoid-possible-double-free-in-ProcRenderAddGl.patch
 
 ## Add new patches above; Fedora-specific patches below
 
-# Only on F38 and later (patch number starts at 3801, see autopatch below)
-# Upstream commits 73d6e88, f69280dd and 4127776, minus the xwayland.pc.in change
-Patch3801: 0001-Disallow-byte-swapped-clients-by-default.patch
 
 BuildRequires: make
 BuildRequires: systemtap-sdt-devel
 BuildRequires: git-core
-BuildRequires: automake autoconf libtool pkgconfig
+BuildRequires: automake
+BuildRequires: autoconf
+BuildRequires: libtool
+BuildRequires: pkgconfig
 BuildRequires: xorg-x11-util-macros >= 1.17
 
 BuildRequires: xorg-x11-proto-devel >= 7.7-10
 
-BuildRequires: dbus-devel libepoxy-devel systemd-devel
+BuildRequires: dbus-devel
+BuildRequires: libepoxy-devel
+BuildRequires: systemd-devel
 BuildRequires: xorg-x11-xtrans-devel >= 1.3.2
-BuildRequires: libXfont2-devel libXau-devel libxkbfile-devel libXres-devel
-BuildRequires: libfontenc-devel libXtst-devel libXdmcp-devel
-BuildRequires: libX11-devel libXext-devel
-BuildRequires: libXinerama-devel libXi-devel
-
-# DMX config utils buildreqs.
-BuildRequires: libXt-devel libdmx-devel libXmu-devel libXrender-devel
-BuildRequires: libXi-devel libXpm-devel libXaw-devel libXfixes-devel
+BuildRequires: libXfont2-devel
+BuildRequires: libXau-devel
+BuildRequires: libxkbfile-devel
+BuildRequires: libXres-devel
+BuildRequires: libfontenc-devel
+BuildRequires: libXtst-devel
+BuildRequires: libXdmcp-devel
+BuildRequires: libX11-devel
+BuildRequires: libXext-devel
+BuildRequires: libXinerama-devel
+BuildRequires: libXi-devel
 
 BuildRequires: pkgconfig(epoxy)
 BuildRequires: pkgconfig(xshmfence) >= 1.1
 BuildRequires: libXv-devel
 BuildRequires: pixman-devel >= 0.30.0
-BuildRequires: libpciaccess-devel >= 0.13.1 openssl-devel bison flex
+BuildRequires: libpciaccess-devel >= 0.13.1
+BuildRequires: openssl-devel
+BuildRequires: bison
+BuildRequires: flex
 BuildRequires: mesa-libGL-devel >= 9.2
 BuildRequires: mesa-libEGL-devel
 BuildRequires: mesa-libgbm-devel
 # XXX silly...
-BuildRequires: libdrm-devel >= 2.4.0 kernel-headers
+BuildRequires: libdrm-devel >= 2.4.0
+BuildRequires: kernel-headers
 
-BuildRequires: audit-libs-devel libselinux-devel >= 2.0.86-1
+BuildRequires: audit-libs-devel
+BuildRequires: libselinux-devel >= 2.0.86-1
 BuildRequires: libudev-devel
 # libunwind is Exclusive for the following arches
 %ifarch aarch64 %{arm} hppa ia64 mips ppc ppc64 %{ix86} x86_64
@@ -228,8 +156,12 @@ BuildRequires: libunwind-devel
 %endif
 %endif
 
-BuildRequires: pkgconfig(xcb-aux) pkgconfig(xcb-image) pkgconfig(xcb-icccm)
-BuildRequires: pkgconfig(xcb-keysyms) pkgconfig(xcb-renderutil)
+BuildRequires: pkgconfig(xcb-aux)
+BuildRequires: pkgconfig(xcb-image)
+BuildRequires: pkgconfig(xcb-icccm)
+BuildRequires: pkgconfig(xcb-keysyms)
+BuildRequires: pkgconfig(xcb-renderutil)
+BuildRequires: pkgconfig(libxcvt)
 
 %description
 X.Org X11 X server
@@ -269,6 +201,9 @@ Obsoletes: xorg-x11-drv-modesetting < %{version}-%{release}
 Provides: xorg-x11-drv-modesetting = %{version}-%{release}
 # Dropped from F25
 Obsoletes: xorg-x11-drv-vmmouse < 13.1.0-4
+# Dropped from xorg-x11-server-21.1
+# https://gitlab.freedesktop.org/xorg/xserver/-/commit/b3b81c8c2090cd49410960a021baf0d27fdd2ab3
+Obsoletes: xorg-x11-server-Xdmx < 1.20.15
 
 Requires: xorg-x11-server-common >= %{version}-%{release}
 Requires: system-setup-keyboard
@@ -293,22 +228,6 @@ X application.  It runs in a window just like other X applications,
 but it is an X server itself in which you can run other software.  It
 is a very useful tool for developers who wish to test their
 applications without running them on their real X server.
-
-
-%package Xdmx
-Summary: Distributed Multihead X Server and utilities
-Requires: xorg-x11-server-common >= %{version}-%{release}
-Provides: Xdmx
-
-%description Xdmx
-Xdmx is proxy X server that provides multi-head support for multiple displays
-attached to different machines (each of which is running a typical X server).
-When Xinerama is used with Xdmx, the multiple displays on multiple machines
-are presented to the user as a single unified screen.  A simple application
-for Xdmx would be to provide multi-head support using two desktop machines,
-each of which has a single display device attached to it.  A complex
-application for Xdmx would be to unify a 4 by 4 grid of 1280x1024 displays
-(each attached to one of 16 computers) into a unified 5120x4096 display.
 
 
 %package Xvfb
@@ -374,14 +293,11 @@ Xserver source code needed to build VNC server (Xvnc)
 %autosetup -N -n %{pkgname}-%{?gitdate:%{gitdate}}%{!?gitdate:%{version}}
 rm -rf .git
 cp %{SOURCE1} .gitignore
+%global _default_patch_flags -f
 # ick
-%global __scm git
-%{expand:%__scm_setup_git -q}
-%if 0%{?fedora} >= 38
-%autopatch
-%else
-%autopatch -M 3800
-%endif
+#%%global __scm git
+#%%{expand:%%__scm_setup_git -q}
+%autopatch -p1
 
 %if 0%{?stable_abi}
 # check the ABI in the source against what we expect.
@@ -484,7 +400,7 @@ mkdir -p %{inst_srcdir}/{hw/dmx/doc,man,doc,hw/dmx/doxygen}
 cp {,%{inst_srcdir}/}hw/xquartz/bundle/cpprules.in
 cp {,%{inst_srcdir}/}man/Xserver.man
 cp {,%{inst_srcdir}/}doc/smartsched
-cp {,%{inst_srcdir}/}hw/dmx/doxygen/doxygen.conf.in
+#cp {,%{inst_srcdir}/}hw/dmx/doxygen/doxygen.conf.in
 cp {,%{inst_srcdir}/}xserver.ent.in
 cp {,%{inst_srcdir}/}hw/xfree86/Xorg.sh.in
 cp xkb/README.compiled %{inst_srcdir}/xkb
@@ -524,7 +440,6 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 %{_bindir}/Xorg
 %{_libexecdir}/Xorg
 %{Xorgperms} %{_libexecdir}/Xorg.wrap
-%{_bindir}/cvt
 %{_bindir}/gtf
 %dir %{_libdir}/xorg
 %dir %{_libdir}/xorg/modules
@@ -533,9 +448,10 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 %dir %{_libdir}/xorg/modules/extensions
 %{_libdir}/xorg/modules/extensions/libglx.so
 %dir %{_libdir}/xorg/modules/input
+%{_libdir}/xorg/modules/input/inputtest_drv.so
 %{_libdir}/xorg/modules/libfbdevhw.so
 %{_libdir}/xorg/modules/libexa.so
-%{_libdir}/xorg/modules/libfb.so
+#%%{_libdir}/xorg/modules/libfb.so
 %{_libdir}/xorg/modules/libglamoregl.so
 %{_libdir}/xorg/modules/libshadow.so
 %{_libdir}/xorg/modules/libshadowfb.so
@@ -543,14 +459,14 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 %{_libdir}/xorg/modules/libwfb.so
 %if %{defined int10_arch}
 %{_libdir}/xorg/modules/libint10.so
-%{_libdir}/xorg/modules/libvbe.so
+#%%{_libdir}/xorg/modules/libvbe.so
 %endif
 %{_mandir}/man1/gtf.1*
 %{_mandir}/man1/Xorg.1*
 %{_mandir}/man1/Xorg.wrap.1*
-%{_mandir}/man1/cvt.1*
 %{_mandir}/man4/fbdevhw.4*
 %{_mandir}/man4/exa.4*
+%{_mandir}/man4//inputtestdrv.4*
 %{_mandir}/man4/modesetting.4*
 %{_mandir}/man5/Xwrapper.config.5*
 %{_mandir}/man5/xorg.conf.5*
@@ -562,24 +478,6 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 %files Xnest
 %{_bindir}/Xnest
 %{_mandir}/man1/Xnest.1*
-
-%files Xdmx
-%{_bindir}/Xdmx
-%{_bindir}/dmxaddinput
-%{_bindir}/dmxaddscreen
-%{_bindir}/dmxreconfig
-%{_bindir}/dmxresize
-%{_bindir}/dmxrminput
-%{_bindir}/dmxrmscreen
-%{_bindir}/dmxtodmx
-%{_bindir}/dmxwininfo
-%{_bindir}/vdltodmx
-%{_bindir}/dmxinfo
-%{_bindir}/xdmxconfig
-%{_mandir}/man1/Xdmx.1*
-%{_mandir}/man1/dmxtodmx.1*
-%{_mandir}/man1/vdltodmx.1*
-%{_mandir}/man1/xdmxconfig.1*
 
 %files Xvfb
 %{_bindir}/Xvfb
@@ -604,6 +502,13 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Tue Jul 16 2024 Sérgio Basto <sergio@serjux.com> - 21.1.13-1
+- 21.1.13
+- DMX DDX was dropped
+- 0001-Disallow-byte-swapped-clients-by-default.patch is upstreamed
+- 0001-autobind-GPUs-to-the-screen.patch is upstreamed
+- 0001-xf86-dri2-Use-va_gl-as-vdpau_driver-for-Intel-i965-G.patch updated
+
 * Wed Apr 10 2024 José Expósito <jexposit@redhat.com> - 1.20.14-35
 - Backport fix for invalid Unicode sequence
 
