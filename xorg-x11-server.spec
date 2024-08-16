@@ -46,7 +46,7 @@
 Summary:   X.Org X11 X server
 Name:      xorg-x11-server
 Version:   1.20.14
-Release:   37%{?gitdate:.%{gitdate}}%{?dist}
+Release:   38%{?gitdate:.%{gitdate}}%{?dist}
 URL:       http://www.x.org
 # SPDX
 License:   Adobe-Display-PostScript AND BSD-3-Clause AND DEC-3-Clause AND HPND AND HPND-sell-MIT-disclaimer-xserver AND HPND-sell-variant AND ICU AND ISC AND MIT AND MIT-open-group AND NTP AND SGI-B-2.0 AND SMLNJ AND X11 AND X11-distribute-modifications-variant
@@ -143,6 +143,9 @@ Patch124: 0001-composite-Fix-use-after-free-of-the-COW.patch
 Patch125: xorg-x11-server-fb-access-wrapper.patch
 # https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/1057
 Patch126: 0001-present-Send-a-PresentConfigureNotify-event-for-dest.patch
+# https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/645
+Patch127: 0001-xfree86-Consistently-check-for-reference-to-primaryB.patch
+Patch128: 0002-xfree86-Fix-potentially-NULL-reference-to-platform-d.patch
 
 # CVE-2023-5367
 Patch1010: 0001-Xi-randr-fix-handling-of-PropModeAppend-Prepend.patch
@@ -604,6 +607,9 @@ find %{inst_srcdir}/hw/xfree86 -name \*.c -delete
 
 
 %changelog
+* Fri Aug 16 2024 Rahul Rameshbabu <rrameshbabu@nvidia.com> - 1.20.14-38
+- Backport fix for NULL references to pci_device in platform probe code
+
 * Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.20.14-37
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 
